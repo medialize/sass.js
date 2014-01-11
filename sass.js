@@ -8,8 +8,39 @@ this.Sass = (function(){
       compressed: 3
     },
     
+    _createPath: function(parts) {
+      var base = [''];
+    
+      while (parts.length) {
+        var directory = parts.shift();
+        try {
+          FS.createFolder(base.join('/'), directory, true, true);
+        } catch(e) {
+          // IGNORE file exists errors
+        }
+        
+        base.push(directory);
+      }
+    },
+    
+    _ensurePath: function(filename) {
+      var parts = filename.split('/');
+      parts.pop();
+      if (!parts.length) {
+        return;
+      }
+      
+      try {
+        FS.stat(parts.join('/'));
+        return;
+      } catch(e) {
+        Sass._createPath(parts);
+      }
+    },
+    
     writeFile: function(filename, text) {
       try {
+        Sass._ensurePath(filename);
         FS.writeFile(filename, text);
         return true;
       } catch(e) {
@@ -32,7 +63,6 @@ this.Sass = (function(){
       try {
         var result = Module.ccall('sass_compile_unrolled', 'string', ['string', 'number'], [text, Number(style) || 0]);
       } catch(e) {
-        throw e;
         // in case libsass.js was compiled without exception support
         return {
           line: null,
