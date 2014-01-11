@@ -27,16 +27,16 @@
       		});
         }
       };
-      
+
       Sass._worker = new Worker("libsass.worker.js");
       Sass._worker.addEventListener('message', function(event) {
   			Sass._callbacks[event.data.id](event.data.result);
   			delete Sass._callbacks[event.data.id];
   		}, false);
-  		
+
   		return Sass;
     })();
-    
+
     console.log('try Sass.compile("$foo:123px; .m { width:$foo; }", Sass.style.nested, function(result) { console.log(result); });');
   </script>
 </body>

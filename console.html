@@ -15,7 +15,7 @@
         compact: 2,
         compressed: 3
       },
-      
+
       compile: function(text, style) {
         // TODO: see http://kapadia.github.io/emscripten/2013/09/13/emscripten-pointers-and-pointers.html
         // for an idea about accessing a the `char **error_message` parameter - until then, this hack "works"
@@ -37,11 +37,11 @@
             message: message
           };
         }
-        
+
         return result;
       }
     };
-    
+
     console.log('try Sass.compile("$foo:123px; .m { width:$foo; }");');
   </script>
 </body>

@@ -12,7 +12,7 @@ function compile(text, style) {
       message: 'Unknown Error: you need to compile libsass.js with exceptions to get proper error messages'
     };
   }
-  
+
   var error = result.match(/^source string:(\d+):/);
   if (error) {
     var message = result.slice(error[0].length);
@@ -22,7 +22,7 @@ function compile(text, style) {
       message: message
     };
   }
-  
+
   return result;
 }
 
