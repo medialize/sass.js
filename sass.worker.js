@@ -11,7 +11,7 @@ this.Sass = (function(){
       compressed: 3
     },
     
-    writeFile: function(filename, text) {
+    writeFile: function(filename, text, callback) {
       var id = 'cb' + Date.now() + Math.random();
       Sass._callbacks[id] = callback;
   		Sass._worker.postMessage({
@@ -22,7 +22,7 @@ this.Sass = (function(){
   		});
     },
     
-    removeFile: function(filename) {
+    removeFile: function(filename, callback) {
       var id = 'cb' + Date.now() + Math.random();
       Sass._callbacks[id] = callback;
   		Sass._worker.postMessage({
@@ -47,7 +47,7 @@ this.Sass = (function(){
   
   Sass._worker = new Worker("libsass.worker.js");
   Sass._worker.addEventListener('message', function(event) {
-		Sass._callbacks[event.data.id](event.data.result);
+		Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result);
 		delete Sass._callbacks[event.data.id];
 	}, false);
   
