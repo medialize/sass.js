@@ -6,37 +6,9 @@
 </head>
 <body>
   <p>please open the DevTools</p>
+    <!-- Sass Worker API (libsass etc. is loaded from there) -->
+  <script src="sass.worker.js"></script>
   <script>
-    var Sass = (function(){
-      var Sass = {
-        _worker: null,
-        _callbacks: {},
-        style: {
-          nested: 0,
-          expanded: 1,
-          compact: 2,
-          compressed: 3
-        },
-        compile: function(text, style, callback) {
-          var id = 'cb' + Date.now() + Math.random();
-          Sass._callbacks[id] = callback;
-      		Sass._worker.postMessage({
-      		  id: id,
-      		  text: text,
-      		  style: style
-      		});
-        }
-      };
-      
-      Sass._worker = new Worker("libsass.worker.js");
-      Sass._worker.addEventListener('message', function(event) {
-  			Sass._callbacks[event.data.id](event.data.result);
-  			delete Sass._callbacks[event.data.id];
-  		}, false);
-  		
-  		return Sass;
-    })();
-    
     console.log('try Sass.compile("$foo:123px; .m { width:$foo; }", Sass.style.nested, function(result) { console.log(result); });');
   </script>
 </body>
