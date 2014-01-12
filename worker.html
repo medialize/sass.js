@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Sass console</title>
+</head>
+<body>
+  <p>please open the DevTools</p>
+    <!-- Sass Worker API (libsass etc. is loaded from there) -->
+  <script src="sass.worker.js"></script>
+  <script>
+    console.log('try Sass.compile("$foo:123px; .m { width:$foo; }", function(result) { console.log(result); });');
+  </script>
+</body>
+</html>
