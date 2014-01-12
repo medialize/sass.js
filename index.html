@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+	<title>Sass.js - emscripted libsass in the browser</title>
+	<style>
+		textarea {
+		  float: left;
+			width: 40%;
+			height: 400px;
+		}
+
+		#credits {
+			clear: left;
+			padding-top: 10px;
+		}
+	</style>
+</head>
+<body>
+	<h1>Sass.js - Convert Sass in the browser using Emscripten &amp; Libsass</h1>
+  <p>
+    More information in the <a href="https://github.com/medialize/sass.js/">Sass.js repository</a>.
+  </p>
+
+	<p>
+	  <button type="button" id="convert">Convert</button>
+	</p>
+	
+	<textarea id="input">@import "demo";
+$foo: 10px;
+.selector {
+  margin: $foo;
+  .nested {
+    margin: $foo / 2;
+  }
+}</textarea>
+	<textarea id="output"></textarea>
+
+	<p id="credits">
+	 This fun was had by <a href="https://twitter.com/cjk101010">@cjk101010</a>, <a href="https://twitter.com/asciidisco">@asciidisco</a> and <a href="https://twitter.com/rodneyrehm">@rodneyrehm</a>.
+	</p>
+	
+	<script src="src/sass.worker.js" data-libsass-worker="src/libsass.worker.js"></script>
+	<script>
+	  Sass.writeFile('demo.scss', '.imported { content: "yeah, file support!"; }');
+	  Sass.options({ comments: true });
+	
+		var convert = document.getElementById('convert');
+		var input = document.getElementById('input');
+		var output = document.getElementById('output');
+		
+		convert.addEventListener('click', function (event) {
+			event.preventDefault();
+      convert.disabled = true;
+			Sassc.compile(input.value, function (result) {
+        if (typeof result !== 'string') {
+          output.value = 'Error on line ' + result.line + ':\n' + result.message;
+        } else {
+          output.value = result;
+        }
+			});
+		}, false);
+	</script>
+</body>
+</html>
