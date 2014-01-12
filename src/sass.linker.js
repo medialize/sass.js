@@ -31,7 +31,7 @@
             }
           }
         };
-        
+
         var result = Sass.compile(data);
         handleResult(result);
       };
@@ -86,4 +86,4 @@
       compileOnLoad();
     }
 
-})(window.Sass);    
+})(window.Sass);

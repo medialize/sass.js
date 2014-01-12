@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Compile sass link includes</title>
-	<!-- sass/scss sheet to compile -->
-	<link rel="stylesheet/scss" href="scss/deeper/_some.scss?buster=123">
-	<link rel="stylesheet/scss" href="scss/_importable.scss?buster=123">
-	<link rel="stylesheet/scss" href="scss/example.scss#does-not-matter">
-	<style type="text/scss">
+  <title>Compile sass link includes</title>
+  <!-- sass/scss sheet to compile -->
+  <link rel="stylesheet/scss" href="scss/deeper/_some.scss?buster=123">
+  <link rel="stylesheet/scss" href="scss/_importable.scss?buster=123">
+  <link rel="stylesheet/scss" href="scss/example.scss#does-not-matter">
+  <style type="text/scss">
     //@import "scss/_importable";
-	  $inline: 123px;
-	  .inline {
-	    margin: $inline;
-	  }
-	</style>
-	<!-- Sass API -->
-	<script src="src/libsass.js"></script>
-	<script src="src/sass.js"></script>
+    $inline: 123px;
+    .inline {
+      margin: $inline;
+    }
+  </style>
+  <!-- Sass API -->
+  <script src="src/libsass.js"></script>
+  <script src="src/sass.js"></script>
 
-	<!-- Sass <link> and <style> resolver -->
+  <!-- Sass <link> and <style> resolver -->
   <script>
     Sass.imports = function(text) {
       var imports = [];
@@ -28,7 +28,7 @@
       });
       return imports;
     };
-    
+
     Sass.readFile = function(filename) {
       var path = Sass._absolutePath(filename);
       try {
@@ -37,7 +37,7 @@
         return undefined;
       }
     };
-    
+
     Sass['import'] = function(url) {
       // FIXME: replace this failure-to-be with URI.js URI(url).relative(location.href)
       var documentPath = location.pathname.split('/');
@@ -60,7 +60,7 @@
         imports: imports
       };
     };
-    
+
     /*
     // download all imported files, allowing a single <link> to rule them all
     Sass.importAll = function(url) {
@@ -68,15 +68,15 @@
       var imported = {};
       var file = Sass.import(url);
       imported[file.path] = file;
-      
+
       file.imports.forEach(function(importFile) {
         // resolve against window.location.origin and file.directory - we might want URI.js to normalize and resolve paths?
       });
-      
+
       return imported;
     };
     */
-    
+
     function importScss() {
       var elements = document.querySelectorAll('link[rel="stylesheet/scss"], style[type="text/scss"]');
       var compile = [];
@@ -85,25 +85,25 @@
           compile.push(element.textContent);
           return;
         }
-        
+
         var file = Sass['import'](element.href);
         if (!file.invisible) {
           compile.push('@import "' + file.path + '";');
         }
       });
-      
+
       var scss = compile.join("\n");
       var css = Sass.compile(scss);
       var style = document.createElement('style');
       style.textContent = css;
       document.head.appendChild(style);
     }
-    
+
     importScss();
   </script>
 
 </head>
 <body>
-	<div class="box">Sassy</div>
+  <div class="box">Sassy</div>
 </body>
 </html>
