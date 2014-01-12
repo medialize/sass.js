@@ -1,3 +1,4 @@
+'use strict';
 importScripts('libsass.min.js', 'sass.js');
 
 onmessage = function (event) {

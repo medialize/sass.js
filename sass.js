@@ -1,4 +1,5 @@
 this.Sass = (function(){
+  'use strict';
 
   var Sass = {
     style: {
@@ -59,20 +60,16 @@ this.Sass = (function(){
 
     compile: function(text, style) {
       try {
-        // in C we would use char *ptr; foo(&ptr) - in EMScripten this is
-        // not possible, so we allocate a pointer to a pointer on the stack
-        // by hand
+        // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
+        // so we allocate a pointer to a pointer on the stack by hand
         var ptr_to_ptr = Module.allocate([0], 'i8', ALLOC_STACK);
-
         var result = Module.ccall('sass_compile_unrolled', 'string', ['string', 'number', 'i8'], [text, Number(style) || 0, ptr_to_ptr]);
-
         // this is equivalent to *ptr
         var err_str = Module.getValue(ptr_to_ptr, '*');
-
         // error string set? if not, it would be NULL and therefore 0
-        if(err_str) {
-          err_str = Module.Pointer_stringify(err_str); // interpret pointer as string
-
+        if (err_str) {
+          // pull string from pointer
+          err_str = Module.Pointer_stringify(err_str);
           var error = err_str.match(/^source string:(\d+):/);
           var message = err_str.slice(error[0].length);
           // throw new Error(message, 'string', error[1]);
@@ -93,7 +90,5 @@ this.Sass = (function(){
     }
   };
 
-
   return Sass;
-
 })();
