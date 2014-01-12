@@ -92,7 +92,7 @@ this.Sass = (function(){
         var ptr_to_ptr = Module.allocate([0], 'i8', ALLOC_STACK);
         var result = Module.ccall(
           // C/++ function to call
-          'sass_compile_unrolled',
+          'sass_compile_emscripten',
           // return type
           'string',
           // parameter types
