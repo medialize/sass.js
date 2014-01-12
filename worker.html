@@ -9,7 +9,7 @@
     <!-- Sass Worker API (libsass etc. is loaded from there) -->
   <script src="sass.worker.js"></script>
   <script>
-    console.log('try Sass.compile("$foo:123px; .m { width:$foo; }", Sass.style.nested, function(result) { console.log(result); });');
+    console.log('try Sass.compile("$foo:123px; .m { width:$foo; }", function(result) { console.log(result); });');
   </script>
 </body>
 </html>

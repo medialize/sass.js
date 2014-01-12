@@ -1,4 +1,4 @@
-@import "scss/importable.scss";
+@import "importable.scss";
 
 @mixin border-radius($radius) {
   -webkit-border-radius: $radius;
@@ -9,7 +9,7 @@
 }
 
 .box {
-	@extend .green;
-	@include border-radius(10px);
-	border: 20px solid lime;
+  @extend .green;
+  @include border-radius(10px);
+  border: 20px solid lime;
 }
