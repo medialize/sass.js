@@ -15,21 +15,25 @@
       };
 
       var cb = function (data) {
-        var cpcss = Sass.compile(data);
-        var css = document.createElement('style');
+        var handleResult = function(result){
+          var css = document.createElement('style');
 
-        if (typeof cpcss === 'object') {
-          console.error(cpcss);
-        } else {
-          css.setAttribute('type', 'text/css');
-          css.appendChild(document.createTextNode(cpcss));
-          head.appendChild(css);
+          if (typeof result === 'object') {
+            console.error(result);
+          } else {
+            css.setAttribute('type', 'text/css');
+            css.appendChild(document.createTextNode(result));
+            head.appendChild(css);
 
-          sheetsLength--;
-          if (sheetsLength > 0) {
-            _doXHR(sheets.pop().href, cb, ecb);
+            sheetsLength--;
+            if (sheetsLength > 0) {
+              _doXHR(sheets.pop().href, cb, ecb);
+            }
           }
-        }
+        };
+        
+        var result = Sass.compile(data);
+        handleResult(result);
       };
 
       if (linksLength) {
