@@ -71,7 +71,7 @@ this.Sass = (function(){
           // pull string from pointer
           err_str = Module.Pointer_stringify(err_str);
           var error = err_str.match(/^source string:(\d+):/);
-          var message = err_str.slice(error[0].length);
+          var message = err_str.slice(error[0].length).replace(/(^\s+)|(\s+$)/g, '');
           // throw new Error(message, 'string', error[1]);
           return {
             line: Number(error[1]),
