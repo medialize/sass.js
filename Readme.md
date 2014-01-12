@@ -4,6 +4,8 @@ Sass parser in JavaScript. This is a convenience API for the [emscripted](https:
 
 > A fair warning: minified it's 2MB, gzipped it's 550KB.
 
+see the [live demo](http://medialize.github.com/sass.js/)
+
 ## Known Problems
 
 * compile styles `nested`, `expanded` and `compact` seem to behave exactly the same
@@ -95,4 +97,4 @@ Sass.removeFile(filename);
 
 ## License
 
-libsass.js is - as [libsass](https://github.com/hcatlin/libsass) and [Emscripten](https://github.com/kripken/emscripten/) are - published under the [MIT License](http://opensource.org/licenses/mit-license).
+Sass.js is - as [libsass](https://github.com/hcatlin/libsass) and [Emscripten](https://github.com/kripken/emscripten/) are - published under the [MIT License](http://opensource.org/licenses/mit-license).
