@@ -88,6 +88,7 @@ this.Sass = (function(){
 
       return result;
     }
+
   };
 
   return Sass;
