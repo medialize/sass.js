@@ -37,7 +37,7 @@ this.Sass = (function(){
   		});
     },
 
-    options: function(options) {
+    options: function(options, callback) {
       var id = 'cb' + Date.now() + Math.random();
       Sass._callbacks[id] = callback;
   		Sass._worker.postMessage({
