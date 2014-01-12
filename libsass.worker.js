@@ -5,7 +5,10 @@ onmessage = function (event) {
   var result;
   switch (event.data.command) {
     case 'compile':
-      result = Sass.compile(event.data.text, event.data.style);
+      result = Sass.compile(event.data.text);
+      break;
+    case 'options':
+      result = Sass.options(event.data.options);
       break;
     case 'writeFile':
       result = Sass.writeFile(event.data.filename, event.data.text);

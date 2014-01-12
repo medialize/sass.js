@@ -8,9 +8,37 @@ this.Sass = (function(){
       compact: 2,
       compressed: 3
     },
+    comments: {
+      "none": 0,
+      "default": 1
+    },
+    _options: {
+      style: 0,
+      comments: 0
+    },
+    options: function(options) {
+      if (typeof options !== 'object') {
+        return;
+      }
 
+      Object.keys(options).forEach(function(key) {
+        switch (key) {
+          case 'style':
+            Sass._options[key] = Number(options[key]);
+            break;
+          case 'comments':
+            Sass._options[key] = Number(!!options[key]);
+            break;
+        }
+      });
+    },
+
+    _path: '/sass/',
+    _absolutePath: function(filename) {
+      return Sass._path + (filename.slice(0, 1) === '/' ? filename.slice(1) : filename);
+    },
     _createPath: function(parts) {
-      var base = [''];
+      var base = [];
 
       while (parts.length) {
         var directory = parts.shift();
@@ -23,7 +51,6 @@ this.Sass = (function(){
         base.push(directory);
       }
     },
-
     _ensurePath: function(filename) {
       var parts = filename.split('/');
       parts.pop();
@@ -38,32 +65,41 @@ this.Sass = (function(){
         Sass._createPath(parts);
       }
     },
-
     writeFile: function(filename, text) {
+      var path = Sass._absolutePath(filename);
       try {
-        Sass._ensurePath(filename);
-        FS.writeFile(filename, text);
+        Sass._ensurePath(path);
+        FS.writeFile(path, text);
         return true;
       } catch(e) {
         return false;
       }
     },
-
     removeFile: function(filename) {
+      var path = Sass._absolutePath(filename);
       try {
-        FS.unlink(filename);
+        FS.unlink(path);
         return true;
       } catch(e) {
         return false;
       }
     },
 
-    compile: function(text, style) {
+    compile: function(text) {
       try {
         // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
         // so we allocate a pointer to a pointer on the stack by hand
         var ptr_to_ptr = Module.allocate([0], 'i8', ALLOC_STACK);
-        var result = Module.ccall('sass_compile_unrolled', 'string', ['string', 'number', 'i8'], [text, Number(style) || 0, ptr_to_ptr]);
+        var result = Module.ccall(
+          // C/++ function to call
+          'sass_compile_unrolled',
+          // return type
+          'string',
+          // parameter types
+          ['string', 'number', 'number', 'string', 'i8'],
+          // arguments for invocation
+          [text, Sass._options.style, Sass._options.comments, Sass._path, ptr_to_ptr]
+        );
         // this is equivalent to *ptr
         var err_str = Module.getValue(ptr_to_ptr, '*');
         // error string set? if not, it would be NULL and therefore 0
