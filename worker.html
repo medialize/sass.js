@@ -7,7 +7,7 @@
 <body>
   <p>please open the DevTools</p>
     <!-- Sass Worker API (libsass etc. is loaded from there) -->
-  <script src="sass.worker.js"></script>
+  <script src="src/sass.worker.js" data-libsass-worker="src/libsass.worker.js"></script>
   <script>
     console.log('try Sass.compile("$foo:123px; .m { width:$foo; }", function(result) { console.log(result); });');
   </script>

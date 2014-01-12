@@ -57,8 +57,14 @@ this.Sass = (function(){
   		});
     }
   };
-
-  Sass._worker = new Worker("libsass.worker.js");
+  
+  var workerPath = "libsass.worker.js"
+  var scriptElement = document.currentScript || document.querySelector('[data-libsass-worker]');
+  if (scriptElement) {
+    workerPath = scriptElement.getAttribute('data-libsass-worker');
+  }
+  
+  Sass._worker = new Worker(workerPath);
   Sass._worker.addEventListener('message', function(event) {
 		Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result);
 		delete Sass._callbacks[event.data.id];
