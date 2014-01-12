@@ -2,11 +2,22 @@
 
 Sass parser in JavaScript. This is a convenience API for the [emscripted](https://github.com/rodneyrehm/libsass) [libsass](https://github.com/hcatlin/libsass).
 
+> A fair warning: minified it's 2MB, gzipped it's 550KB.
+
+## Known Problems
+
+* compile styles `nested`, `expanded` and `compact` seem to behave exactly the same
+* compile style `compressed` prefixes every selector with `&`
+
+(We haven't looked into why this is happening yet)
+
+
 ## Sass.js API
 
-Sass.js comes in two flavors – the synchronous in-document `sass.js` and the asynchronous worker `sass.worker.js`.
+Sass.js comes in two flavors – the synchronous in-document `sass.js` and the asynchronous worker `sass.worker.js`. The primary API - wrapping the Emscripten runtime - is provided with `sass.js` (it is used internally by `sass.worker.js` as well). `sass.worker.js` mimics the same API (adding callbacks for the asynchronous part) and passes all the function calls through to the [web worker](https://developer.mozilla.org/en/docs/Web/API/Worker).
 
-## Synchronous in-document sass.js
+
+### Synchronous in-document sass.js
 
 ```html
 <!-- loading libsass.js and sass.js into your document -->
@@ -19,7 +30,10 @@ Sass.js comes in two flavors – the synchronous in-document `sass.js` and the a
 </script>
 ```
 
-## Asynchronous worker sass.worker.js
+**Warning:** `src/libsass.js` will litter your global scope with Emscripten's runtime. It's great for debugging, but you really want to use `sass.worker.js`.
+
+
+### Asynchronous worker sass.worker.js
 
 ```html
 <!-- loading libsass.worker.js and sass.worker.js into your document -->
@@ -32,7 +46,42 @@ Sass.js comes in two flavors – the synchronous in-document `sass.js` and the a
 </script>
 ```
 
-TODO: proper API documentation
+### Working With Files
+
+Chances are you want to use one of the readily available Sass mixins (e.g. [drublic/sass-mixins](https://github.com/drublic/Sass-Mixins) or [Burbon](https://github.com/thoughtbot/bourbon)). While Sass.js doesn't feature a full-blown "loadBurbon()", registering files is possible:
+
+```js
+Sass.writeFile('one.scss', '.one { width: 123px; }');
+Sass.writeFile('some-dir/two.scss', '.two { width: 123px; }');
+Sass.compile('@import "one"; @import "some-dir/two";');
+```
+
+outputs
+
+```css
+.one {
+  width: 123px; }
+
+.two {
+  width: 123px; }
+```
+
+### API Overview
+
+```js
+//TODO: proper API documentation
+Sass.compile(text);
+Sass.options({
+  style: Sass.style.nested, 
+  comments: Sass.comments.none
+});
+Sass.writeFile(filename, text);
+Sass.removeFile(filename);
+// linked.html
+// Sass.readFile(filename);
+// Sass.imports(text);
+// Sass.import(url);
+```
 
 ---
 
@@ -46,4 +95,4 @@ TODO: proper API documentation
 
 ## License
 
-Sass.js - as [libsass](https://github.com/hcatlin/libsass) and [Emscripten](https://github.com/kripken/emscripten/) are published under the [MIT License](http://opensource.org/licenses/mit-license).
+libsass.js is - as [libsass](https://github.com/hcatlin/libsass) and [Emscripten](https://github.com/kripken/emscripten/) are - published under the [MIT License](http://opensource.org/licenses/mit-license).
