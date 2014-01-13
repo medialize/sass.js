@@ -1,0 +1,44 @@
+{
+  "name": "Sass.js",
+  "version": "[dev-version]",
+  "title": "Sass.js - API for emscripted libsass",
+  "description": "Sass.js is a convenience API for the JavaScript libsass (compiled with Emscripten)",
+  "homepage": "http://medialize.github.com/sass.js/",
+  "author": {
+    "name": "Rodney Rehm",
+    "url": "http://rodneyrehm.de/"
+  },
+  "contributors": [
+    {
+	    "name": "Sebastian Golasch",
+	    "url": "http://asciidisco.com/"
+	  },
+	  {
+	    "name": "Christian Kruse",
+	    "url": "http://http://wwwtech.de/"
+	  }
+  ],
+  "repository" :
+  {
+    "type" : "git",
+    "url" : "https://github.com/medialize/sass.js.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/mit-license"
+    }
+  ],
+  "keywords": [
+    "sass",
+    "scss",
+    "css"
+  ],
+  "main": "./src/sass.js",
+  "files": [
+    "src/sass.js",
+    "src/sass.worker.js",
+    "src/libsass.worker.js",
+    "src/libsass.min.js"
+  ]
+}
