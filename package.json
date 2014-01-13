@@ -1,6 +1,6 @@
 {
   "name": "Sass.js",
-  "version": "[dev-version]",
+  "version": "0.0.0",
   "title": "Sass.js - API for emscripted libsass",
   "description": "Sass.js is a convenience API for the JavaScript libsass (compiled with Emscripten)",
   "homepage": "http://medialize.github.com/sass.js/",
@@ -35,10 +35,21 @@
     "css"
   ],
   "main": "./src/sass.js",
+  "scripts": {
+    "test": "grunt test",
+    "lint": "grunt lint"
+  },
   "files": [
     "src/sass.js",
     "src/sass.worker.js",
     "src/libsass.worker.js",
     "src/libsass.min.js"
-  ]
+  ],
+  "devDependencies": {
+    "jshint-stylish": "~0.1.5",
+    "chai": "~1.8.1",
+    "grunt-mocha-test": "~0.8.1",
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.8.0"
+  }
 }
