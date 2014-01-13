@@ -1,6 +1,6 @@
 this.Sass = (function(){
   'use strict';
-
+  /*global Module, FS, ALLOC_STACK*/
   var Sass = {
     style: {
       nested: 0,
@@ -9,13 +9,17 @@ this.Sass = (function(){
       compressed: 3
     },
     comments: {
-      "none": 0,
-      "default": 1
+      'none': 0,
+      'default': 1
     },
     _options: {
       style: 0,
       comments: 0
     },
+    _files: {},
+    _path: '/sass/',
+
+
     options: function(options) {
       if (typeof options !== 'object') {
         return;
@@ -33,10 +37,10 @@ this.Sass = (function(){
       });
     },
 
-    _path: '/sass/',
     _absolutePath: function(filename) {
       return Sass._path + (filename.slice(0, 1) === '/' ? filename.slice(1) : filename);
     },
+
     _createPath: function(parts) {
       var base = [];
 
@@ -51,6 +55,7 @@ this.Sass = (function(){
         base.push(directory);
       }
     },
+
     _ensurePath: function(filename) {
       var parts = filename.split('/');
       parts.pop();
@@ -65,20 +70,39 @@ this.Sass = (function(){
         Sass._createPath(parts);
       }
     },
+
     writeFile: function(filename, text) {
       var path = Sass._absolutePath(filename);
       try {
         Sass._ensurePath(path);
         FS.writeFile(path, text);
+        Sass._files[path] = filename;
         return true;
       } catch(e) {
         return false;
       }
     },
+
+    readFile: function(filename) {
+      var path = Sass._absolutePath(filename);
+      try {
+        return FS.readFile(path, {encoding: 'utf8'});
+      } catch(e) {
+        return undefined;
+      }
+    },
+
+    listFiles: function() {
+      return Object.keys(Sass._files).map(function(path) {
+        return Sass._files[path];
+      });
+    },
+
     removeFile: function(filename) {
       var path = Sass._absolutePath(filename);
       try {
         FS.unlink(path);
+        delete Sass._files[path];
         return true;
       } catch(e) {
         return false;
@@ -89,7 +113,7 @@ this.Sass = (function(){
       try {
         // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
         // so we allocate a pointer to a pointer on the stack by hand
-        var ptr_to_ptr = Module.allocate([0], 'i8', ALLOC_STACK);
+        var errorPointerPointer = Module.allocate([0], 'i8', ALLOC_STACK);
         var result = Module.ccall(
           // C/++ function to call
           'sass_compile_emscripten',
@@ -98,22 +122,28 @@ this.Sass = (function(){
           // parameter types
           ['string', 'number', 'number', 'string', 'i8'],
           // arguments for invocation
-          [text, Sass._options.style, Sass._options.comments, Sass._path, ptr_to_ptr]
+          [text, Sass._options.style, Sass._options.comments, Sass._path, errorPointerPointer]
         );
         // this is equivalent to *ptr
-        var err_str = Module.getValue(ptr_to_ptr, '*');
+        var errorPointer = Module.getValue(errorPointerPointer, '*');
         // error string set? if not, it would be NULL and therefore 0
-        if (err_str) {
+        if (errorPointer) {
           // pull string from pointer
-          err_str = Module.Pointer_stringify(err_str);
-          var error = err_str.match(/^source string:(\d+):/);
-          var message = err_str.slice(error[0].length).replace(/(^\s+)|(\s+$)/g, '');
+
+          /*jshint camelcase:false*/
+          errorPointer = Module.Pointer_stringify(errorPointer);
+          /*jshint camelcase:true*/
+
+          var error = errorPointer.match(/^source string:(\d+):/);
+          var message = errorPointer.slice(error[0].length).replace(/(^\s+)|(\s+$)/g, '');
           // throw new Error(message, 'string', error[1]);
           return {
             line: Number(error[1]),
             message: message
           };
         }
+
+        return result;
       } catch(e) {
         // in case libsass.js was compiled without exception support
         return {
@@ -121,8 +151,6 @@ this.Sass = (function(){
           message: 'Unknown Error: you need to compile libsass.js with exceptions to get proper error messages'
         };
       }
-
-      return result;
     }
   };
 

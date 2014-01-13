@@ -1,6 +1,7 @@
 this.Sass = (function(){
   'use strict';
-
+  /*global document, Worker*/
+  
   var Sass = {
     _worker: null,
     _callbacks: {},
@@ -12,63 +13,82 @@ this.Sass = (function(){
       compressed: 3
     },
     comments: {
-      "none": 0,
-      "default": 1
+      'none': 0,
+      'default': 1
     },
 
     writeFile: function(filename, text, callback) {
       var id = 'cb' + Date.now() + Math.random();
       Sass._callbacks[id] = callback;
-  		Sass._worker.postMessage({
-  		  command: 'writeFile',
-  		  id: id,
-  		  filename: filename,
-  		  text: text
-  		});
+      Sass._worker.postMessage({
+        command: 'writeFile',
+        id: id,
+        filename: filename,
+        text: text
+      });
+    },
+
+    readFile: function(filename, callback) {
+      var id = 'cb' + Date.now() + Math.random();
+      Sass._callbacks[id] = callback;
+      Sass._worker.postMessage({
+        command: 'readFile',
+        id: id,
+        filename: filename
+      });
+    },
+
+    listFiles: function(callback) {
+      var id = 'cb' + Date.now() + Math.random();
+      Sass._callbacks[id] = callback;
+      Sass._worker.postMessage({
+        command: 'listFiles',
+        id: id
+      });
     },
 
     removeFile: function(filename, callback) {
       var id = 'cb' + Date.now() + Math.random();
       Sass._callbacks[id] = callback;
-  		Sass._worker.postMessage({
-  		  command: 'removeFile',
-  		  id: id,
-  		  filename: filename
-  		});
+      Sass._worker.postMessage({
+        command: 'removeFile',
+        id: id,
+        filename: filename
+      });
     },
 
     options: function(options, callback) {
       var id = 'cb' + Date.now() + Math.random();
       Sass._callbacks[id] = callback;
-  		Sass._worker.postMessage({
-  		  command: 'options',
-  		  id: id,
-  		  options: options
-  		});
+      Sass._worker.postMessage({
+        command: 'options',
+        id: id,
+        options: options
+      });
     },
 
     compile: function(text, callback) {
       var id = 'cb' + Date.now() + Math.random();
       Sass._callbacks[id] = callback;
-  		Sass._worker.postMessage({
-  		  command: 'compile',
-  		  id: id,
-  		  text: text
-  		});
+      Sass._worker.postMessage({
+        command: 'compile',
+        id: id,
+        text: text
+      });
     }
   };
-  
-  var workerPath = "libsass.worker.js"
+
+  var workerPath = 'libsass.worker.js';
   var scriptElement = document.currentScript || document.querySelector('[data-libsass-worker]');
   if (scriptElement) {
     workerPath = scriptElement.getAttribute('data-libsass-worker');
   }
-  
+
   Sass._worker = new Worker(workerPath);
   Sass._worker.addEventListener('message', function(event) {
-		Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result);
-		delete Sass._callbacks[event.data.id];
-	}, false);
+    Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result);
+    delete Sass._callbacks[event.data.id];
+  }, false);
 
   return Sass;
 })();

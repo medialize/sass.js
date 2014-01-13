@@ -1,4 +1,5 @@
 'use strict';
+/*global Sass, postMessage, onmessage:true, importScripts*/
 importScripts('libsass.min.js', 'sass.js');
 
 onmessage = function (event) {
@@ -13,11 +14,17 @@ onmessage = function (event) {
     case 'writeFile':
       result = Sass.writeFile(event.data.filename, event.data.text);
       break;
-    case 'writeFile':
+    case 'readFile':
+      result = Sass.readFile(event.data.filename);
+      break;
+    case 'listFiles':
+      result = Sass.listFiles();
+      break;
+    case 'removeFile':
       result = Sass.removeFile(event.data.filename);
       break;
     default:
-      result = {line: 0, message: "Unknown command " + event.action};
+      result = {line: 0, message: 'Unknown command ' + event.action};
       break;
   }
 
