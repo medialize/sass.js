@@ -27,6 +27,25 @@ this.Sass = (function(){
       });
     },
 
+    readFile: function(filename, callback) {
+      var id = 'cb' + Date.now() + Math.random();
+      Sass._callbacks[id] = callback;
+      Sass._worker.postMessage({
+        command: 'readFile',
+        id: id,
+        filename: filename
+      });
+    },
+
+    listFiles: function(callback) {
+      var id = 'cb' + Date.now() + Math.random();
+      Sass._callbacks[id] = callback;
+      Sass._worker.postMessage({
+        command: 'listFiles',
+        id: id
+      });
+    },
+
     removeFile: function(filename, callback) {
       var id = 'cb' + Date.now() + Math.random();
       Sass._callbacks[id] = callback;
@@ -58,7 +77,7 @@ this.Sass = (function(){
     }
   };
 
-  var workerPath = "libsass.worker.js"
+  var workerPath = "libsass.worker.js";
   var scriptElement = document.currentScript || document.querySelector('[data-libsass-worker]');
   if (scriptElement) {
     workerPath = scriptElement.getAttribute('data-libsass-worker');

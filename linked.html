@@ -29,15 +29,6 @@
       return imports;
     };
 
-    Sass.readFile = function(filename) {
-      var path = Sass._absolutePath(filename);
-      try {
-        return FS.readFile(path, {encoding: 'utf8'});
-      } catch(e) {
-        return undefined;
-      }
-    };
-
     Sass['import'] = function(url) {
       // FIXME: replace this failure-to-be with URI.js URI(url).relative(location.href)
       var documentPath = location.pathname.split('/');

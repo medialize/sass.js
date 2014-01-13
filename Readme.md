@@ -79,10 +79,8 @@ Sass.options({
 });
 Sass.writeFile(filename, text);
 Sass.removeFile(filename);
-// linked.html
-// Sass.readFile(filename);
-// Sass.imports(text);
-// Sass.import(url);
+Sass.readFile(filename);
+Sass.listFiles();
 ```
 
 ---

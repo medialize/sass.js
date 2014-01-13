@@ -13,7 +13,13 @@ onmessage = function (event) {
     case 'writeFile':
       result = Sass.writeFile(event.data.filename, event.data.text);
       break;
-    case 'writeFile':
+    case 'readFile':
+      result = Sass.readFile(event.data.filename);
+      break;
+    case 'listFiles':
+      result = Sass.listFiles();
+      break;
+    case 'removeFile':
       result = Sass.removeFile(event.data.filename);
       break;
     default:

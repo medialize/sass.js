@@ -10,13 +10,13 @@
   },
   "contributors": [
     {
-	    "name": "Sebastian Golasch",
-	    "url": "http://asciidisco.com/"
-	  },
-	  {
-	    "name": "Christian Kruse",
-	    "url": "http://http://wwwtech.de/"
-	  }
+      "name": "Sebastian Golasch",
+      "url": "http://asciidisco.com/"
+    },
+    {
+      "name": "Christian Kruse",
+      "url": "http://http://wwwtech.de/"
+    }
   ],
   "repository" :
   {

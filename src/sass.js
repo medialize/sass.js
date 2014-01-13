@@ -16,6 +16,10 @@ this.Sass = (function(){
       style: 0,
       comments: 0
     },
+    _files: {},
+    _path: '/sass/',
+
+
     options: function(options) {
       if (typeof options !== 'object') {
         return;
@@ -33,10 +37,10 @@ this.Sass = (function(){
       });
     },
 
-    _path: '/sass/',
     _absolutePath: function(filename) {
       return Sass._path + (filename.slice(0, 1) === '/' ? filename.slice(1) : filename);
     },
+
     _createPath: function(parts) {
       var base = [];
 
@@ -51,6 +55,7 @@ this.Sass = (function(){
         base.push(directory);
       }
     },
+
     _ensurePath: function(filename) {
       var parts = filename.split('/');
       parts.pop();
@@ -65,20 +70,39 @@ this.Sass = (function(){
         Sass._createPath(parts);
       }
     },
+
     writeFile: function(filename, text) {
       var path = Sass._absolutePath(filename);
       try {
         Sass._ensurePath(path);
         FS.writeFile(path, text);
+        Sass._files[path] = filename;
         return true;
       } catch(e) {
         return false;
       }
     },
+
+    readFile: function(filename) {
+      var path = Sass._absolutePath(filename);
+      try {
+        return FS.readFile(path, {encoding: 'utf8'});
+      } catch(e) {
+        return undefined;
+      }
+    },
+
+    listFiles: function() {
+      return Object.keys(Sass._files).map(function(path) {
+        return Sass._files[path];
+      });
+    },
+
     removeFile: function(filename) {
       var path = Sass._absolutePath(filename);
       try {
         FS.unlink(path);
+        delete Sass._files[path];
         return true;
       } catch(e) {
         return false;
