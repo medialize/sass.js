@@ -1,4 +1,5 @@
 'use strict';
+/*global Sass, postMessage, onmessage:true, importScripts*/
 importScripts('libsass.min.js', 'sass.js');
 
 onmessage = function (event) {
@@ -23,7 +24,7 @@ onmessage = function (event) {
       result = Sass.removeFile(event.data.filename);
       break;
     default:
-      result = {line: 0, message: "Unknown command " + event.action};
+      result = {line: 0, message: 'Unknown command ' + event.action};
       break;
   }
 

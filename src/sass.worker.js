@@ -1,6 +1,7 @@
 this.Sass = (function(){
   'use strict';
-
+  /*global document, Worker*/
+  
   var Sass = {
     _worker: null,
     _callbacks: {},
@@ -12,8 +13,8 @@ this.Sass = (function(){
       compressed: 3
     },
     comments: {
-      "none": 0,
-      "default": 1
+      'none': 0,
+      'default': 1
     },
 
     writeFile: function(filename, text, callback) {
@@ -77,7 +78,7 @@ this.Sass = (function(){
     }
   };
 
-  var workerPath = "libsass.worker.js";
+  var workerPath = 'libsass.worker.js';
   var scriptElement = document.currentScript || document.querySelector('[data-libsass-worker]');
   if (scriptElement) {
     workerPath = scriptElement.getAttribute('data-libsass-worker');
