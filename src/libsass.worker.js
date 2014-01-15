@@ -1,6 +1,6 @@
 'use strict';
 /*global Sass, postMessage, onmessage:true, importScripts*/
-importScripts('libsass.min.js', 'sass.js');
+importScripts('libsass.js', 'sass.js');
 
 onmessage = function (event) {
   var result;
