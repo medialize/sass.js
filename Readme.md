@@ -38,9 +38,11 @@ Sass.js comes in two flavors – the synchronous in-document `sass.js` and the a
 ### Asynchronous worker sass.worker.js
 
 ```html
-<!-- loading libsass.worker.js and sass.worker.js into your document -->
-<script src="src/sass.worker.js" data-libsass-worker="src/libsass.worker.js"></script>
+<!-- loading sass.worker.js into your document -->
+<script src="src/sass.worker.js"></script>
 <script>
+  // loading libsass.worker (subsequently loading libsass.js and sass.js inside the worker)
+  Sass.initialize('src/libsass.worker.js');
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
   Sass.compile(scss, function(css) {
       console.log(css);
