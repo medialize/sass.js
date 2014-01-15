@@ -1,4 +1,14 @@
-// Note: Some Emscripten settings will significantly limit the speed of the generated code.
+/*! sass.js - v0.0.0 - 2014-01-15 */
+(function (root, factory) {
+  'use strict';
+  if (typeof define === 'function' && define.amd) {
+    define([], factory);
+  } else if (typeof exports === 'object') {
+    module.exports = factory();
+  } else {
+    root.Sass = factory();
+  }
+}(this, function () {// Note: Some Emscripten settings will significantly limit the speed of the generated code.
 // Note: Some Emscripten settings may limit the speed of the generated code.
 // The Module object: Our interface to the outside world. We import
 // and export values on it, and do the work to get that through
@@ -61,7 +71,7 @@ if (ENVIRONMENT_IS_NODE) {
     globalEval(read(f));
   };
   Module['arguments'] = process['argv'].slice(2);
-  module['exports'] = Module;
+  
 }
 else if (ENVIRONMENT_IS_SHELL) {
   Module['print'] = print;
@@ -8294,161 +8304,158 @@ run();
 // {{POST_RUN_ADDITIONS}}
 // {{MODULE_ADDITIONS}}
 
-this.Sass = (function(){
-  'use strict';
-  /*global Module, FS, ALLOC_STACK*/
-  var Sass = {
-    style: {
-      nested: 0,
-      expanded: 1,
-      compact: 2,
-      compressed: 3
-    },
-    comments: {
-      'none': 0,
-      'default': 1
-    },
-    _options: {
-      style: 0,
-      comments: 0
-    },
-    _files: {},
-    _path: '/sass/',
+/*global Module, FS, ALLOC_STACK*/
+/*jshint strict:false*/
+var Sass = {
+  style: {
+    nested: 0,
+    expanded: 1,
+    compact: 2,
+    compressed: 3
+  },
+  comments: {
+    'none': 0,
+    'default': 1
+  },
+  _options: {
+    style: 0,
+    comments: 0
+  },
+  _files: {},
+  _path: '/sass/',
 
+  options: function(options) {
+    if (typeof options !== 'object') {
+      return;
+    }
 
-    options: function(options) {
-      if (typeof options !== 'object') {
-        return;
+    Object.keys(options).forEach(function(key) {
+      switch (key) {
+        case 'style':
+          Sass._options[key] = Number(options[key]);
+          break;
+        case 'comments':
+          Sass._options[key] = Number(!!options[key]);
+          break;
       }
+    });
+  },
 
-      Object.keys(options).forEach(function(key) {
-        switch (key) {
-          case 'style':
-            Sass._options[key] = Number(options[key]);
-            break;
-          case 'comments':
-            Sass._options[key] = Number(!!options[key]);
-            break;
-        }
-      });
-    },
+  _absolutePath: function(filename) {
+    return Sass._path + (filename.slice(0, 1) === '/' ? filename.slice(1) : filename);
+  },
 
-    _absolutePath: function(filename) {
-      return Sass._path + (filename.slice(0, 1) === '/' ? filename.slice(1) : filename);
-    },
+  _createPath: function(parts) {
+    var base = [];
 
-    _createPath: function(parts) {
-      var base = [];
-
-      while (parts.length) {
-        var directory = parts.shift();
-        try {
-          FS.createFolder(base.join('/'), directory, true, true);
-        } catch(e) {
-          // IGNORE file exists errors
-        }
-
-        base.push(directory);
-      }
-    },
-
-    _ensurePath: function(filename) {
-      var parts = filename.split('/');
-      parts.pop();
-      if (!parts.length) {
-        return;
-      }
-
+    while (parts.length) {
+      var directory = parts.shift();
       try {
-        FS.stat(parts.join('/'));
-        return;
+        FS.createFolder(base.join('/'), directory, true, true);
       } catch(e) {
-        Sass._createPath(parts);
+        // IGNORE file exists errors
       }
-    },
 
-    writeFile: function(filename, text) {
-      var path = Sass._absolutePath(filename);
-      try {
-        Sass._ensurePath(path);
-        FS.writeFile(path, text);
-        Sass._files[path] = filename;
-        return true;
-      } catch(e) {
-        return false;
-      }
-    },
+      base.push(directory);
+    }
+  },
 
-    readFile: function(filename) {
-      var path = Sass._absolutePath(filename);
-      try {
-        return FS.readFile(path, {encoding: 'utf8'});
-      } catch(e) {
-        return undefined;
-      }
-    },
+  _ensurePath: function(filename) {
+    var parts = filename.split('/');
+    parts.pop();
+    if (!parts.length) {
+      return;
+    }
 
-    listFiles: function() {
-      return Object.keys(Sass._files).map(function(path) {
-        return Sass._files[path];
-      });
-    },
+    try {
+      FS.stat(parts.join('/'));
+      return;
+    } catch(e) {
+      Sass._createPath(parts);
+    }
+  },
 
-    removeFile: function(filename) {
-      var path = Sass._absolutePath(filename);
-      try {
-        FS.unlink(path);
-        delete Sass._files[path];
-        return true;
-      } catch(e) {
-        return false;
-      }
-    },
+  writeFile: function(filename, text) {
+    var path = Sass._absolutePath(filename);
+    try {
+      Sass._ensurePath(path);
+      FS.writeFile(path, text);
+      Sass._files[path] = filename;
+      return true;
+    } catch(e) {
+      return false;
+    }
+  },
 
-    compile: function(text) {
-      try {
-        // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
-        // so we allocate a pointer to a pointer on the stack by hand
-        var errorPointerPointer = Module.allocate([0], 'i8', ALLOC_STACK);
-        var result = Module.ccall(
-          // C/++ function to call
-          'sass_compile_emscripten',
-          // return type
-          'string',
-          // parameter types
-          ['string', 'number', 'number', 'string', 'i8'],
-          // arguments for invocation
-          [text, Sass._options.style, Sass._options.comments, Sass._path, errorPointerPointer]
-        );
-        // this is equivalent to *ptr
-        var errorPointer = Module.getValue(errorPointerPointer, '*');
-        // error string set? if not, it would be NULL and therefore 0
-        if (errorPointer) {
-          // pull string from pointer
+  readFile: function(filename) {
+    var path = Sass._absolutePath(filename);
+    try {
+      return FS.readFile(path, {encoding: 'utf8'});
+    } catch(e) {
+      return undefined;
+    }
+  },
 
-          /*jshint camelcase:false*/
-          errorPointer = Module.Pointer_stringify(errorPointer);
-          /*jshint camelcase:true*/
+  listFiles: function() {
+    return Object.keys(Sass._files).map(function(path) {
+      return Sass._files[path];
+    });
+  },
 
-          var error = errorPointer.match(/^source string:(\d+):/);
-          var message = errorPointer.slice(error[0].length).replace(/(^\s+)|(\s+$)/g, '');
-          // throw new Error(message, 'string', error[1]);
-          return {
-            line: Number(error[1]),
-            message: message
-          };
-        }
+  removeFile: function(filename) {
+    var path = Sass._absolutePath(filename);
+    try {
+      FS.unlink(path);
+      delete Sass._files[path];
+      return true;
+    } catch(e) {
+      return false;
+    }
+  },
 
-        return result;
-      } catch(e) {
-        // in case libsass.js was compiled without exception support
+  compile: function(text) {
+    try {
+      // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
+      // so we allocate a pointer to a pointer on the stack by hand
+      var errorPointerPointer = Module.allocate([0], 'i8', ALLOC_STACK);
+      var result = Module.ccall(
+        // C/++ function to call
+        'sass_compile_emscripten',
+        // return type
+        'string',
+        // parameter types
+        ['string', 'number', 'number', 'string', 'i8'],
+        // arguments for invocation
+        [text, Sass._options.style, Sass._options.comments, Sass._path, errorPointerPointer]
+      );
+      // this is equivalent to *ptr
+      var errorPointer = Module.getValue(errorPointerPointer, '*');
+      // error string set? if not, it would be NULL and therefore 0
+      if (errorPointer) {
+        // pull string from pointer
+
+        /*jshint camelcase:false*/
+        errorPointer = Module.Pointer_stringify(errorPointer);
+        /*jshint camelcase:true*/
+
+        var error = errorPointer.match(/^source string:(\d+):/);
+        var message = errorPointer.slice(error[0].length).replace(/(^\s+)|(\s+$)/g, '');
+        // throw new Error(message, 'string', error[1]);
         return {
-          line: null,
-          message: 'Unknown Error: you need to compile libsass.js with exceptions to get proper error messages'
+          line: Number(error[1]),
+          message: message
         };
       }
-    }
-  };
 
-  return Sass;
-})();
+      return result;
+    } catch(e) {
+      // in case libsass.js was compiled without exception support
+      return {
+        line: null,
+        message: 'Unknown Error: you need to compile libsass.js with exceptions to get proper error messages'
+      };
+    }
+  }
+};
+return Sass;
+}));
