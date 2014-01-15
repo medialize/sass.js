@@ -1,3 +1,4 @@
+'use strict';
 /*
  * This is an ugly hack that simply reads a couple of source files 
  * and adds `module.exports` so we can require it:
@@ -5,7 +6,7 @@
  * var plain = requirePlain({
  *   base: 'path/to/source', // optional, prefixed to all files
  *   files: ['a.js', 'b.js'],
- *   exports: "someLocalVariable"
+ *   exports: 'someLocalVariable'
  * });
  */
 var fs = require('fs');
@@ -21,7 +22,7 @@ module.exports = function(options) {
   
   counter++;
   var file = __dirname + '/~require.plain.' + counter + '.js';
-  var base = options.base || "";
+  var base = options.base || '';
   var source = [
     '/* temporarily created from libsass.js and sass.js */'
   ];
