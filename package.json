@@ -18,10 +18,9 @@
       "url": "http://http://wwwtech.de/"
     }
   ],
-  "repository" :
-  {
-    "type" : "git",
-    "url" : "https://github.com/medialize/sass.js.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/medialize/sass.js.git"
   },
   "licenses": [
     {
@@ -51,5 +50,9 @@
     "grunt-mocha-test": "~0.8.1",
     "grunt": "~0.4.2",
     "grunt-contrib-jshint": "~0.8.0"
+  },
+  "dependencies": {
+    "node-sass": "~0.8.1",
+    "benchmark": "~1.0.0"
   }
 }
