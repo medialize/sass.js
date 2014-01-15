@@ -1,7 +1,12 @@
 'use strict';
 
 var expect = require('chai').expect;
-var Sass = require('../src/sass.js');
+var requirePlain = require('./require.plain.js');
+var Sass = requirePlain({
+  base: __dirname + '/../src/',
+  files: ['libsass.js', 'sass.js'],
+  exports: 'this.Sass'
+});
 
 describe('Sass.compile()', function() {
 
@@ -23,5 +28,5 @@ describe('Sass.compile()', function() {
 
     done();
   });
-
+  
 });
