@@ -43,7 +43,7 @@ module.exports = function(grunt) {
         }
       },
       worker: {
-        src: ['dist/worker.js'],
+        src: ['src/libsass.worker.js'],
         dest: 'dist/worker.js',
         options: {
           banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - web worker - <%= grunt.template.today("yyyy-mm-dd") %> */',
