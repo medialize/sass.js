@@ -1,6 +1,20 @@
-this.Sass = (function(){
+(function (root, factory) {
   'use strict';
-  /*global document, Worker*/
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define([], factory);
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like enviroments that support module.exports,
+    // like Node.
+    module.exports = factory();
+  } else {
+    // Browser globals (root is window)
+    root.Sass = factory();
+  }
+}(this, function () {
+  'use strict';
+  /*global Worker*/
   
   var Sass = {
     _worker: null,
@@ -67,7 +81,7 @@ this.Sass = (function(){
 
     initialize: function(workerUrl) {
       if (Sass._worker) {
-        throw new Error("Sass Worker is already initalized");
+        throw new Error('Sass Worker is already initalized');
       }
 
       Sass._worker = new Worker(workerUrl);
@@ -79,4 +93,4 @@ this.Sass = (function(){
   };
 
   return Sass;
-})();
+}));
