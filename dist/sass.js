@@ -1,4 +1,4 @@
-/*! sass.js - v0.0.0 - 2014-01-16 */
+/*! sass.js - v0.2.0 - 2014-01-16 */
 (function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
