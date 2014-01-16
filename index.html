@@ -40,8 +40,9 @@ $foo: 10px;
    This fun was had by <a href="https://twitter.com/cjk101010">@cjk101010</a>, <a href="https://twitter.com/asciidisco">@asciidisco</a> and <a href="https://twitter.com/rodneyrehm">@rodneyrehm</a>.
   </p>
 
-  <script src="src/sass.worker.js" data-libsass-worker="src/libsass.worker.js"></script>
+  <script src="dist/sass.worker.js"></script>
   <script>
+    Sass.initialize('dist/worker.min.js');
     Sass.writeFile('demo.scss', '.imported { content: "yeah, file support!"; }');
     Sass.options({ comments: true });
 
