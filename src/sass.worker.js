@@ -1,6 +1,20 @@
-this.Sass = (function(){
+(function (root, factory) {
   'use strict';
-  /*global document, Worker*/
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define([], factory);
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like enviroments that support module.exports,
+    // like Node.
+    module.exports = factory();
+  } else {
+    // Browser globals (root is window)
+    root.Sass = factory();
+  }
+}(this, function () {
+  'use strict';
+  /*global Worker*/
   
   var Sass = {
     _worker: null,
@@ -17,78 +31,66 @@ this.Sass = (function(){
       'default': 1
     },
 
+    _dispatch: function(options, callback) {
+      options.id = 'cb' + Date.now() + Math.random();
+      Sass._callbacks[options.id] = callback;
+      Sass._worker.postMessage(options);
+    },
+
     writeFile: function(filename, text, callback) {
-      var id = 'cb' + Date.now() + Math.random();
-      Sass._callbacks[id] = callback;
-      Sass._worker.postMessage({
+      Sass._dispatch({
         command: 'writeFile',
-        id: id,
         filename: filename,
         text: text
-      });
+      }, callback);
     },
 
     readFile: function(filename, callback) {
-      var id = 'cb' + Date.now() + Math.random();
-      Sass._callbacks[id] = callback;
-      Sass._worker.postMessage({
+      Sass._dispatch({
         command: 'readFile',
-        id: id,
         filename: filename
-      });
+      }, callback);
     },
 
     listFiles: function(callback) {
-      var id = 'cb' + Date.now() + Math.random();
-      Sass._callbacks[id] = callback;
-      Sass._worker.postMessage({
-        command: 'listFiles',
-        id: id
-      });
+      Sass._dispatch({
+        command: 'listFiles'
+      }, callback);
     },
 
     removeFile: function(filename, callback) {
-      var id = 'cb' + Date.now() + Math.random();
-      Sass._callbacks[id] = callback;
-      Sass._worker.postMessage({
+      Sass._dispatch({
         command: 'removeFile',
-        id: id,
         filename: filename
-      });
+      }, callback);
     },
 
     options: function(options, callback) {
-      var id = 'cb' + Date.now() + Math.random();
-      Sass._callbacks[id] = callback;
-      Sass._worker.postMessage({
+      Sass._dispatch({
         command: 'options',
-        id: id,
         options: options
-      });
+      }, callback);
     },
 
     compile: function(text, callback) {
-      var id = 'cb' + Date.now() + Math.random();
-      Sass._callbacks[id] = callback;
-      Sass._worker.postMessage({
+      Sass._dispatch({
         command: 'compile',
-        id: id,
         text: text
-      });
+      }, callback);
+    },
+
+    initialize: function(workerUrl) {
+      if (Sass._worker) {
+        throw new Error('Sass Worker is already initalized');
+      }
+
+      Sass._worker = new Worker(workerUrl);
+      Sass._worker.addEventListener('message', function(event) {
+        Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result);
+        delete Sass._callbacks[event.data.id];
+      }, false);
     }
   };
 
-  var workerPath = 'libsass.worker.js';
-  var scriptElement = document.currentScript || document.querySelector('[data-libsass-worker]');
-  if (scriptElement) {
-    workerPath = scriptElement.getAttribute('data-libsass-worker');
-  }
-
-  Sass._worker = new Worker(workerPath);
-  Sass._worker.addEventListener('message', function(event) {
-    Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result);
-    delete Sass._callbacks[event.data.id];
-  }, false);
-
   return Sass;
-})();
+}));

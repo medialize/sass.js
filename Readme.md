@@ -1,28 +1,45 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for the [emscripted](https://github.com/rodneyrehm/libsass) [libsass](https://github.com/hcatlin/libsass). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/andrew/node-sass)
+Sass parser in JavaScript. This is a convenience API for the [emscripted](https://github.com/rodneyrehm/libsass) [libsass](https://github.com/hcatlin/libsass) (at v1.0.1). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/andrew/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified it's 2MB, gzipped it's 550KB.
+> A fair warning: minified it's 2MB, gzipped it's 550KB. [node-sass](https://github.com/andrew/node-sass) is about 20 times faster than Sass.js
 
 see the [live demo](http://medialize.github.com/sass.js/)
 
-## Known Problems
-
-* compile styles `nested`, `expanded` and `compact` seem to behave exactly the same
-* compile style `compressed` prefixes every selector with `&`
-
-(We haven't looked into why this is happening yet)
-
-
-## Sass.js API
+## Loading the Sass.js API
 
 Sass.js comes in two flavors – the synchronous in-document `sass.js` and the asynchronous worker `sass.worker.js`. The primary API - wrapping the Emscripten runtime - is provided with `sass.js` (it is used internally by `sass.worker.js` as well). `sass.worker.js` mimics the same API (adding callbacks for the asynchronous part) and passes all the function calls through to the [web worker](https://developer.mozilla.org/en/docs/Web/API/Worker).
-
 
 ### Synchronous in-document sass.js
 
 ```html
-<!-- loading libsass.js and sass.js into your document -->
+<script src="dist/sass.min.js"></script>
+<script>
+  var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
+  var css = Sass.compile(scss);
+  console.log(css);
+</script>
+```
+
+### Asynchronous worker sass.worker.js
+
+```html
+<script src="dist/sass.worker.js"></script>
+<script>
+  // loading libsass.worker (subsequently loading libsass.js and sass.js inside the worker)
+  Sass.initialize('dist/worker.min.js');
+  var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
+  Sass.compile(scss, function(css) {
+      console.log(css);
+  });
+</script>
+```
+
+### loading from `src/`
+
+You can - for debugging purposes - load Sass.js from src files. Emscripten litters the global scope with ~400 variables, so this should never be used in production!
+
+```html
 <script src="src/libsass.js"></script>
 <script src="src/sass.js"></script>
 <script>
@@ -32,20 +49,26 @@ Sass.js comes in two flavors – the synchronous in-document `sass.js` and the a
 </script>
 ```
 
-**Warning:** `src/libsass.js` will litter your global scope with Emscripten's runtime. It's great for debugging, but you really want to use `sass.worker.js`.
+## Using the Sass.js API
 
-
-### Asynchronous worker sass.worker.js
-
-```html
-<!-- loading libsass.worker.js and sass.worker.js into your document -->
-<script src="src/sass.worker.js" data-libsass-worker="src/libsass.worker.js"></script>
-<script>
-  var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  Sass.compile(scss, function(css) {
-      console.log(css);
-  });
-</script>
+```js
+// compile text to SCSS
+Sass.compile(text);
+// set compile style options
+Sass.options({
+  // format output: nested, expanded, compact, compressed
+  style: Sass.style.nested, 
+  // add line comments to output: none, default
+  comments: Sass.comments.none
+});
+// register a file to be available for @import
+Sass.writeFile(filename, text);
+// remove a file 
+Sass.removeFile(filename);
+// get a file's content
+Sass.readFile(filename);
+// list all files (regardless of directory structure)
+Sass.listFiles();
 ```
 
 ### Working With Files
@@ -66,21 +89,6 @@ outputs
 
 .two {
   width: 123px; }
-```
-
-### API Overview
-
-```js
-//TODO: proper API documentation
-Sass.compile(text);
-Sass.options({
-  style: Sass.style.nested, 
-  comments: Sass.comments.none
-});
-Sass.writeFile(filename, text);
-Sass.removeFile(filename);
-Sass.readFile(filename);
-Sass.listFiles();
 ```
 
 ---
