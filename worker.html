@@ -8,7 +8,7 @@
   <p>please open the DevTools</p>
   <script src="dist/sass.worker.js"></script>
   <script>
-    Sass.initialize('src/libsass.worker.js');
+    Sass.initialize('dist/worker.min.js');
     console.log('try Sass.compile("$foo:123px; .m { width:$foo; }", function(result) { console.log(result); });');
   </script>
 </body>
