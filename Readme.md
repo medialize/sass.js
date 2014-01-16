@@ -93,6 +93,17 @@ outputs
 
 ---
 
+## Changelog
+
+### 0.2.0 (January 16th 2014) ###
+
+* using libsass at v1.0.1 (instead of building from master)
+* adding `grunt build` to generate `dist` files
+* adding mocha tests `grunt test`
+
+### 0.1.0 (January 13th 2014) ###
+
+* Initial Sass.js
 
 ## Authors
 
