@@ -67,7 +67,7 @@ module.exports = function(grunt) {
 
     'closure-compiler': {
       sass: {
-        closurePath: './closure-compiler',
+        closurePath: './bin/closure-compiler',
         js: 'dist/sass.js',
         jsOutputFile: 'dist/sass.min.js',
         options: {
