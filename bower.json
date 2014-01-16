@@ -6,11 +6,19 @@
     "./dist/sass.worker.js"
   ],
   "ignore": [
-    ".*",
+    "**/.*",
     "*.html",
-    "bin/*",
-    "scss/*",
-    "src/*",
-    "test/*"
+    "*.md",
+    "*.json",
+    "bin",
+    "scss",
+    "src",
+    "test"
   ],
+  "keywords": [
+    "libsass",
+    "sass",
+    "scss",
+    "css"
+  ]
 }
