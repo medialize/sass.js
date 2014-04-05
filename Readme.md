@@ -95,6 +95,10 @@ outputs
 
 ## Changelog
 
+### 0.3.0 (April 5th 2014) ###
+
+* upgrading to [libsass @1122ead...](https://github.com/hcatlin/libsass/commit/1122ead208a8d1c438daaca70041ef6dd2361fa0) (to be on par with [node-sass](https://github.com/andrew/node-sass) [v.0.8.3](https://github.com/andrew/node-sass/releases/tag/v0.8.3))
+
 ### 0.2.0 (January 16th 2014) ###
 
 * using libsass at v1.0.1 (instead of building from master)
