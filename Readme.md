@@ -109,7 +109,7 @@ emmake make js
 
 ### 0.4.0 (June 6th 2014) ###
 
-* upgrading to [libsass v2.0](https://github.com/hcatlin/libsass/releases/tag/v2.0) - Sending [#386](https://github.com/hcatlin/libsass/pull/386), [#387](https://github.com/hcatlin/libsass/pull/387), [#388]https://github.com/hcatlin/libsass/pull/388
+* upgrading to [libsass v2.0](https://github.com/hcatlin/libsass/releases/tag/v2.0) - Sending [#386](https://github.com/hcatlin/libsass/pull/386), [#387](https://github.com/hcatlin/libsass/pull/387), [#388](https://github.com/hcatlin/libsass/pull/388)
 
 ### 0.3.0 (April 5th 2014) ###
 
