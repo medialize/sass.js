@@ -98,14 +98,20 @@ outputs
 ```bash
 git clone https://github.com/hcatlin/libsass/
 cd libsass
-git checkout v2.0
+git checkout 2.1.0-beta
 git submodule init
 git submodule update
 emmake make js
+# result: libsass.js
+# copy that file to sass.js/src/libsass.js
+# then run `grunt build` in sass.js
 ```
 
-
 ## Changelog
+
+### 0.5.0 (August 31st 2014) ###
+
+* upgrading to [libsass 2.1.0-beta](https://github.com/hcatlin/libsass/releases/tag/2.1.0-beta)
 
 ### 0.4.0 (June 6th 2014) ###
 

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /*! sass.js - v0.4.0 - web worker - 2014-06-06 */(function (root, factory) {
+=======
+/*! sass.js - v0.0.0 - web worker - 2014-08-31 */(function (root, factory) {
+>>>>>>> master
   'use strict';
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
