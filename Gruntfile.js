@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 
     concat: {
       sass: {
-        src: ['src/libsass.js', 'src/sass.js'],
+        src: ['libsass/libsass/lib/libsass.js', 'src/sass.js'],
         dest: 'dist/sass.js',
         options: {
           banner: ['/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> */',
@@ -79,6 +79,12 @@ module.exports = function(grunt) {
       }
     },
 
+    shell: {
+      build_libsass: {
+        command: '(cd libsass && /bin/bash build-libsass.sh)',
+      }
+    },
+
     mochaTest: {
       src: ['test/**/test.*.js']
     },
@@ -88,21 +94,22 @@ module.exports = function(grunt) {
       target: [
         'Gruntfile.js',
         'src/**/*.js',
-        'test/**/*.js',
-        '!src/libsass.js'
+        'test/**/*.js'
       ]
     }
   });
 
+  grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-closure-compiler');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha-test');
 
+  grunt.registerTask('build:libsass', ['shell:build_libsass']);
   grunt.registerTask('build:sass', ['concat:sass', 'closure-compiler:sass', 'clean:build']);
   grunt.registerTask('build:worker', ['concat:worker', 'concat:worker-inline', 'concat:sass-worker']);
-  grunt.registerTask('build', ['clean:dist', 'build:sass', 'build:worker']);
+  grunt.registerTask('build', ['clean:dist', 'build:libsass', 'build:sass', 'build:worker']);
   grunt.registerTask('lint', 'jshint');
   grunt.registerTask('test', 'mochaTest');
 };

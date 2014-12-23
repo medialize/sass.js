@@ -1,0 +1,29 @@
+--- Makefile	2014-12-23 13:56:17.000000000 +0100
++++ Makefile.emscripten	2014-12-23 13:57:52.000000000 +0100
+@@ -43,6 +43,7 @@
+ 	context.cpp \
+ 	contextualize.cpp \
+ 	copy_c_str.cpp \
++	emscripten_wrapper.cpp \
+ 	error_handling.cpp \
+ 	eval.cpp \
+ 	expand.cpp \
+@@ -96,6 +97,9 @@
+ static: lib/libsass.a
+ shared: lib/libsass.so
+ 
++js: static
++	emcc -O2 lib/libsass.a -o lib/libsass.js -s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" -s DISABLE_EXCEPTION_CATCHING=0
++
+ lib/libsass.a: $(COBJECTS) $(OBJECTS)
+ 	$(MKDIR) lib
+ 	$(AR) rvs $@ $(COBJECTS) $(OBJECTS)
+@@ -136,7 +140,7 @@
+ 	$(RUBY_BIN) $(SASS_SPEC_PATH)/sass-spec.rb -c $(SASSC_BIN) $(LOG_FLAGS) $(SASS_SPEC_PATH)/spec/issues
+ 
+ clean:
+-	$(RM) $(COBJECTS) $(OBJECTS) lib/*.a lib/*.la lib/*.so
++	$(RM) $(COBJECTS) $(OBJECTS) lib/*.a lib/*.la lib/*.so lib/*.js
+ 
+ 
+ .PHONY: all debug debug-static debug-shared static shared install install-static install-shared clean

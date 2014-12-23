@@ -93,21 +93,35 @@ outputs
 
 ---
 
+## Building sass.js ##
+
+```bash
+grunt build
+# destination:
+#   dist/sass.js
+#   dist/sass.min.js
+#   dist/sass.worker.js
+#   dist/worker.js
+#   dist/worker.min.js
+```
+
 ## Building libsass.js ##
 
 ```bash
-git clone https://github.com/hcatlin/libsass/
-cd libsass
-git checkout 2.1.0-beta
-git submodule init
-git submodule update
-emmake make js
-# result: libsass.js
-# copy that file to sass.js/src/libsass.js
-# then run `grunt build` in sass.js
+# using grunt:
+grunt build:libsass
+# using bash:
+(cd libsass && build-libsass.sh)
+
+# destination: 
+#   libsass/libsass/lib/libsass.js
 ```
 
 ## Changelog
+
+### master (will become 0.6.0) ###
+
+* adding `grunt build:libsass` to make libsass.js ([#15](https://github.com/medialize/sass.js/issues/15))
 
 ### 0.5.0 (August 31st 2014) ###
 
