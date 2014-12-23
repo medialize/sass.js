@@ -1,4 +1,4 @@
-/*! sass.js - v0.5.0 - web worker - 2014-08-31 */'use strict';
+/*! sass.js - v0.6.0 - web worker - 2014-12-23 */'use strict';
 /*global Sass, postMessage, onmessage:true, importScripts*/
 importScripts('sass.min.js');
 
