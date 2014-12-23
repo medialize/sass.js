@@ -6,11 +6,25 @@ Sass parser in JavaScript. This is a convenience API for the [emscripted](https:
 
 see the [live demo](http://medialize.github.com/sass.js/)
 
+
 ## Loading the Sass.js API
 
 Sass.js comes in two flavors – the synchronous in-document `sass.js` and the asynchronous worker `sass.worker.js`. The primary API - wrapping the Emscripten runtime - is provided with `sass.js` (it is used internally by `sass.worker.js` as well). `sass.worker.js` mimics the same API (adding callbacks for the asynchronous part) and passes all the function calls through to the [web worker](https://developer.mozilla.org/en/docs/Web/API/Worker).
 
-### Synchronous in-document sass.js
+```html
+<script src="dist/sass.worker.js"></script>
+<script>
+  // loading libsass.worker
+  Sass.initialize('dist/worker.min.js');
+
+  var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
+  Sass.compile(scss, function(css) {
+      console.log(css);
+  });
+</script>
+```
+
+It is possible - but *not recommended* to use sass.js without in the main RunLoop instead of using a Worker:
 
 ```html
 <script src="dist/sass.min.js"></script>
@@ -21,26 +35,12 @@ Sass.js comes in two flavors – the synchronous in-document `sass.js` and the a
 </script>
 ```
 
-### Asynchronous worker sass.worker.js
+You can - for debugging purposes - load `sass.js` from source files. Emscripten litters the global scope with ~400 variables, so this MUST never be used in production!
+
+> Note: you need to have run `grunt build:libsass` before this is possible
 
 ```html
-<script src="dist/sass.worker.js"></script>
-<script>
-  // loading libsass.worker (subsequently loading libsass.js and sass.js inside the worker)
-  Sass.initialize('dist/worker.min.js');
-  var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  Sass.compile(scss, function(css) {
-      console.log(css);
-  });
-</script>
-```
-
-### loading from `src/`
-
-You can - for debugging purposes - load Sass.js from src files. Emscripten litters the global scope with ~400 variables, so this should never be used in production!
-
-```html
-<script src="src/libsass.js"></script>
+<script src="libsass/libsass/lib/libsass.js"></script>
 <script src="src/sass.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
@@ -49,26 +49,76 @@ You can - for debugging purposes - load Sass.js from src files. Emscripten litte
 </script>
 ```
 
+---
+
+
 ## Using the Sass.js API
 
 ```js
 // compile text to SCSS
-Sass.compile(text);
+Sass.compile(text, function callback(result) {
+  // (string) result is the compiled CSS
+});
+
 // set compile style options
 Sass.options({
   // format output: nested, expanded, compact, compressed
-  style: Sass.style.nested, 
+  style: Sass.style.nested,
+  // add line comments to output: none, default
+  comments: Sass.comments.none
+}, function callback(){});
+
+// register a file to be available for @import
+Sass.writeFile(filename, text, function callback(success) {
+  // (boolean) success is
+  //   `true` when the write was OK,
+  //   `false` when it failed
+});
+
+// remove a file
+Sass.removeFile(filename, function callback(success) {
+  // (boolean) success is
+  //   `true` when deleting the file was OK,
+  //   `false` when it failed
+});
+
+// get a file's content
+Sass.readFile(filename, function callback(content) {
+  // (string) content is the file's content,
+  //   `undefined` when the read failed
+});
+
+// list all files (regardless of directory structure)
+Sass.listFiles(function callback(list) {
+  // (array) list contains the paths of all registered files
+});
+```
+
+### Using the synchronous, non-worker API
+
+```js
+// compile text to SCSS
+var result = Sass.compile(text);
+
+// set compile style options
+Sass.options({
+  // format output: nested, expanded, compact, compressed
+  style: Sass.style.nested,
   // add line comments to output: none, default
   comments: Sass.comments.none
 });
+
 // register a file to be available for @import
-Sass.writeFile(filename, text);
-// remove a file 
-Sass.removeFile(filename);
+var success = Sass.writeFile(filename, text);
+
+// remove a file
+var success = Sass.removeFile(filename);
+
 // get a file's content
-Sass.readFile(filename);
+var content = Sass.readFile(filename);
+
 // list all files (regardless of directory structure)
-Sass.listFiles();
+var list = Sass.listFiles();
 ```
 
 ### Working With Files
@@ -78,7 +128,9 @@ Chances are you want to use one of the readily available Sass mixins (e.g. [drub
 ```js
 Sass.writeFile('one.scss', '.one { width: 123px; }');
 Sass.writeFile('some-dir/two.scss', '.two { width: 123px; }');
-Sass.compile('@import "one"; @import "some-dir/two";');
+Sass.compile('@import "one"; @import "some-dir/two";', function(result) {
+  console.log(result);
+});
 ```
 
 outputs
@@ -93,6 +145,7 @@ outputs
 
 ---
 
+
 ## Building sass.js ##
 
 ```bash
@@ -105,7 +158,7 @@ grunt build
 #   dist/worker.min.js
 ```
 
-## Building libsass.js ##
+### Building libsass.js ###
 
 ```bash
 # using grunt:
@@ -113,9 +166,12 @@ grunt build:libsass
 # using bash:
 (cd libsass && build-libsass.sh)
 
-# destination: 
+# destination:
 #   libsass/libsass/lib/libsass.js
 ```
+
+---
+
 
 ## Changelog
 
