@@ -6,6 +6,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    libsassVersion: '3.0.2',
 
     clean: {
       dist: ['dist'],
@@ -14,10 +15,10 @@ module.exports = function(grunt) {
 
     concat: {
       sass: {
-        src: ['src/libsass.js', 'src/sass.js'],
+        src: ['libsass/libsass/lib/libsass.js', 'src/sass.js'],
         dest: 'dist/sass.js',
         options: {
-          banner: ['/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> */',
+          banner: ['/*! <%= pkg.name %> - v<%= pkg.version %> - libsass v<%= libsassVersion %> - <%= grunt.template.today("yyyy-mm-dd") %> */',
             '(function (root, factory) {',
             '  \'use strict\';',
             '  if (typeof define === \'function\' && define.amd) {',
@@ -62,6 +63,13 @@ module.exports = function(grunt) {
             return content.replace(/importScripts\('sass\.min\.js'\);/, '');
           }
         }
+      },
+      'sass-min-banner': {
+        src: ['dist/sass.min.js'],
+        dest: 'dist/sass.min.js',
+        options: {
+          banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - libsass v<%= libsassVersion %> - <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+        }
       }
     },
 
@@ -79,6 +87,12 @@ module.exports = function(grunt) {
       }
     },
 
+    shell: {
+      build_libsass: {
+        command: '(cd libsass && /bin/bash build-libsass.sh "<%= libsassVersion %>")',
+      }
+    },
+
     mochaTest: {
       src: ['test/**/test.*.js']
     },
@@ -88,21 +102,22 @@ module.exports = function(grunt) {
       target: [
         'Gruntfile.js',
         'src/**/*.js',
-        'test/**/*.js',
-        '!src/libsass.js'
+        'test/**/*.js'
       ]
     }
   });
 
+  grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-closure-compiler');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha-test');
 
-  grunt.registerTask('build:sass', ['concat:sass', 'closure-compiler:sass', 'clean:build']);
+  grunt.registerTask('build:libsass', ['shell:build_libsass']);
+  grunt.registerTask('build:sass', ['concat:sass', 'closure-compiler:sass', 'concat:sass-min-banner', 'clean:build']);
   grunt.registerTask('build:worker', ['concat:worker', 'concat:worker-inline', 'concat:sass-worker']);
-  grunt.registerTask('build', ['clean:dist', 'build:sass', 'build:worker']);
+  grunt.registerTask('build', ['clean:dist', 'build:libsass', 'build:sass', 'build:worker']);
   grunt.registerTask('lint', 'jshint');
   grunt.registerTask('test', 'mochaTest');
 };
