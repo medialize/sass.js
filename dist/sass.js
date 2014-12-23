@@ -8424,11 +8424,17 @@ var Sass = {
   },
 
   writeFile: function(filename, text) {
+    var _absolute = filename.slice(0, 1) === '/';
     var path = Sass._absolutePath(filename);
     try {
       Sass._ensurePath(path);
       FS.writeFile(path, text);
       Sass._files[path] = filename;
+      // create symlink for absolute path resolution
+      if (_absolute) {
+        Sass._ensurePath(filename);
+        FS.symlink(path, filename)
+      }
       return true;
     } catch(e) {
       return false;
@@ -8451,10 +8457,17 @@ var Sass = {
   },
 
   removeFile: function(filename) {
+    var _absolute = filename.slice(0, 1) === '/';
     var path = Sass._absolutePath(filename);
     try {
       FS.unlink(path);
       delete Sass._files[path];
+
+      // undo symlink for absolute path resolution
+      if (_absolute && FS.lstat(filename)) {
+        FS.unlink(filename);
+      }
+
       return true;
     } catch(e) {
       return false;
