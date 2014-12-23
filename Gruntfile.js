@@ -6,6 +6,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    libsassVersion: '3.0.2',
 
     clean: {
       dist: ['dist'],
@@ -17,7 +18,7 @@ module.exports = function(grunt) {
         src: ['libsass/libsass/lib/libsass.js', 'src/sass.js'],
         dest: 'dist/sass.js',
         options: {
-          banner: ['/*! <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> */',
+          banner: ['/*! <%= pkg.name %> - v<%= pkg.version %> - libsass v<%= libsassVersion %> - <%= grunt.template.today("yyyy-mm-dd") %> */',
             '(function (root, factory) {',
             '  \'use strict\';',
             '  if (typeof define === \'function\' && define.amd) {',
@@ -62,6 +63,13 @@ module.exports = function(grunt) {
             return content.replace(/importScripts\('sass\.min\.js'\);/, '');
           }
         }
+      },
+      'sass-min-banner': {
+        src: ['dist/sass.min.js'],
+        dest: 'dist/sass.min.js',
+        options: {
+          banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - libsass v<%= libsassVersion %> - <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+        }
       }
     },
 
@@ -81,7 +89,7 @@ module.exports = function(grunt) {
 
     shell: {
       build_libsass: {
-        command: '(cd libsass && /bin/bash build-libsass.sh)',
+        command: '(cd libsass && /bin/bash build-libsass.sh "<%= libsassVersion %>")',
       }
     },
 
@@ -107,7 +115,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
 
   grunt.registerTask('build:libsass', ['shell:build_libsass']);
-  grunt.registerTask('build:sass', ['concat:sass', 'closure-compiler:sass', 'clean:build']);
+  grunt.registerTask('build:sass', ['concat:sass', 'closure-compiler:sass', 'concat:sass-min-banner', 'clean:build']);
   grunt.registerTask('build:worker', ['concat:worker', 'concat:worker-inline', 'concat:sass-worker']);
   grunt.registerTask('build', ['clean:dist', 'build:libsass', 'build:sass', 'build:worker']);
   grunt.registerTask('lint', 'jshint');

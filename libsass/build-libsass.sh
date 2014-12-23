@@ -2,7 +2,9 @@
 
 set -e -u
 
-LIBSASS_VERSION="3.0.2"
+# accept parameter, default to 3.0.2
+LIBSASS_VERSION=${1:-"3.0.2"}
+echo "Building libsass version ${LIBSASS_VERSION}"
 
 # clean
 rm -rf ./libsass
