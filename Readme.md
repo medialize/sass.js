@@ -178,6 +178,7 @@ grunt build:libsass
 ### master (will become 0.6.0) ###
 
 * adding `grunt build:libsass` to make libsass.js ([#15](https://github.com/medialize/sass.js/issues/15))
+* making absolute paths work via symlinks ([#19](https://github.com/medialize/sass.js/issues/19))
 
 ### 0.5.0 (August 31st 2014) ###
 
