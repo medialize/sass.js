@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    libsassVersion: '3.0.2',
+    libsassVersion: '3.1.0',
 
     clean: {
       dist: ['dist'],
