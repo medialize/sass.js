@@ -1,4 +1,4 @@
-/*! sass.js - v0.6.1 - web worker - 2015-01-05 */(function (root, factory) {
+/*! sass.js - v0.6.2 - web worker - 2015-01-23 */(function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
