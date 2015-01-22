@@ -13,7 +13,7 @@
  shared: $(LIBRARIES)
  
 +js: static
-+	emcc -O2 lib/libsass.a -o lib/libsass.js -s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" -s DISABLE_EXCEPTION_CATCHING=0
++	emcc -O2 lib/libsass.a -o lib/libsass.js -s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" -s DISABLE_EXCEPTION_CATCHING=0 --memory-init-file 0
 +
  lib/libsass.a: $(COBJECTS) $(OBJECTS)
  	$(MKDIR) lib
