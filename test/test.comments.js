@@ -7,7 +7,7 @@ describe('option.comments', function() {
 
   it('should add line comments', function(done) {
     var source = '@import "testfile";\n\n$foo:123px;\n\n.m {\n  width:$foo;\n}';
-    var expected = '/* line 1, /sass/testfile */\n.imported {\n  content: "testfile"; }\n\n/* line 5, source string */\n.m {\n  width: 123px; }\n';
+    var expected = '/* line 1, /sass/testfile.scss */\n.imported {\n  content: "testfile"; }\n\n/* line 5, stdin */\n.m {\n  width: 123px; }\n';
     
     Sass.options({comments: true});
     Sass.writeFile('testfile.scss', '.imported { content: "testfile"; }');

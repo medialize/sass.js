@@ -145,7 +145,9 @@ var Sass = {
         errorPointer = Module.Pointer_stringify(errorPointer);
         /*jshint camelcase:true*/
 
-        var error = errorPointer.match(/^source string:(\d+):/);
+        // Sass.compile("$foo:123px; .m { width:$foo; }") yields
+        // errorPointer === "stdin:1: unbound variable $foobar"
+        var error = errorPointer.match(/^stdin:(\d+):/);
         var message = errorPointer.slice(error[0].length).replace(/(^\s+)|(\s+$)/g, '');
         // throw new Error(message, 'string', error[1]);
         return {
@@ -156,10 +158,11 @@ var Sass = {
 
       return result;
     } catch(e) {
-      // in case libsass.js was compiled without exception support
+      // in case libsass.js was compiled without exception support (or something failed in parsing the error message)
       return {
         line: null,
-        message: 'Unknown Error: you need to compile libsass.js with exceptions to get proper error messages'
+        message: 'Unknown Error: you need to compile libsass.js with exceptions to get proper error messages',
+        error: e
       };
     }
   }

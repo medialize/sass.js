@@ -175,6 +175,10 @@ grunt build:libsass
 
 ## Changelog
 
+### 0.6.3 (March 3rd 2015) ###
+
+* fixing invalid source error handling ([#23](https://github.com/medialize/sass.js/issues/23))
+
 ### 0.6.2 (January 22nd 2015) ###
 
 * fixing `Makefile.patch` for "memory file" to work with emscripten 1.29

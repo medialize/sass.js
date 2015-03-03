@@ -18,8 +18,9 @@ describe('Sass.compile()', function() {
     var source = '$foo:123px;\n\n.m {\n  width:$foo;\n}\n\nfoobar';
     var result = Sass.compile(source);
     expect(result).to.be.a('object');
+    console.log(result);
     expect(result.line).to.equal(7);
-    expect(result.message).to.equal('error: invalid top-level expression');
+    expect(result.message).to.equal('invalid top-level expression');
 
     done();
   });
