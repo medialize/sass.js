@@ -88,9 +88,11 @@ module.exports = function(grunt) {
     },
 
     shell: {
+      /*jshint camelcase:false*/
       build_libsass: {
         command: '(cd libsass && /bin/bash build-libsass.sh "<%= libsassVersion %>")',
       }
+      /*jshint camelcase:true*/
     },
 
     mochaTest: {
