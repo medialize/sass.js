@@ -79,7 +79,7 @@ var Sass = {
       // create symlink for absolute path resolution
       if (_absolute) {
         Sass._ensurePath(filename);
-        FS.symlink(path, filename)
+        FS.symlink(path, filename);
       }
       return true;
     } catch(e) {
