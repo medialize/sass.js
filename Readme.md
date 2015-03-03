@@ -1,6 +1,6 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for the [emscripted](https://github.com/rodneyrehm/libsass) [libsass](https://github.com/hcatlin/libsass) (at v1.0.1). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/andrew/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for emscripted [libsass](https://github.com/sass/libsass) (at v3.1.0). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/andrew/node-sass). Sass.js and node-sass should generate the same results.
 
 > A fair warning: minified it's 2.2MB, gzipped it's 611KB. [node-sass](https://github.com/andrew/node-sass) is about 20 times faster than Sass.js
 
