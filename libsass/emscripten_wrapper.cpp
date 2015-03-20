@@ -30,7 +30,8 @@ char *sass_compile_emscripten(
   options.is_indented_syntax_src = false;
 
   ctx->options = options;
-  ctx->source_string = source_string;
+  // libsass is taking care of memory cleanup
+  ctx->source_string = strdup(source_string);
 
   sass_compile(ctx);
 
