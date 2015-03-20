@@ -16,9 +16,18 @@ char *sass_compile_emscripten(
 
   options.source_comments = source_comments;
   options.output_style = output_style;
-  options.image_path = NULL;
+  // options.indent = indent;
+  // options.linefeed = linefeed;
   options.include_paths = include_paths;
+  // options.plugin_paths = plugin_paths;
+
+  // we're running from <stdin> without SourceMap support
+  options.source_map_contents = false;
+  options.source_map_embed = false;
+  options.omit_source_map_url = true;
   options.precision = 0; // 0 => use sass default numeric precision
+  // indented: sass, we're only dealing with scss
+  options.is_indented_syntax_src = false;
 
   ctx->options = options;
   ctx->source_string = source_string;
