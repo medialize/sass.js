@@ -19,6 +19,7 @@ var Sass = {
   _path: '/sass/',
 
   FS: FS,
+  Module: Module,
 
   options: function(options) {
     if (typeof options !== 'object') {
