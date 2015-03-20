@@ -2,8 +2,8 @@
 
 set -e -u
 
-# accept parameter, default to 3.0.2
-LIBSASS_VERSION=${1:-"3.0.2"}
+# accept parameter, default to master
+LIBSASS_VERSION=${1:-"master"}
 echo "Building libsass version ${LIBSASS_VERSION}"
 
 # clean
