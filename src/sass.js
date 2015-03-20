@@ -163,7 +163,7 @@ var Sass = {
       // in case libsass.js was compiled without exception support (or something failed in parsing the error message)
       return {
         line: null,
-        message: 'Unknown Error: you need to compile libsass.js with exceptions to get proper error messages',
+        message: e.message,
         error: e
       };
     }

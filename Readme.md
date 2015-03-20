@@ -178,6 +178,7 @@ grunt build:libsass
 ### master ###
 
 * adding `SassWorker._eval()` to execute arbitrary code in the worker context. This is used for development/debugging
+* fixing the hiding of internal script errors
 
 ### 0.6.3 (March 3rd 2015) ###
 
