@@ -1,4 +1,4 @@
-/*! sass.js - v0.0.0 - web worker - 2015-03-03 */'use strict';
+/*! sass.js - v0.0.0 - web worker - 2015-03-20 */'use strict';
 /*global Sass, postMessage, onmessage:true, importScripts*/
 importScripts('sass.min.js');
 
@@ -23,6 +23,9 @@ onmessage = function (event) {
     case 'removeFile':
       result = Sass.removeFile(event.data.filename);
       break;
+    case '_eval':
+      var func = new Function('return ' + event.data.func)();
+      result = func.call(Sass);
     default:
       result = {line: 0, message: 'Unknown command ' + event.action};
       break;
