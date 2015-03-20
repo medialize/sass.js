@@ -9,6 +9,7 @@ module.exports = function(grunt) {
     libsassVersion: '3.1.0',
 
     clean: {
+      libsass: ['libsass/libsass'],
       dist: ['dist'],
       build: ['dist/*.txt']
     },
