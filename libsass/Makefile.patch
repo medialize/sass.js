@@ -1,24 +1,43 @@
---- Makefile	2015-01-05 09:31:33.000000000 +0100
-+++ Makefile.emscripten	2015-01-05 09:31:38.000000000 +0100
-@@ -97,6 +97,7 @@
- 	context.cpp \
- 	contextualize.cpp \
- 	copy_c_str.cpp \
-+	emscripten_wrapper.cpp \
- 	error_handling.cpp \
- 	eval.cpp \
- 	expand.cpp \
-@@ -167,6 +168,9 @@
+--- Makefile.orig	2015-03-19 20:45:55.000000000 +0100
++++ Makefile.patched	2015-03-19 20:58:48.000000000 +0100
+@@ -143,7 +143,8 @@
+ 	to_string.cpp \
+ 	units.cpp \
+ 	utf8_string.cpp \
+-	util.cpp
++	util.cpp \
++	emscripten_wrapper.cpp
+ 
+ CSOURCES = cencode.c
+ 
+@@ -187,6 +188,26 @@
  static: lib/libsass.a
  shared: $(LIBRARIES)
  
 +js: static
-+	emcc -O2 lib/libsass.a -o lib/libsass.js -s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" -s DISABLE_EXCEPTION_CATCHING=0 --memory-init-file 0
++	emcc lib/libsass.a -o lib/libsass.js \
++ 		-O2 \
++		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
++		-s DISABLE_EXCEPTION_CATCHING=0 \
++		-s ALLOW_MEMORY_GROWTH=1 \
++		--memory-init-file 0
 +
- lib/libsass.a: $(COBJECTS) $(OBJECTS)
++js-debug: static
++	emcc lib/libsass.a -o lib/libsass.js \
++ 		-O1 \
++		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
++		-s DISABLE_EXCEPTION_CATCHING=0 \
++		-s ALLOW_MEMORY_GROWTH=1 \
++		-s ASSERTIONS=2 \
++		-s SAFE_HEAP=1 \
++		-s DEMANGLE_SUPPORT=1 \
++		--minify 0 \
++		--memory-init-file 0
++
+ lib:
  	$(MKDIR) lib
- 	$(AR) rcvs $@ $(COBJECTS) $(OBJECTS)
-@@ -217,7 +221,7 @@
+ 
+@@ -235,7 +256,7 @@
  	$(RUBY_BIN) $(SASS_SPEC_PATH)/sass-spec.rb -c $(SASSC_BIN) $(LOG_FLAGS) $(SASS_SPEC_PATH)/spec/issues
  
  clean:
