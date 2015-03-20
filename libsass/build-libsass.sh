@@ -2,6 +2,10 @@
 
 set -e -u
 
+# USAGE:
+#   build-libsass.sh <version>
+#   build-libsass.sh <version> debug
+
 # accept parameter, default to master
 LIBSASS_VERSION=${1:-"master"}
 echo "Building libsass version ${LIBSASS_VERSION}"
@@ -19,4 +23,8 @@ cp ./emscripten_wrapper.cpp ./libsass/emscripten_wrapper.cpp
 cp ./emscripten_wrapper.hpp ./libsass/emscripten_wrapper.hpp
 
 # build
-(cd libsass && emmake make js)
+if [ "${2:-}" = "debug" ]; then
+  (cd libsass && emmake make js-debug)
+else
+  (cd libsass && emmake make js)
+fi
