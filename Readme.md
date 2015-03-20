@@ -175,6 +175,10 @@ grunt build:libsass
 
 ## Changelog
 
+### master ###
+
+* adding `SassWorker._eval()` to execute arbitrary code in the worker context. This is used for development/debugging
+
 ### 0.6.3 (March 3rd 2015) ###
 
 * fixing invalid source error handling ([#23](https://github.com/medialize/sass.js/issues/23))
