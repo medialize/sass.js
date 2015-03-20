@@ -191,6 +191,11 @@ open:
 * support sass syntax (the whitespace significant thing)
 * figure out what these C plugins are and how we can make use of them (if at all)
 
+### master ###
+
+* adding `SassWorker._eval()` to execute arbitrary code in the worker context. This is used for development/debugging
+* fixing the hiding of internal script errors
+
 ### 0.6.3 (March 3rd 2015) ###
 
 * fixing invalid source error handling ([#23](https://github.com/medialize/sass.js/issues/23))
