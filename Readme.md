@@ -175,6 +175,22 @@ grunt build:libsass
 
 ## Changelog
 
+### master (libsass/3.2 integration) ###
+
+this is the libsass version 3.2 integration branch
+
+* [libsass 3.2 beta.1](https://github.com/sass/libsass/releases/tag/3.2.0-beta.1)
+* [libsass 3.2 beta.2](https://github.com/sass/libsass/releases/tag/3.2.0-beta.2)
+* compiling `master` because of [Fix deallocation of sources to use free instead of delete](https://github.com/sass/libsass/commit/ecf9ff475ea63e04a41c2ea38c52f40407dcd73a)
+
+open:
+
+* support different output styles
+* support indent/linefeed options
+* support SourceMaps
+* support sass syntax (the whitespace significant thing)
+* figure out what these C plugins are and how we can make use of them (if at all)
+
 ### 0.6.3 (March 3rd 2015) ###
 
 * fixing invalid source error handling ([#23](https://github.com/medialize/sass.js/issues/23))
