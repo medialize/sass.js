@@ -5,18 +5,62 @@ var Sass = {
     nested: 0,
     expanded: 1,
     compact: 2,
-    compressed: 3
+    compressed: 3,
   },
   comments: {
     'none': 0,
-    'default': 1
+    'default': 1,
   },
+
+  // defined in sass_interface.h
   _options: {
+    // Output style for the generated css code
+    // using Sass.style.*
     style: 0,
-    comments: 0
+    // If you want inline source comments
+    comments: 0,
+    // Precision for outputting fractional numbers
+    // 0: use libsass default
+    precision: 0,
+    // Treat source_string as sass (as opposed to scss)
+    indentedSyntax: 0,
+    // embed include contents in maps
+    sourceMapContents: 1,
+    // embed sourceMappingUrl as data uri
+    sourceMapEmbed: 1,
+    // Disable sourceMappingUrl in css output
+    omitSourceMapUrl: 1,
+    // Path to source map file
+    // Enables the source map generating
+    // Used to create sourceMappingUrl
+    sourceMapFile: 'file',
+    // Pass-through as sourceRoot property
+    sourceMapRoot: 'root',
+    // String to be used for indentation
+    indent: '  ',
+    // String to be used to for line feeds
+    linefeed: '\n',
   },
+  _optionTypes: {
+    style: Number,
+    comments: Boolean,
+    precision: Boolean,
+    indentedSyntax: Boolean,
+    sourceMapContents: Boolean,
+    sourceMapEmbed: Boolean,
+    omitSourceMapUrl: Boolean,
+    sourceMapFile: String,
+    sourceMapRoot: String,
+    indent: String,
+    linefeed: String,
+  },
+
   _files: {},
   _path: '/sass/',
+  // for relative paths in src-map
+  _inputPath: '/sass/input',
+  // for relative paths to the output
+  _outputPath: '/sass/output',
 
   FS: FS,
   Module: Module,
@@ -27,15 +71,21 @@ var Sass = {
     }
 
     Object.keys(options).forEach(function(key) {
-      switch (key) {
-        case 'style':
-          Sass._options[key] = Number(options[key]);
-          break;
-        case 'comments':
-          Sass._options[key] = Number(!!options[key]);
-          break;
+      var _type = this._optionTypes[key];
+
+      // no need to import crap
+      if (!_type) {
+        throw new Error('Unknown option "' + key + '"');
       }
-    });
+
+      // force expected data type
+      this._options[key] = _type(options[key]);
+
+      // in emscripten you pass booleans as integer 0 and 1
+      if (_type === Boolean) {
+        this._options[key] = Number(this._options[key]);
+      }
+    }, this);
   },
 
   _absolutePath: function(filename) {
@@ -123,41 +173,95 @@ var Sass = {
     }
   },
 
+  _makePointerPointer: function() {
+    // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
+    // so we allocate a pointer to a pointer on the stack by hand
+    return Module.allocate([0], 'i8', ALLOC_STACK);
+  },
+
+  _readPointerPointer: function(pointer) {
+    // this is equivalent to *ptr
+    var _pointer = Module.getValue(pointer, '*');
+    /*jshint camelcase:false*/
+    // is the string set? if not, it would be NULL and therefore 0
+    return _pointer ? Module.Pointer_stringify(_pointer) : null;
+    /*jshint camelcase:true*/
+  },
+
   compile: function(text) {
     try {
-      // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
-      // so we allocate a pointer to a pointer on the stack by hand
-      var errorPointerPointer = Module.allocate([0], 'i8', ALLOC_STACK);
+      var errorPointer = this._makePointerPointer();
+      var sourcemapPointer = this._makePointerPointer();
+      var filesPointer = this._makePointerPointer();
+
+      var args = [
+        // char *source_string,
+        ['string', text],
+        // int output_style,
+        ['number', Sass._options.style],
+        // int precision,
+        ['number', Sass._options.precision],
+        // bool source_comments,
+        ['number', Sass._options.comments],
+        // bool is_indented_syntax_src,
+        ['number', Sass._options.indentedSyntax],
+        // bool source_map_contents,
+        ['number', Sass._options.sourceMapContents],
+        // bool source_map_embed,
+        ['number', Sass._options.sourceMapEmbed],
+        // bool omit_source_map_url,
+        ['number', Sass._options.omitSourceMapUrl],
+        // char *source_map_file,
+        ['string', Sass._options.sourceMapFile],
+        // char *source_map_file,
+        ['string', Sass._options.sourceMapRoot],
+        // char *input_path,
+        ['string', Sass._inputPath],
+        // char *output_path,
+        ['string', Sass._outputPath],
+        // char *indent,
+        ['string', Sass._options.indent],
+        // char *linefeed,
+        ['string', Sass._options.linefeed],
+        // char *include_paths,
+        ['string', Sass._path],
+        // char **source_map_string,
+        ['i8', sourcemapPointer],
+        // char **included_files,
+        ['i8', filesPointer],
+        // char **error_message
+        ['i8', errorPointer],
+      ];
+
       var result = Module.ccall(
-        // C/++ function to call
+        // C function to call
         'sass_compile_emscripten',
         // return type
         'string',
         // parameter types
-        ['string', 'number', 'number', 'string', 'i8'],
+        args.map(function(arg) {
+          return arg[0];
+        }),
         // arguments for invocation
-        [text, Sass._options.style, Sass._options.comments, Sass._path, errorPointerPointer]
+        args.map(function(arg) {
+          return arg[1];
+        })
       );
-      // this is equivalent to *ptr
-      var errorPointer = Module.getValue(errorPointerPointer, '*');
-      // error string set? if not, it would be NULL and therefore 0
-      if (errorPointer) {
-        // pull string from pointer
 
-        /*jshint camelcase:false*/
-        errorPointer = Module.Pointer_stringify(errorPointer);
-        /*jshint camelcase:true*/
-
+      var error = this._readPointerPointer(errorPointer);
+      if (error) {
         // Sass.compile("$foo:123px; .m { width:$foo; }") yields
-        // errorPointer === "stdin:1: unbound variable $foobar"
-        var error = errorPointer.match(/^stdin:(\d+):/);
-        var message = errorPointer.slice(error[0].length).replace(/(^\s+)|(\s+$)/g, '');
-        // throw new Error(message, 'string', error[1]);
+        // error === "stdin:1: unbound variable $foobar"
+        var _error = error.match(/^stdin:(\d+):/);
+        var message = _error && error.slice(_error[0].length).replace(/(^\s+)|(\s+$)/g, '') || error;
         return {
-          line: Number(error[1]),
+          line: _error && Number(_error[1]) || null,
           message: message
         };
       }
+
+      var sourcemap = this._readPointerPointer(sourcemapPointer);
+      var files = this._readPointerPointer(filesPointer);
 
       return result;
     } catch(e) {
