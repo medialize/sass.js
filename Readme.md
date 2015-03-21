@@ -240,7 +240,9 @@ this is the libsass version 3.2 integration branch
 
 open:
 
-* switch from sass_interface.h to [sass_context.h](https://github.com/sass/libsass/wiki/API-Sass-Context-Internal)
+* figure out C-string-arrays for `files`
+* figure out if/how the pointer-pointers in emscripten need to be cleaned
+* figure out if using the memory-ownership methods instead of strdup() is desired
 
 ### master ###
 
