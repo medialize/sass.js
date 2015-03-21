@@ -230,10 +230,15 @@ this is the libsass version 3.2 integration branch
   * `inputPath` - source map generation source (`stdin`)
   * `outputPath` - source map generation target
 
+#### Breaking Changes
+
+* `Sass.compile` used to return the compiled CSS as string, it now returns an object `{text: "generated_css"}`
+
+---
+
 open:
 
 * switch from sass_interface.h to [sass_context.h](https://github.com/sass/libsass/wiki/API-Sass-Context-Internal)
-* support returning SourceMaps
 
 ### master ###
 

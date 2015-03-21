@@ -199,7 +199,7 @@ var Sass = {
   compile: function(text) {
     try {
       var errorPointer = this._makePointerPointer();
-      var sourcemapPointer = this._makePointerPointer();
+      var mapPointer = this._makePointerPointer();
       var filesPointer = this._makePointerPointer();
 
       var args = [
@@ -234,7 +234,7 @@ var Sass = {
         // char *include_paths,
         ['string', Sass._path],
         // char **source_map_string,
-        ['i8', sourcemapPointer],
+        ['i8', mapPointer],
         // char **included_files,
         ['i8', filesPointer],
         // char **error_message
@@ -268,12 +268,15 @@ var Sass = {
         };
       }
 
-      var sourcemap = this._readPointerPointer(sourcemapPointer);
+      var map = this._readPointerPointer(mapPointer);
       var files = this._readPointerPointer(filesPointer);
 
-      return result;
+      return {
+        text: result,
+        map: map && JSON.parse(map),
+        files: files
+      };
     } catch(e) {
-      // in case libsass.js was compiled without exception support (or something failed in parsing the error message)
       return {
         line: null,
         message: e.message,
