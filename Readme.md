@@ -148,6 +148,8 @@ outputs
 
 ## Building sass.js ##
 
+You need [NodeJS](http://nodejs.org/), [grunt](http://gruntjs.com/) and of course [emscripten](http://kripken.github.io/emscripten-site/).
+
 ```bash
 grunt build
 # destination:
@@ -158,13 +160,42 @@ grunt build
 #   dist/worker.min.js
 ```
 
-### Building libsass.js ###
+### Building sass.js in emscripten debug mode ###
 
 ```bash
-# using grunt:
-grunt build:libsass
-# using bash:
-(cd libsass && build-libsass.sh)
+grunt build:debug
+# destination:
+#   dist/sass.js
+#   dist/sass.min.js
+#   dist/sass.worker.js
+#   dist/worker.js
+#   dist/worker.min.js
+```
+
+### Building only libsass.js ###
+
+```bash
+# import libsass repository
+grunt libsass:prepare
+# invoke emscripten
+grunt libsass:build
+# invoke emscripten in debug mode
+grunt libsass:debug
+
+# destination:
+#   libsass/libsass/lib/libsass.js
+```
+
+If you don't like grunt, run with the shell:
+
+```bash
+LIBSASS_VERSION="3.1.0"
+# import libsass repository
+(cd libsass && prepare.sh ${LIBSASS_VERSION})
+# invoke emscripten
+(cd libsass && build.sh ${LIBSASS_VERSION})
+# invoke emscripten in debug mode
+(cd libsass && build.sh ${LIBSASS_VERSION} debug)
 
 # destination:
 #   libsass/libsass/lib/libsass.js
@@ -179,6 +210,9 @@ grunt build:libsass
 
 this is the libsass version 3.2 integration branch
 
+* improving build infrastructure
+  * allowing builds without forced download of libsass.git every time
+  * providing emscripten debug mode
 * [libsass 3.2 beta.1](https://github.com/sass/libsass/releases/tag/3.2.0-beta.1)
 * [libsass 3.2 beta.2](https://github.com/sass/libsass/releases/tag/3.2.0-beta.2)
 * compiling `master` because of [Fix deallocation of sources to use free instead of delete](https://github.com/sass/libsass/commit/ecf9ff475ea63e04a41c2ea38c52f40407dcd73a)
@@ -186,9 +220,8 @@ this is the libsass version 3.2 integration branch
 
 open:
 
+* switch from sass_interface.h to [sass_context.h](https://github.com/sass/libsass/wiki/API-Sass-Context-Internal)
 * support SourceMaps
-* support sass syntax (the whitespace significant thing)
-* figure out what these C plugins are and how we can make use of them (if at all)
 
 ### master ###
 

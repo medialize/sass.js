@@ -89,11 +89,15 @@ module.exports = function(grunt) {
     },
 
     shell: {
-      /*jshint camelcase:false*/
-      build_libsass: {
-        command: '(cd libsass && /bin/bash build-libsass.sh "<%= libsassVersion %>")',
-      }
-      /*jshint camelcase:true*/
+      prepareLibsass: {
+        command: '(cd libsass && /bin/bash prepare.sh "<%= libsassVersion %>")',
+      },
+      buildLibsass: {
+        command: '(cd libsass && /bin/bash build.sh "<%= libsassVersion %>")',
+      },
+      buildLibsassDebug: {
+        command: '(cd libsass && /bin/bash build.sh "<%= libsassVersion %>" debug)',
+      },
     },
 
     mochaTest: {
@@ -117,10 +121,19 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-mocha-test');
 
-  grunt.registerTask('build:libsass', ['shell:build_libsass']);
+  // aliases to build libsass from git using emscripten
+  grunt.registerTask('libsass:prepare', ['shell:prepareLibsass']);
+  grunt.registerTask('libsass:build', ['shell:buildLibsass']);
+  grunt.registerTask('libsass:debug', ['shell:buildLibsassDebug']);
+
+  // concatenate source files and libsass.js
   grunt.registerTask('build:sass', ['concat:sass', 'closure-compiler:sass', 'concat:sass-min-banner', 'clean:build']);
   grunt.registerTask('build:worker', ['concat:worker', 'concat:worker-inline', 'concat:sass-worker']);
-  grunt.registerTask('build', ['clean:dist', 'build:libsass', 'build:sass', 'build:worker']);
+
+  // full build pipeline
+  grunt.registerTask('build', ['clean:dist', 'libsass:prepare', 'libsass:build', 'build:sass', 'build:worker']);
+  grunt.registerTask('build:debug', ['clean:dist', 'libsass:prepare', 'libsass:debug', 'build:sass', 'build:worker']);
+
   grunt.registerTask('lint', 'jshint');
   grunt.registerTask('test', 'mochaTest');
 };
