@@ -17,11 +17,11 @@ var Sass = {
     // Output style for the generated css code
     // using Sass.style.*
     style: 0,
-    // If you want inline source comments
-    comments: 0,
     // Precision for outputting fractional numbers
     // 0: use libsass default
     precision: 0,
+    // If you want inline source comments
+    comments: 0,
     // Treat source_string as sass (as opposed to scss)
     indentedSyntax: 0,
     // embed include contents in maps
@@ -29,13 +29,23 @@ var Sass = {
     // embed sourceMappingUrl as data uri
     sourceMapEmbed: 1,
     // Disable sourceMappingUrl in css output
-    omitSourceMapUrl: 1,
+    sourceMapOmitUrl: 1,
+    // Pass-through as sourceRoot property
+    sourceMapRoot: 'root',
     // Path to source map file
     // Enables the source map generating
     // Used to create sourceMappingUrl
     sourceMapFile: 'file',
-    // Pass-through as sourceRoot property
-    sourceMapRoot: 'root',
+    // The input path is used for source map generation.
+    // It can be used to define something with string
+    // compilation or to overload the input file path.
+    // It is set to "stdin" for data contexts
+    // and to the input file on file contexts.
+    inputPath: 'stdin',
+    // The output path is used for source map generation.
+    // Libsass will not write to this file, it is just
+    // used to create information in source-maps etc.
+    outputPath: 'stdout',
     // String to be used for indentation
     indent: '  ',
     // String to be used to for line feeds
@@ -43,24 +53,22 @@ var Sass = {
   },
   _optionTypes: {
     style: Number,
+    precision: Number,
     comments: Boolean,
-    precision: Boolean,
     indentedSyntax: Boolean,
     sourceMapContents: Boolean,
     sourceMapEmbed: Boolean,
-    omitSourceMapUrl: Boolean,
-    sourceMapFile: String,
+    sourceMapOmitUrl: Boolean,
     sourceMapRoot: String,
+    sourceMapFile: String,
+    inputPath: String,
+    outputPath: String,
     indent: String,
     linefeed: String,
   },
 
   _files: {},
   _path: '/sass/',
-  // for relative paths in src-map
-  _inputPath: '/sass/input',
-  // for relative paths to the output
-  _outputPath: '/sass/output',
 
   FS: FS,
   Module: Module,
@@ -210,15 +218,15 @@ var Sass = {
         // bool source_map_embed,
         ['number', Sass._options.sourceMapEmbed],
         // bool omit_source_map_url,
-        ['number', Sass._options.omitSourceMapUrl],
+        ['number', Sass._options.sourceMapOmitUrl],
+        // char *source_map_root,
+        ['string', Sass._options.sourceMapRoot],
         // char *source_map_file,
         ['string', Sass._options.sourceMapFile],
-        // char *source_map_file,
-        ['string', Sass._options.sourceMapRoot],
         // char *input_path,
-        ['string', Sass._inputPath],
+        ['string', Sass._options.inputPath],
         // char *output_path,
-        ['string', Sass._outputPath],
+        ['string', Sass._options.outputPath],
         // char *indent,
         ['string', Sass._options.indent],
         // char *linefeed,
