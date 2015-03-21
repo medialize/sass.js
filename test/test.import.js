@@ -11,7 +11,7 @@ describe('@import', function() {
 
     Sass.writeFile('testfile.scss', '.imported { content: "testfile"; }');
     var result = Sass.compile(source);
-    expect(result).to.equal(expected);
+    expect(result.text).to.equal(expected);
 
     done();
   });
@@ -22,7 +22,7 @@ describe('@import', function() {
 
     Sass.writeFile('some-dir/testfile.scss', '.imported { content: "testfile"; }');
     var result = Sass.compile(source);
-    expect(result).to.equal(expected);
+    expect(result.text).to.equal(expected);
 
     done();
   });
@@ -34,7 +34,7 @@ describe('@import', function() {
     Sass.writeFile('some-dir/testfile.scss', '@import "foo/bar";.imported { content: "testfile"; }');
     Sass.writeFile('some-dir/foo/bar.scss', '.imported { content: "bar"; }');
     var result = Sass.compile(source);
-    expect(result).to.equal(expected);
+    expect(result.text).to.equal(expected);
 
     done();
   });

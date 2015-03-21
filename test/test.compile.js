@@ -9,7 +9,9 @@ describe('Sass.compile()', function() {
     var source = '$foo:123px;\n\n.m {\n  width:$foo;\n}';
     var expected = '.m {\n  width: 123px; }\n';
     var result = Sass.compile(source);
-    expect(result).to.equal(expected);
+    expect(result).to.be.a('object');
+    expect(result.map).to.be.a('object');
+    expect(result.text).to.equal(expected);
 
     done();
   });

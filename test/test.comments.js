@@ -13,8 +13,8 @@ describe('option.comments', function() {
     Sass.writeFile('testfile.scss', '.imported { content: "testfile"; }');
     var result = Sass.compile(source);
     Sass.options({comments: false});
-    
-    expect(result).to.equal(expected);
+
+    expect(result.text).to.equal(expected);
     
     done();
   });
