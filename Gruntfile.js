@@ -16,7 +16,7 @@ module.exports = function(grunt) {
 
     concat: {
       sass: {
-        src: ['libsass/libsass/lib/libsass.js', 'src/sass.js'],
+        src: ['libsass/libsass/lib/libsass.js', 'src/sass.properties.js', 'src/sass.js'],
         dest: 'dist/sass.js',
         options: {
           banner: ['/*! <%= pkg.name %> - v<%= pkg.version %> - libsass v<%= libsassVersion %> - <%= grunt.template.today("yyyy-mm-dd") %> */',
