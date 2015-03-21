@@ -213,15 +213,27 @@ this is the libsass version 3.2 integration branch
 * improving build infrastructure
   * allowing builds without forced download of libsass.git every time
   * providing emscripten debug mode
-* [libsass 3.2 beta.1](https://github.com/sass/libsass/releases/tag/3.2.0-beta.1)
-* [libsass 3.2 beta.2](https://github.com/sass/libsass/releases/tag/3.2.0-beta.2)
-* compiling `master` because of [Fix deallocation of sources to use free instead of delete](https://github.com/sass/libsass/commit/ecf9ff475ea63e04a41c2ea38c52f40407dcd73a)
-* adding various configuration options
+* Upgrading build infrastructure and API to libsass 3.2
+  * [libsass 3.2 beta.1](https://github.com/sass/libsass/releases/tag/3.2.0-beta.1)
+  * [libsass 3.2 beta.2](https://github.com/sass/libsass/releases/tag/3.2.0-beta.2)
+  * compiling `3681c480` because of [Fix deallocation of sources to use free instead of delete](https://github.com/sass/libsass/commit/ecf9ff475ea63e04a41c2ea38c52f40407dcd73a)
+* adding configuration options
+  * `precision` - Precision for outputting fractional numbers (`0` using libsass default)
+  * `indentedSyntax` - Treat source string as SASS (as opposed to SCSS)
+  * `indent` - String to be used for indentation (2 spaces)
+  * `linefeed` - String to be used to for line feeds (`\n`)
+  * `sourceMapRoot` - Pass-through as sourceRoot property
+  * `sourceMapFile` - Path to source map file (enables generating source maps)
+  * `sourceMapContents` - embed include contents in maps
+  * `sourceMapEmbed` - embed sourceMappingUrl as data URI
+  * `sourceMapOmitUrl` - Disable sourceMappingUrl in CSS output
+  * `inputPath` - source map generation source (`stdin`)
+  * `outputPath` - source map generation target
 
 open:
 
 * switch from sass_interface.h to [sass_context.h](https://github.com/sass/libsass/wiki/API-Sass-Context-Internal)
-* support SourceMaps
+* support returning SourceMaps
 
 ### master ###
 
