@@ -25,7 +25,8 @@ char *sass_compile_emscripten(
   char *include_paths,
   char **source_map_string,
   char **included_files,
-  char **error_message
+  char **error_message,
+  char **error_json
 );
 
 #ifdef __cplusplus

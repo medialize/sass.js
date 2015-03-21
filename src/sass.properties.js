@@ -160,9 +160,15 @@ var properties = [
     key: 'filesPointer',
   },
   {
-    // char **errorPointer,
+    // char **error_message,
     type: 'i8',
     source: 'func',
     key: 'errorPointer',
+  },
+  {
+    // char **error_json,
+    type: 'i8',
+    source: 'func',
+    key: 'jsonPointer',
   },
 ];

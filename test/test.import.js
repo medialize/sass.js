@@ -44,7 +44,7 @@ describe('@import', function() {
     var result = Sass.compile(source);
     expect(result).to.be.a('object');
     expect(result.line).to.equal(1);
-    expect(result.message).to.equal('file to import not found or unreadable: unknown-file\nCurrent dir:');
+    expect(result.message).to.equal('file to import not found or unreadable: unknown-file\nCurrent dir: ');
 
     done();
   });

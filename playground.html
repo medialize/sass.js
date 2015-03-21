@@ -197,8 +197,10 @@ $foo: 10px;
       convert.disabled = false;
       Sass.options(getOptions(), function() {
         Sass.compile(input.value, function (result) {
-          if (typeof result.text !== 'string') {
-            output.value = 'Error on line ' + result.line + ':\n' + result.message;
+          if (result.status) {
+            var formatted = result.formatted;
+            delete result.formatted;
+            output.value = formatted + '\n\n' + JSON.stringify(result, null, 2);
           } else {
             output.value = result.text;
           }

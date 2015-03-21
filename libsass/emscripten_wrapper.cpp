@@ -21,7 +21,8 @@ char *sass_compile_emscripten(
   char *include_paths,
   char **source_map_string,
   char **included_files,
-  char **error_message
+  char **error_message,
+  char **error_json
 ) {
   char *output_string;
 
@@ -77,22 +78,29 @@ char *sass_compile_emscripten(
   *included_files = NULL;
   *source_map_string = NULL;
   *error_message = NULL;
+  *error_json = NULL;
   if (status == 0) {
+    // NOTE: taking memory ownership causes the thing to explode on second iteration
+    //output_string = sass_context_take_output_string(ctx);
     output_string = strdup(sass_context_get_output_string(ctx));
 
+    //*source_map_string = sass_context_take_source_map_string(ctx);
     const char* _source_map_string = sass_context_get_source_map_string(ctx);
     if (_source_map_string) {
       *source_map_string = strdup(_source_map_string);
     }
 
+    // TODO: figure out how C-string-arrays work
     char** _included_files = sass_context_get_included_files(ctx);
     if (_included_files && *_included_files) {
       *included_files = strdup(*_included_files);
     }
   } else {
     output_string = NULL;
+    //*error_message = sass_context_take_error_message(ctx);
     *error_message = strdup(sass_context_get_error_message(ctx));
-    // const char* sass_context_get_error_json (struct Sass_Context* ctx);
+    //*error_json = sass_context_take_error_json(ctx);
+    *error_json = strdup(sass_context_get_error_json(ctx));
   }
 
   // clean up

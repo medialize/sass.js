@@ -218,6 +218,7 @@ this is the libsass version 3.2 integration branch
   * [libsass 3.2 beta.2](https://github.com/sass/libsass/releases/tag/3.2.0-beta.2)
   * compiling `3681c480` because of [Fix deallocation of sources to use free instead of delete](https://github.com/sass/libsass/commit/ecf9ff475ea63e04a41c2ea38c52f40407dcd73a)
 * improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
+* improving error error reporting
 * adding configuration options
   * `precision` - Precision for outputting fractional numbers (`0` using libsass default)
   * `indentedSyntax` - Treat source string as SASS (as opposed to SCSS)

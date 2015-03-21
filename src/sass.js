@@ -132,7 +132,17 @@ var Sass = {
   _makePointerPointer: function() {
     // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
     // so we allocate a pointer to a pointer on the stack by hand
+    // http://kripken.github.io/emscripten-site/docs/api_reference/advanced-apis.html#allocate
+    // https://github.com/kripken/emscripten/blob/master/src/preamble.js#L545
+    // https://github.com/kripken/emscripten/blob/master/src/preamble.js#L568
     return Module.allocate([0], 'i8', ALLOC_STACK);
+  },
+
+  _cleanPointerPointer: function(pointer) {
+    // FIXME: we probably need to do more here than simply set a null pointer to free the memory?
+    // http://kripken.github.io/emscripten-site/docs/api_reference/preamble.js.html#setValue
+    // http://kripken.github.io/emscripten-site/docs/api_reference/advanced-apis.html#allocate
+    // Module.setValue(pointer, 0);
   },
 
   _readPointerPointer: function(pointer) {
@@ -147,6 +157,7 @@ var Sass = {
   compile: function(text) {
     try {
       var errorPointer = this._makePointerPointer();
+      var jsonPointer = this._makePointerPointer();
       var mapPointer = this._makePointerPointer();
       var filesPointer = this._makePointerPointer();
 
@@ -156,6 +167,7 @@ var Sass = {
         func: {
           text: text,
           errorPointer: errorPointer,
+          jsonPointer: jsonPointer,
           mapPointer: mapPointer,
           filesPointer: filesPointer,
         },
@@ -176,28 +188,33 @@ var Sass = {
         })
       );
 
-      var error = this._readPointerPointer(errorPointer);
-      if (error) {
-        // Sass.compile("$foo:123px; .m { width:$foo; }") yields
-        // error === "stdin:1: unbound variable $foobar"
-        var _error = error.match(/^stdin:(\d+):/);
-        var message = _error && error.slice(_error[0].length).replace(/(^\s+)|(\s+$)/g, '') || error;
-        return {
-          line: _error && Number(_error[1]) || null,
-          message: message
-        };
-      }
+      var message = this._readPointerPointer(errorPointer);
+      this._cleanPointerPointer(errorPointer);
+
+      var error = this._readPointerPointer(jsonPointer);
+      this._cleanPointerPointer(jsonPointer);
 
       var map = this._readPointerPointer(mapPointer);
+      this._cleanPointerPointer(mapPointer);
+
       var files = this._readPointerPointer(filesPointer);
+      this._cleanPointerPointer(filesPointer);
+
+      if (error) {
+        var _error = JSON.parse(error);
+        _error.formatted = message;
+        return _error;
+      }
 
       return {
+        status: 0,
         text: result,
         map: map && JSON.parse(map),
         files: files
       };
     } catch(e) {
       return {
+        status: 99,
         line: null,
         message: e.message,
         error: e
