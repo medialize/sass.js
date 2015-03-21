@@ -2,7 +2,7 @@
 
 Sass parser in JavaScript. This is a convenience API for emscripted [libsass](https://github.com/sass/libsass) (at v3.1.0). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/andrew/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified it's 2.2MB, gzipped it's 611KB. [node-sass](https://github.com/andrew/node-sass) is about 20 times faster than Sass.js
+> A fair warning: minified it's 2.6MB, gzipped it's 730KB. [node-sass](https://github.com/andrew/node-sass) is about 20 times faster than Sass.js
 
 see the [live demo](http://medialize.github.com/sass.js/)
 
@@ -18,10 +18,38 @@ Sass.js comes in two flavors – the synchronous in-document `sass.js` and the a
   Sass.initialize('dist/worker.min.js');
 
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  Sass.compile(scss, function(css) {
-      console.log(css);
+  Sass.compile(scss, function(result) {
+    console.log(result);
   });
 </script>
+```
+
+The `result` object for the given `scss` with default `options` looks as follows:
+
+```js
+{
+  // status 0 means everything is ok,
+  // any other value means an error occured
+  "status": 0,
+  // the compiled CSS
+  "text": ".some-selector {\n  width: 123px; }\n",
+  // the SourceMap for this compilation
+  "map": {
+    "version": 3,
+    "sourceRoot": "root",
+    "file": "stdout",
+    "sources": [
+      "stdin"
+    ],
+    "sourcesContent": [
+      "$someVar: 123px; .some-selector { width: $someVar; }"
+    ],
+    "mappings": "AAAiB,cAAc,CAAC;EAAE,KAAK,EAA7B,KAAK,GAAkB",
+    "names": []
+  },
+  // the files that were used during the compilation
+  "files": null
+}
 ```
 
 It is possible - but *not recommended* to use sass.js without in the main RunLoop instead of using a Worker:
@@ -30,8 +58,8 @@ It is possible - but *not recommended* to use sass.js without in the main RunLoo
 <script src="dist/sass.min.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  var css = Sass.compile(scss);
-  console.log(css);
+  var result = Sass.compile(scss);
+  console.log(result);
 </script>
 ```
 
@@ -44,8 +72,8 @@ You can - for debugging purposes - load `sass.js` from source files. Emscripten 
 <script src="src/sass.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  var css = Sass.compile(scss);
-  console.log(css);
+  var result = Sass.compile(scss);
+  console.log(result);
 </script>
 ```
 
@@ -57,15 +85,58 @@ You can - for debugging purposes - load `sass.js` from source files. Emscripten 
 ```js
 // compile text to SCSS
 Sass.compile(text, function callback(result) {
-  // (string) result is the compiled CSS
+  // (object) result compilation result
+  // (number) result.status success status (0 in success case)
+  // (string) result.text compiled CSS string
+  // (object) result.map SourceMap
+  // (array)  result.files list of files used during compilation
+  // -------------------------------
+  // (number) result.status success status (not 0 in error case)
+  // (string) result.file the file path the occurred in
+  // (number) result.line the line the error occurred on
+  // (number) result.column the character offset in that line the error began with
+  // (string) result.message the error message
+  // (string) result.formatted human readable error message containing all details
 });
 
 // set compile style options
 Sass.options({
-  // format output: nested, expanded, compact, compressed
+  // Format output: nested, expanded, compact, compressed
   style: Sass.style.nested,
-  // add line comments to output: none, default
-  comments: Sass.comments.none
+  // Precision for outputting fractional numbers
+  // (0 is libsass default precision)
+  precision: 0,
+  // If you want inline source comments
+  comments: false,
+  // Treat source_string as SASS (as opposed to SCSS)
+  indentedSyntax: false,
+  // String to be used for indentation
+  indent: '  ',
+  // String to be used to for line feeds
+  linefeed: '\n',
+
+  // Path to source map file
+  // Enables the source map generating
+  // Used to create sourceMappingUrl
+  sourceMapFile: 'file',
+  // Pass-through as sourceRoot property
+  sourceMapRoot: 'root',
+  // The input path is used for source map generation.
+  // It can be used to define something with string
+  // compilation or to overload the input file path.
+  // It is set to "stdin" for data contexts
+  // and to the input file on file contexts.
+  inputPath: 'stdin',
+  // The output path is used for source map generation.
+  // Libsass will not write to this file, it is just
+  // used to create information in source-maps etc.
+  outputPath: 'stdout',
+  // Embed included contents in maps
+  sourceMapContents: true,
+  // Embed sourceMappingUrl as data uri
+  sourceMapEmbed: false,
+  // Disable sourceMappingUrl in css output
+  sourceMapOmitUrl: true,
 }, function callback(){});
 
 // register a file to be available for @import
@@ -96,16 +167,15 @@ Sass.listFiles(function callback(list) {
 
 ### Using the synchronous, non-worker API
 
+the expected input and the produced output is the same as with the *preferred* worker API. Only the way how data is passed to and from sass.js differs:
+
 ```js
 // compile text to SCSS
 var result = Sass.compile(text);
 
 // set compile style options
 Sass.options({
-  // format output: nested, expanded, compact, compressed
-  style: Sass.style.nested,
-  // add line comments to output: none, default
-  comments: Sass.comments.none
+  // see worker API for list of options
 });
 
 // register a file to be available for @import
@@ -129,7 +199,7 @@ Chances are you want to use one of the readily available Sass mixins (e.g. [drub
 Sass.writeFile('one.scss', '.one { width: 123px; }');
 Sass.writeFile('some-dir/two.scss', '.two { width: 123px; }');
 Sass.compile('@import "one"; @import "some-dir/two";', function(result) {
-  console.log(result);
+  console.log(result.text);
 });
 ```
 
@@ -219,6 +289,7 @@ this is the libsass version 3.2 integration branch
   * compiling `3681c480` because of [Fix deallocation of sources to use free instead of delete](https://github.com/sass/libsass/commit/ecf9ff475ea63e04a41c2ea38c52f40407dcd73a)
 * improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
 * improving error error reporting
+* adding `SassWorker._eval()` to execute arbitrary code in the worker context (for debugging emscripten JS API).
 * adding configuration options
   * `precision` - Precision for outputting fractional numbers (`0` using libsass default)
   * `indentedSyntax` - Treat source string as SASS (as opposed to SCSS)
@@ -243,11 +314,6 @@ open:
 * figure out C-string-arrays for `files`
 * figure out if/how the pointer-pointers in emscripten need to be cleaned
 * figure out if using the memory-ownership methods instead of strdup() is desired
-
-### master ###
-
-* adding `SassWorker._eval()` to execute arbitrary code in the worker context. This is used for development/debugging
-* fixing the hiding of internal script errors
 
 ### 0.6.3 (March 3rd 2015) ###
 
