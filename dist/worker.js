@@ -1,9 +1,10 @@
-/*! sass.js - v0.0.0 - web worker - 2015-03-21 */'use strict';
+/*! sass.js - v0.0.0 - web worker - 2015-03-22 */'use strict';
 /*global Sass, postMessage, onmessage:true, importScripts*/
 importScripts('sass.min.js');
 
 onmessage = function (event) {
   var result;
+  var synchronous = true;
   switch (event.data.command) {
     case 'compile':
       result = Sass.compile(event.data.text);
@@ -23,6 +24,18 @@ onmessage = function (event) {
     case 'removeFile':
       result = Sass.removeFile(event.data.filename);
       break;
+    case 'lazyFiles':
+      result = Sass.lazyFiles(event.data.base, event.data.directory, event.data.files);
+      break;
+    case 'preloadFiles':
+      synchronous = false;
+      Sass.preloadFiles(event.data.base, event.data.directory, event.data.files, function() {
+        postMessage({
+          id: event.data.id,
+          result: undefined
+        });
+      });
+      break;
     case '_eval':
       var func = new Function('return ' + event.data.func)();
       result = func.call(Sass);
@@ -31,7 +44,7 @@ onmessage = function (event) {
       break;
   }
 
-  postMessage({
+  synchronous && postMessage({
     id: event.data.id,
     result: result
   });
