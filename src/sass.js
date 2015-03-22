@@ -1,5 +1,22 @@
 /*global Module, FS, ALLOC_STACK*/
 /*jshint strict:false*/
+
+function stripLeadingSlash(text) {
+  return text.slice(0, 1) === '/' ? text.slice(1) : text;
+}
+
+function addLeadingSlash(text) {
+  return text.slice(0, 1) !== '/' ? ('/' + text) : text;
+}
+
+function stripTrailingSlash(text) {
+  return text.slice(-1) === '/' ? text.slice(0, -1) : text;
+}
+
+function addTrailingSlash(text) {
+  return text.slice(-1) !== '/' ? (text + '/') : text;
+}
+
 var Sass = {
   style: {
     nested: 0,
@@ -39,7 +56,7 @@ var Sass = {
   },
 
   _absolutePath: function(filename) {
-    return Sass._path + (filename.slice(0, 1) === '/' ? filename.slice(1) : filename);
+    return Sass._path + stripLeadingSlash(filename);
   },
 
   _createPath: function(parts) {
@@ -60,6 +77,7 @@ var Sass = {
   _ensurePath: function(filename) {
     var parts = filename.split('/');
     parts.pop();
+
     if (!parts.length) {
       return;
     }
