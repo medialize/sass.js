@@ -1,6 +1,6 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for emscripted [libsass](https://github.com/sass/libsass) (at v3.2.0). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/andrew/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at v3.2.0). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/andrew/node-sass). Sass.js and node-sass should generate the same results.
 
 > A fair warning: minified it's 2.6MB, gzipped it's 730KB. If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
@@ -36,10 +36,11 @@ It is possible - but *not recommended* to use Sass.js without in the main RunLoo
 
 You can - for debugging purposes - load `sass.js` from source files. Emscripten litters the global scope with ~400 variables, so this MUST never be used in production!
 
-> Note: you need to have run `grunt build:libsass` before this is possible
+> Note: you need to have run `grunt libsass:prepare libsass:build` before this is possible
 
 ```html
 <script src="libsass/libsass/lib/libsass.js"></script>
+<script src="src/sass.properties.js"></script>
 <script src="src/sass.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
@@ -450,7 +451,11 @@ open:
 * [Sebastian Golasch](https://github.com/asciidisco) - [@asciidisco](https://twitter.com/asciidisco)
 * [Rodney Rehm](http://rodneyrehm.de/en/) - [@rodneyrehm](https://twitter.com/rodneyrehm)
 
+## Credits
+
+* the [sass group](https://github.com/sass), especially [team libsass](https://github.com/sass/libsass)
+* team [emscripten](https://github.com/kripken/emscripten), especially [Alan Zakai](https://github.com/kripken)
 
 ## License
 
-Sass.js is - as [libsass](https://github.com/hcatlin/libsass) and [Emscripten](https://github.com/kripken/emscripten/) are - published under the [MIT License](http://opensource.org/licenses/mit-license).
+Sass.js is - as [libsass](https://github.com/sass/libsass) and [emscripten](https://github.com/kripken/emscripten/) are - published under the [MIT License](http://opensource.org/licenses/mit-license).
