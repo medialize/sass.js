@@ -2,25 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Sass.js - emscripted libsass in the browser</title>
+  <title>Sass.js playground - emscripted libsass in the browser</title>
   <style>
-    textarea {
-      float: left;
-      width: 40%;
+
+    #credits {
+      padding-top: 10px;
+    }
+
+    #input-output {
+      display: flex;
+      align-items: center;
+      align-content: stretch;
+      justify-content: center;
+    }
+    #input-output > section {
+      flex: 1 0 100px;
+    }
+    #input-output > section > textarea {
+      box-sizing: border-box;
+      width: 100%;
       height: 200px;
     }
 
-    #credits {
-      clear: left;
-      padding-top: 10px;
-    }
-    
     #options {
       padding: 20px;
       background: #DDD;
-      -webkit-columns: 2;
+      -webkit-columns: 3;
+         -moz-columns: 3;
+              columns: 3;
       -webkit-column-rule: 1px solid white;
+         -moz-column-rule: 1px solid white;
+              column-rule: 1px solid white;
       -webkit-column-gap: 15px;
+         -moz-column-gap: 15px;
+              column-gap: 15px;
     }
     .option {
       position: relative;
@@ -30,7 +45,6 @@
       display: inline-block;
       width: 150px;
       text-align: right;
-
     }
     .option label:after {
       content: ": ";
@@ -49,15 +63,41 @@
     .option .comment:after {
       content: ' */';
     }
+
+
+    #filesystem {
+      display: flex;
+      align-items: flex-start;
+      align-content: stretch;
+      justify-content: center;
+
+      padding: 20px;
+      background: #DDD;
+    }
+    #filesystem > section {
+      flex: 1 0 100px;
+    }
+    #filesystem > section {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      align-content: stretch;
+      justify-content: center;
+    }
+    #filesystem textarea {
+      height: 200px;
+    }
     
   </style>
 </head>
 <body>
-  <h1>Sass.js - Convert Sass in the browser using Emscripten &amp; Libsass</h1>
+  <h1>Sass.js Playground</h1>
   <p>
-    More information in the <a href="https://github.com/medialize/sass.js/">Sass.js repository</a>.
+    For more information on how to convert SCSS and SASS in the browser using emscripted &amp; libsass
+    see the <a href="https://github.com/medialize/sass.js/">Sass.js repository</a>.
   </p>
 
+  <h2>Sass.options()</h2>
   <article id="options">
     
     <section class="option">
@@ -167,9 +207,12 @@
 
   </article>
 
-  <p><button type="button" id="convert">Convert</button></p>
+  <h2>Sass.compile()</h2>
 
-  <textarea id="input">@import "demo";
+  <article id="input-output">
+    <section>
+      <h3>Input</h3>
+      <textarea id="input">@import "demo";
 $foo: 10px;
 .selector {
   margin: $foo;
@@ -177,7 +220,34 @@ $foo: 10px;
     margin: $foo / 2;
   }
 }</textarea>
-  <textarea id="output"></textarea>
+    </section>
+    <section>
+      <h3>Output</h3>
+      <textarea id="output"></textarea>
+    </section>
+    <section>
+      <h3>SourceMap</h3>
+      <textarea id="sourcemap"></textarea>
+    </section>
+  </article>
+
+  <p><button type="button" id="convert">Convert</button></p>
+
+  <h2>Filesystem</h2>
+  <article id="filesystem">
+    <section>
+      <h3>Files</h3>
+      <ul id="filesystem-list">
+        <li><button type="button" id="filesystem-new">add file</button></li>
+      </ul>
+    </section>
+    <section>
+      <h3>Edit File</h3>
+      <input id="filesystem-file" type="text" placeholder="file name">
+      <textarea id="filesystem-content" placeholder="file content"></textarea>
+      <button type="button" id="filesystem-save">save file</button>
+    </section>
+  </article>
 
   <p id="credits">
    This fun was had by <a href="https://twitter.com/cjk101010">@cjk101010</a>, <a href="https://twitter.com/asciidisco">@asciidisco</a> and <a href="https://twitter.com/rodneyrehm">@rodneyrehm</a>.
@@ -186,11 +256,11 @@ $foo: 10px;
   <script src="dist/sass.worker.js"></script>
   <script>
     Sass.initialize('dist/worker.min.js');
-    Sass.writeFile('demo.scss', '.imported { content: "yeah, file support!"; }');
 
     var convert = document.getElementById('convert');
     var input = document.getElementById('input');
     var output = document.getElementById('output');
+    var sourcemap = document.getElementById('sourcemap');
 
     convert.addEventListener('click', function (event) {
       event.preventDefault();
@@ -201,12 +271,12 @@ $foo: 10px;
             var formatted = result.formatted;
             delete result.formatted;
             output.value = formatted + '\n\n' + JSON.stringify(result, null, 2);
+            sourcemap.value = '';
           } else {
             output.value = result.text;
+            sourcemap.value = JSON.stringify(result.map, null, 2);
           }
 
-          console.log('files', result.files);
-          console.log('map', result.map);
         });
       })
     }, false);
@@ -231,7 +301,59 @@ $foo: 10px;
 
       return options;
     }
-    
+
+    var files = document.getElementById('filesystem-list');
+    var editNew = document.getElementById('filesystem-new');
+    var editFile = document.getElementById('filesystem-file');
+    var editContent = document.getElementById('filesystem-content');
+    var editSave = document.getElementById('filesystem-save');
+
+    files.addEventListener('click', function(event) {
+      if (event.target.classList.contains('filesystem-edit')) {
+        readFile(event.target.parentNode);
+      } else if (event.target.classList.contains('filesystem-remove')) {
+        removeFile(event.target.parentNode)
+      }
+    });
+
+    editSave.addEventListener('click', function(event) {
+      writeFile(editFile.value, editContent.value);
+    });
+
+    editNew.addEventListener('click', function(event) {
+      editFile.value = '';
+      editContent.value = '';
+    });
+
+    function readFile(fileNode) {
+      editFile.value = fileNode.getAttribute('data-file');
+      editContent.value = fileNode.getAttribute('data-content');
+    }
+
+    function removeFile(fileNode) {
+      Sass.removeFile(fileNode.getAttribute('data-file'));
+      fileNode.parentNode.removeChild(fileNode);
+    }
+
+    function writeFile(file, content) {
+      var item = document.getElementById('filesystem--' + file);
+      if (!item) {
+        item = document.createElement('li');
+        item.id = 'filesystem--' + file;
+        item.setAttribute('data-file', file);
+        item.innerHTML = '<span></span><button type="button" class="filesystem-edit">edit</button><button type="button" class="filesystem-remove">remove</button>';
+        files.insertBefore(item, files.firstElementChild);
+      }
+
+      item.firstElementChild.textContent = file;
+      item.setAttribute('data-content', content);
+      Sass.writeFile(file, content);
+      return item;
+    }
+
+    var _demoFile = writeFile('demo.scss', '.imported { content: "yeah, file support!"; }');
+    readFile(_demoFile);
+
   </script>
 </body>
 </html>
