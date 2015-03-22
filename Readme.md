@@ -1,11 +1,10 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for emscripted [libsass](https://github.com/sass/libsass) (at v3.1.0). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/andrew/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for emscripted [libsass](https://github.com/sass/libsass) (at v3.2.0). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/andrew/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified it's 2.6MB, gzipped it's 730KB. [node-sass](https://github.com/andrew/node-sass) is about 20 times faster than Sass.js
+> A fair warning: minified it's 2.6MB, gzipped it's 730KB. If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
-see the [live demo](http://medialize.github.com/sass.js/)
-
+Have a go at the [playground](http://medialize.github.com/sass.js/playground.html) to fiddle with what sass.js has to offer.
 
 ## Loading the Sass.js API
 
@@ -22,34 +21,6 @@ Sass.js comes in two flavors – the synchronous in-document `sass.js` and the a
     console.log(result);
   });
 </script>
-```
-
-The `result` object for the given `scss` with default `options` looks as follows:
-
-```js
-{
-  // status 0 means everything is ok,
-  // any other value means an error occured
-  "status": 0,
-  // the compiled CSS
-  "text": ".some-selector {\n  width: 123px; }\n",
-  // the SourceMap for this compilation
-  "map": {
-    "version": 3,
-    "sourceRoot": "root",
-    "file": "stdout",
-    "sources": [
-      "stdin"
-    ],
-    "sourcesContent": [
-      "$someVar: 123px; .some-selector { width: $someVar; }"
-    ],
-    "mappings": "AAAiB,cAAc,CAAC;EAAE,KAAK,EAA7B,KAAK,GAAkB",
-    "names": []
-  },
-  // the files that were used during the compilation
-  "files": null
-}
 ```
 
 It is possible - but *not recommended* to use Sass.js without in the main RunLoop instead of using a Worker:
@@ -201,6 +172,82 @@ var list = Sass.listFiles();
 // preload a set of files
 // see chapter »Working With Files« below
 Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, callback);
+```
+
+### `compile()` Response Object
+
+Compiling the following source:
+
+```scss
+$someVar: 123px; .some-selector { width: $someVar; }
+```
+
+Yields the following `result` object:
+
+```js
+{
+  // status 0 means everything is ok,
+  // any other value means an error occured
+  "status": 0,
+  // the compiled CSS
+  "text": ".some-selector {\n  width: 123px; }\n",
+  // the SourceMap for this compilation
+  "map": {
+    "version": 3,
+    "sourceRoot": "root",
+    "file": "stdout",
+    "sources": [
+      "stdin"
+    ],
+    "sourcesContent": [
+      "$someVar: 123px; .some-selector { width: $someVar; }"
+    ],
+    "mappings": "AAAiB,cAAc,CAAC;EAAE,KAAK,EAA7B,KAAK,GAAkB",
+    "names": []
+  },
+  // the files that were used during the compilation
+  "files": null
+}
+```
+
+Compiling the following (invalid) source:
+
+```scss
+$foo: 123px;
+
+.bar {
+  width: $bar;
+}
+
+bad-token-test
+```
+
+Yields the following `result` object:
+
+```js
+{
+  // status other than 0 means an error occured
+  "status": 1,
+  // the file the problem occurred in
+  "file": "stdin",
+  // the line the problem occurred on
+  "line": 5,
+  // the character on the line the problem started with
+  "column": 2,
+  // the problem description
+  "message": "invalid top-level expression",
+  // human readable formatting of the error
+  "formatted": "Error: invalid top-level expression\n        on line 5 of stdin\n>> }\n   -^\n"
+}
+```
+
+where the `formatted` properties contains a human readable presentation of the problem:
+
+```
+Error: invalid top-level expression
+        on line 5 of stdin
+>> }
+   -^
 ```
 
 ### Working With Files
