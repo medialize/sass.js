@@ -24,7 +24,7 @@ Sass.js comes in two flavors – the synchronous in-document `sass.js` and the a
 </script>
 ```
 
-It is possible - but *not recommended* to use sass.js without in the main RunLoop instead of using a Worker:
+It is possible - but *not recommended* to use Sass.js without in the main RunLoop instead of using a Worker:
 
 ```html
 <script src="dist/sass.min.js"></script>
@@ -92,6 +92,14 @@ Sass.readFile(filename, function callback(content) {
 Sass.listFiles(function callback(list) {
   // (array) list contains the paths of all registered files
 });
+
+// preload a set of files
+// see chapter »Working With Files« below
+Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, callback);
+
+// register a set of files to be (synchronously) loaded when required
+// see chapter »Working With Files« below
+Sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, callback);
 ```
 
 ### Using the synchronous, non-worker API
@@ -119,11 +127,15 @@ var content = Sass.readFile(filename);
 
 // list all files (regardless of directory structure)
 var list = Sass.listFiles();
+
+// preload a set of files
+// see chapter »Working With Files« below
+Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, callback);
 ```
 
 ### Working With Files
 
-Chances are you want to use one of the readily available Sass mixins (e.g. [drublic/sass-mixins](https://github.com/drublic/Sass-Mixins) or [Bourbon](https://github.com/thoughtbot/bourbon)). While Sass.js doesn't feature a full-blown "loadBurbon()", registering files is possible:
+Chances are you want to use one of the readily available Sass mixins (e.g. [drublic/sass-mixins](https://github.com/drublic/Sass-Mixins) or [Bourbon](https://github.com/thoughtbot/bourbon)). While Sass.js doesn't feature a full-blown "loadBurbon()", registering individual files is possible:
 
 ```js
 Sass.writeFile('one.scss', '.one { width: 123px; }');
@@ -143,10 +155,39 @@ outputs
   width: 123px; }
 ```
 
+To make things somewhat more comfortable, Sass.js provides 2 methods to load batches of files. `Sass.lazyFiles()` registers the files and only loads them when they're loaded by libsass - the catch is this HTTP request has to be made synchronously (and thus only works within the WebWorker). `Sass.preloadFiles()` downloads the registered files immediately (asynchronously, also working in the synchronous API):
+
+```js
+// HTTP requests are made relative to worker
+var base = '../scss/';
+// equals 'http://medialize.github.io/sass.js/scss/'
+
+// the directory files should be made available in
+var directory = '';
+
+// the files to load (relative to both base and directory)
+var files = [
+  'demo.scss',
+  'example.scss',
+  '_importable.scss',
+  'deeper/_some.scss',
+];
+
+// register the files to load when necessary
+Sass.lazyFiles(base, directory, files, function() { console.log('files registered, not loaded') });
+
+// download the files immediately
+Sass.preloadFiles(base, directory, files, function() { console.log('files loaded') });
+```
+
+Note that `Sass.lazyFiles()` can slow down the perceived performance of `Sass.compile()` because of the synchronous HTTP requests. They're made in sequence, not in parallel.
+
+While Sass.js does not plan on providing file maps to SASS projects, it contains two mappings to serve as an example how your project can approach the problem: [`maps/bourbon.js`](maps/bourbon.js) and [`maps/drublic-sass-mixins.js`](maps/drublic-sass-mixins.js).
+
 ---
 
 
-## Building sass.js ##
+## Building Sass.js ##
 
 ```bash
 grunt build
@@ -178,6 +219,7 @@ grunt build:libsass
 ### master ###
 
 * adding `SassWorker._eval()` to execute arbitrary code in the worker context. This is used for development/debugging
+* adding `Sass.lazyFiles()` and `Sass.preloadFiles()`
 * fixing the hiding of internal script errors
 
 ### 0.6.3 (March 3rd 2015) ###

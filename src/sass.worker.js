@@ -65,6 +65,24 @@
       }, callback);
     },
 
+    lazyFiles: function(base, directory, files, callback) {
+      Sass._dispatch({
+        command: 'lazyFiles',
+        base: base,
+        directory: directory,
+        files: files,
+      }, callback);
+    },
+
+    preloadFiles: function(base, directory, files, callback) {
+      Sass._dispatch({
+        command: 'preloadFiles',
+        base: base,
+        directory: directory,
+        files: files,
+      }, callback);
+    },
+
     options: function(options, callback) {
       Sass._dispatch({
         command: 'options',

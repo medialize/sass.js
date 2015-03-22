@@ -1,6 +1,8 @@
 /*global Module, FS, ALLOC_STACK*/
 /*jshint strict:false*/
 
+function noop(){}
+
 function stripLeadingSlash(text) {
   return text.slice(0, 1) === '/' ? text.slice(1) : text;
 }
@@ -139,6 +141,58 @@ var Sass = {
     } catch(e) {
       return false;
     }
+  },
+
+  _handleFiles: function(base, directory, files, callback) {
+    var _root = Sass._absolutePath(directory || '');
+    _root = addTrailingSlash(_root);
+    base = addTrailingSlash(base);
+
+    return files.map(function(file) {
+      file = stripLeadingSlash(file);
+
+      var parts = file.split('/');
+      var _file = parts.pop();
+      var _path = _root + parts.join('/');
+      _path = addTrailingSlash(_path);
+
+      return callback(_path, _file, base + file);
+    }, Sass);
+  },
+
+  _handleLazyFile: function(path, file, url) {
+    Sass._ensurePath(path + file);
+    FS.createLazyFile(path, file, url, true, false);
+  },
+
+  _preloadingFiles: 0,
+  _preloadingFilesCallback: null,
+  _handlePreloadFile: function(path, file, url) {
+    Sass._ensurePath(path + file);
+
+    Sass._preloadingFiles++;
+    var request = new XMLHttpRequest();
+    request.onload = function(response) {
+      Sass.writeFile(path.slice(Sass._path.length) + file, this.responseText);
+
+      Sass._preloadingFiles--;
+      if (!Sass._preloadingFiles) {
+        Sass._preloadingFilesCallback();
+        Sass._preloadingFilesCallback = null;
+      }
+    };
+
+    request.open("get", url, true);
+    request.send();
+  },
+
+  lazyFiles: function(base, directory, files) {
+    Sass._handleFiles(base, directory, files, Sass._handleLazyFile);
+  },
+
+  preloadFiles: function(base, directory, files, callback) {
+    Sass._preloadingFilesCallback = callback || noop;
+    Sass._handleFiles(base, directory, files, Sass._handlePreloadFile);
   },
 
   compile: function(text) {
