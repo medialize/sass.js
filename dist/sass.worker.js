@@ -1,4 +1,4 @@
-/*! sass.js - v0.0.0 - web worker - 2015-03-20 */(function (root, factory) {
+/*! sass.js - v0.0.0 - web worker - 2015-03-22 */(function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
@@ -62,6 +62,24 @@
       Sass._dispatch({
         command: 'removeFile',
         filename: filename
+      }, callback);
+    },
+
+    lazyFiles: function(base, directory, files, callback) {
+      Sass._dispatch({
+        command: 'lazyFiles',
+        base: base,
+        directory: directory,
+        files: files,
+      }, callback);
+    },
+
+    preloadFiles: function(base, directory, files, callback) {
+      Sass._dispatch({
+        command: 'preloadFiles',
+        base: base,
+        directory: directory,
+        files: files,
       }, callback);
     },
 
