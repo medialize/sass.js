@@ -26,26 +26,7 @@ char *sass_compile_emscripten(
 ) {
   char *output_string;
 
-  // I suck at C and I'm probably doing this way wrong
-  Sass_Output_Style sass_output_style;
-  switch (output_style) {
-    case 3:
-      sass_output_style = SASS_STYLE_COMPRESSED;
-      break;
-
-    case 2:
-      sass_output_style = SASS_STYLE_COMPACT;
-      break;
-
-    case 1:
-      sass_output_style = SASS_STYLE_EXPANDED;
-      break;
-
-    case 0:
-    default:
-      sass_output_style = SASS_STYLE_NESTED;
-      break;
-  }
+  Sass_Output_Style sass_output_style = (Sass_Output_Style)output_style;
 
   // initialize context
   struct Sass_Data_Context* data_ctx = sass_make_data_context(strdup(source_string));
