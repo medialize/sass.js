@@ -268,8 +268,16 @@ var Sass = {
       var map = this._readPointerPointer(mapPointer);
       this._cleanPointerPointer(mapPointer);
 
-      var files = this._readPointerPointer(filesPointer);
-      this._cleanPointerPointer(filesPointer);
+      var files = [];
+      var _listPointer = Module.getValue(filesPointer, '*');
+      for (var i=0; true; i+=4) {
+        var _pointer = Module.getValue(_listPointer + i, '*');
+        if (!_pointer) {
+          break;
+        }
+
+        files.push(Module.Pointer_stringify(_pointer));
+      }
 
       if (error) {
         var _error = JSON.parse(error);

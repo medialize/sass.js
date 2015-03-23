@@ -20,7 +20,7 @@ char *sass_compile_emscripten(
   char *linefeed,
   char *include_paths,
   char **source_map_string,
-  char **included_files,
+  char ***included_files,
   char **error_message,
   char **error_json
 ) {
@@ -71,10 +71,19 @@ char *sass_compile_emscripten(
       *source_map_string = strdup(_source_map_string);
     }
 
-    // TODO: figure out how C-string-arrays work
     char** _included_files = sass_context_get_included_files(ctx);
+    size_t i;
     if (_included_files && *_included_files) {
-      *included_files = strdup(*_included_files);
+      // first we count the number of included files
+      for (i = 0; _included_files[i] != NULL; ++i) ;
+      // then we allocate the memory
+      *included_files = (char **)malloc((i + 1) * sizeof(*included_files));
+      // then we set the stop-gap
+      (*included_files)[i] = NULL;
+      // then we copy the strings
+      for (i = 0; _included_files[i] != NULL; ++i) {
+        (*included_files)[i] = strdup(_included_files[i]);
+      }
     }
   } else {
     output_string = NULL;
