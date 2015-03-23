@@ -61,15 +61,8 @@ char *sass_compile_emscripten(
   *error_message = NULL;
   *error_json = NULL;
   if (status == 0) {
-    // NOTE: taking memory ownership causes the thing to explode on second iteration
-    //output_string = sass_context_take_output_string(ctx);
-    output_string = strdup(sass_context_get_output_string(ctx));
-
-    //*source_map_string = sass_context_take_source_map_string(ctx);
-    const char* _source_map_string = sass_context_get_source_map_string(ctx);
-    if (_source_map_string) {
-      *source_map_string = strdup(_source_map_string);
-    }
+    output_string = sass_context_take_output_string(ctx);
+    *source_map_string = sass_context_take_source_map_string(ctx);
 
     char** _included_files = sass_context_get_included_files(ctx);
     size_t i;
@@ -87,10 +80,8 @@ char *sass_compile_emscripten(
     }
   } else {
     output_string = NULL;
-    //*error_message = sass_context_take_error_message(ctx);
-    *error_message = strdup(sass_context_get_error_message(ctx));
-    //*error_json = sass_context_take_error_json(ctx);
-    *error_json = strdup(sass_context_get_error_json(ctx));
+    *error_message = sass_context_take_error_message(ctx);
+    *error_json = sass_context_take_error_json(ctx);
   }
 
   // clean up
