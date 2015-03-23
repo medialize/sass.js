@@ -158,10 +158,9 @@ var Sass = {
   },
 
   _cleanPointerPointer: function(pointer) {
-    // FIXME: we probably need to do more here than simply set a null pointer to free the memory?
-    // http://kripken.github.io/emscripten-site/docs/api_reference/preamble.js.html#setValue
-    // http://kripken.github.io/emscripten-site/docs/api_reference/advanced-apis.html#allocate
-    // Module.setValue(pointer, 0);
+    // var _pointer = Module.getValue(pointer, '*');
+    // _pointer && Module._free(_pointer);
+    // Module._free(pointer);
   },
 
   _readPointerPointer: function(pointer) {
@@ -277,7 +276,9 @@ var Sass = {
         }
 
         files.push(Module.Pointer_stringify(_pointer));
+        // Module._free(_listPointer + i);
       }
+      // Module._free(filesPointer);
 
       if (error) {
         var _error = JSON.parse(error);
