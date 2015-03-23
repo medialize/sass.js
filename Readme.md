@@ -350,11 +350,11 @@ If you don't like grunt, run with the shell:
 ```bash
 LIBSASS_VERSION="3.1.0"
 # import libsass repository
-(cd libsass && prepare.sh ${LIBSASS_VERSION})
+(cd libsass && ./prepare.sh ${LIBSASS_VERSION})
 # invoke emscripten
-(cd libsass && build.sh ${LIBSASS_VERSION})
+(cd libsass && ./build.sh ${LIBSASS_VERSION})
 # invoke emscripten in debug mode
-(cd libsass && build.sh ${LIBSASS_VERSION} debug)
+(cd libsass && ./build.sh ${LIBSASS_VERSION} debug)
 
 # destination:
 #   libsass/libsass/lib/libsass.js
