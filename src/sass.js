@@ -157,12 +157,6 @@ var Sass = {
     return Module.allocate([0], 'i8', ALLOC_STACK);
   },
 
-  _cleanPointerPointer: function(pointer) {
-    // var _pointer = Module.getValue(pointer, '*');
-    // _pointer && Module._free(_pointer);
-    // Module._free(pointer);
-  },
-
   _readPointerPointer: function(pointer) {
     // this is equivalent to *ptr
     var _pointer = Module.getValue(pointer, '*');
@@ -226,6 +220,7 @@ var Sass = {
 
   compile: function(text) {
     try {
+      var _stack = Module.Runtime.stackSave();
       var errorPointer = this._makePointerPointer();
       var jsonPointer = this._makePointerPointer();
       var mapPointer = this._makePointerPointer();
@@ -259,16 +254,12 @@ var Sass = {
       );
 
       var message = this._readPointerPointer(errorPointer);
-      this._cleanPointerPointer(errorPointer);
-
       var error = this._readPointerPointer(jsonPointer);
-      this._cleanPointerPointer(jsonPointer);
-
       var map = this._readPointerPointer(mapPointer);
-      this._cleanPointerPointer(mapPointer);
 
       var files = [];
       var _listPointer = Module.getValue(filesPointer, '*');
+      // TODO: are we limited to 32bit?
       for (var i=0; true; i+=4) {
         var _pointer = Module.getValue(_listPointer + i, '*');
         if (!_pointer) {
@@ -276,9 +267,9 @@ var Sass = {
         }
 
         files.push(Module.Pointer_stringify(_pointer));
-        // Module._free(_listPointer + i);
       }
-      // Module._free(filesPointer);
+
+      Module.Runtime.stackRestore(_stack);
 
       if (error) {
         var _error = JSON.parse(error);
