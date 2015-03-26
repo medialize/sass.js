@@ -63,21 +63,7 @@ char *sass_compile_emscripten(
   if (status == 0) {
     output_string = sass_context_take_output_string(ctx);
     *source_map_string = sass_context_take_source_map_string(ctx);
-
-    char** _included_files = sass_context_get_included_files(ctx);
-    size_t i;
-    if (_included_files && *_included_files) {
-      // first we count the number of included files
-      for (i = 0; _included_files[i] != NULL; ++i) ;
-      // then we allocate the memory
-      *included_files = (char **)malloc((i + 1) * sizeof(*included_files));
-      // then we set the stop-gap
-      (*included_files)[i] = NULL;
-      // then we copy the strings
-      for (i = 0; _included_files[i] != NULL; ++i) {
-        (*included_files)[i] = strdup(_included_files[i]);
-      }
-    }
+    *included_files = sass_context_take_included_files(ctx);
   } else {
     output_string = NULL;
     *error_message = sass_context_take_error_message(ctx);
