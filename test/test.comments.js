@@ -1,7 +1,7 @@
 'use strict';
 
 var expect = require('chai').expect;
-var Sass = require('../dist/sass.min.js');
+var Sass = require('../dist/sass.sync.js');
 
 describe('option.comments', function() {
 

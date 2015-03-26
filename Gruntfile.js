@@ -11,13 +11,33 @@ module.exports = function(grunt) {
     clean: {
       libsass: ['libsass/libsass'],
       dist: ['dist'],
-      build: ['dist/*.txt']
+      build: ['dist/*.txt', 'dist/sass.worker.concat.js']
     },
 
     concat: {
       sass: {
-        src: ['libsass/libsass/lib/libsass.js', 'src/sass.properties.js', 'src/sass.js'],
+        src: ['src/sass.js'],
         dest: 'dist/sass.js',
+        options: {
+          banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - web worker - <%= grunt.template.today("yyyy-mm-dd") %> */'
+        }
+      },
+      worker: {
+        src: ['libsass/libsass/lib/libsass.js', 'src/sass.properties.js', 'src/sass.api.js', 'src/sass.worker.js'],
+        dest: 'dist/sass.worker.concat.js',
+        options: {
+          process: function (content) {
+            return content
+              // prevent emscripted libsass from exporting itself
+              .replace(/module\['exports'\] = Module;/, '')
+              // libsass and sass API are inlined, so no need to load them
+              .replace(/importScripts\('sass\.min\.js'\);/, '');
+          }
+        }
+      },
+      sync: {
+        src: ['libsass/libsass/lib/libsass.js', 'src/sass.properties.js', 'src/sass.api.js'],
+        dest: 'dist/sass.sync.js',
         options: {
           banner: ['/*! <%= pkg.name %> - v<%= pkg.version %> - libsass v<%= libsassVersion %> - <%= grunt.template.today("yyyy-mm-dd") %> */',
             '(function (root, factory) {',
@@ -37,37 +57,9 @@ module.exports = function(grunt) {
           }
         }
       },
-      'sass-worker': {
-        src: ['src/sass.worker.js'],
+      'worker-banner': {
+        src: ['dist/sass.worker.js'],
         dest: 'dist/sass.worker.js',
-        options: {
-          banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - web worker - <%= grunt.template.today("yyyy-mm-dd") %> */'
-        }
-      },
-      worker: {
-        src: ['src/libsass.worker.js'],
-        dest: 'dist/worker.js',
-        options: {
-          banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - web worker - <%= grunt.template.today("yyyy-mm-dd") %> */',
-          process: function (content) {
-            // make the worker load the combined minified file
-            return content.replace(/importScripts\('libsass\.js', 'sass\.js'\);/, 'importScripts(\'sass.min.js\');');
-          }
-        }
-      },
-      'worker-inline': {
-        src: ['dist/sass.min.js', 'dist/worker.js'],
-        dest: 'dist/worker.min.js',
-        options: {
-          process: function (content) {
-            // libsass and sass API are inlined, so no need to load them
-            return content.replace(/importScripts\('sass\.min\.js'\);/, '');
-          }
-        }
-      },
-      'sass-min-banner': {
-        src: ['dist/sass.min.js'],
-        dest: 'dist/sass.min.js',
         options: {
           banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - libsass v<%= libsassVersion %> - <%= grunt.template.today("yyyy-mm-dd") %> */\n',
         }
@@ -75,10 +67,10 @@ module.exports = function(grunt) {
     },
 
     'closure-compiler': {
-      sass: {
+      worker: {
         closurePath: './bin/closure-compiler',
-        js: 'dist/sass.js',
-        jsOutputFile: 'dist/sass.min.js',
+        js: 'dist/sass.worker.concat.js',
+        jsOutputFile: 'dist/sass.worker.js',
         options: {
           /*jshint camelcase:false*/
           compilation_level: 'SIMPLE_OPTIMIZATIONS',
@@ -90,13 +82,13 @@ module.exports = function(grunt) {
 
     shell: {
       prepareLibsass: {
-        command: '(cd libsass && /bin/bash prepare.sh "<%= libsassVersion %>")',
+        command: '(cd libsass && /bin/bash ./prepare.sh "<%= libsassVersion %>")',
       },
       buildLibsass: {
-        command: '(cd libsass && /bin/bash build.sh "<%= libsassVersion %>")',
+        command: '(cd libsass && /bin/bash ./build.sh "<%= libsassVersion %>")',
       },
       buildLibsassDebug: {
-        command: '(cd libsass && /bin/bash build.sh "<%= libsassVersion %>" debug)',
+        command: '(cd libsass && /bin/bash ./build.sh "<%= libsassVersion %>" debug)',
       },
     },
 
@@ -127,11 +119,12 @@ module.exports = function(grunt) {
   grunt.registerTask('libsass:debug', ['shell:buildLibsassDebug']);
 
   // concatenate source files and libsass.js
-  grunt.registerTask('build:sass', ['concat:sass', 'closure-compiler:sass', 'concat:sass-min-banner', 'clean:build']);
-  grunt.registerTask('build:worker', ['concat:worker', 'concat:worker-inline', 'concat:sass-worker']);
+  grunt.registerTask('build:worker', ['concat:worker', 'closure-compiler:worker', 'concat:worker-banner', 'clean:build']);
+  grunt.registerTask('build:sass', ['concat:sass']);
+  grunt.registerTask('build:sync', ['concat:sync']);
 
   // full build pipeline
-  grunt.registerTask('build', ['clean:dist', 'libsass:prepare', 'libsass:build', 'build:sass', 'build:worker']);
+  grunt.registerTask('build', ['clean:dist', 'libsass:prepare', 'libsass:build', 'build:sass', 'build:worker', 'build:sync']);
   grunt.registerTask('build:debug', ['clean:dist', 'libsass:prepare', 'libsass:debug', 'build:sass', 'build:worker']);
 
   grunt.registerTask('lint', 'jshint');

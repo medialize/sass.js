@@ -6,9 +6,9 @@
 </head>
 <body>
   <p>please open the DevTools</p>
-  <script src="dist/sass.worker.js"></script>
+  <script src="dist/sass.js"></script>
   <script>
-    Sass.initialize('dist/worker.min.js');
+    Sass.initialize('dist/sass.worker.js');
     console.log('try Sass.compile("$foo:123px; .m { width:$foo; }", function(result) { console.log(result); });');
   </script>
 </body>

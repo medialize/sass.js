@@ -34,7 +34,7 @@
     "scss",
     "css"
   ],
-  "main": "./dist/sass.min.js",
+  "main": "./dist/sass.sync.js",
   "scripts": {
     "build": "grunt build",
     "test": "grunt test",

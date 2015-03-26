@@ -8,13 +8,15 @@ Have a go at the [playground](http://medialize.github.com/sass.js/playground.htm
 
 ## Loading the Sass.js API
 
-Sass.js comes in two flavors – the synchronous in-document `sass.js` and the asynchronous worker `sass.worker.js`. The primary API - wrapping the Emscripten runtime - is provided with `sass.js` (it is used internally by `sass.worker.js` as well). `sass.worker.js` mimics the same API (adding callbacks for the asynchronous part) and passes all the function calls through to the [web worker](https://developer.mozilla.org/en/docs/Web/API/Worker).
+Sass.js comes in two pieces: `sass.js` being the API available to the browser, `sass.worker.js` being the emscripted libsass that runs in a [Web Worker](https://developer.mozilla.org/en/docs/Web/API/Worker). For use in contexts where Web Workers are not available, `sass.sync.js` can be used for the synchronous API described below.
+Prior to version `0.7.0` there used to be a way to load libsass without using a Web Worker - this has been removed for simplicity.
 
 ```html
-<script src="dist/sass.worker.js"></script>
+<script src="dist/sass.js"></script>
 <script>
-  // loading libsass.worker
-  Sass.initialize('dist/worker.min.js');
+  // telling sass.js where it can find the worker,
+  // url is relative to document.URL
+  Sass.initialize('dist/sass.worker.js');
 
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
   Sass.compile(scss, function(result) {
@@ -26,7 +28,7 @@ Sass.js comes in two flavors – the synchronous in-document `sass.js` and the a
 It is possible - but *not recommended* to use Sass.js without in the main RunLoop instead of using a Worker:
 
 ```html
-<script src="dist/sass.min.js"></script>
+<script src="dist/sass.sync.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
   var result = Sass.compile(scss);
@@ -34,14 +36,27 @@ It is possible - but *not recommended* to use Sass.js without in the main RunLoo
 </script>
 ```
 
-You can - for debugging purposes - load `sass.js` from source files. Emscripten litters the global scope with ~400 variables, so this MUST never be used in production!
+In NodeJS you can use the synchronous API as follows:
+
+```js
+Sass = require('sass.js');
+var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
+var result = Sass.compile(scss);
+console.log(result);
+```
+
+After cloning this repository you can run `grunt libsass:prepare libsass:build` (explained below) and then run sass.js off its source files by using `console.html`
+
 
 > Note: you need to have run `grunt libsass:prepare libsass:build` before this is possible
 
 ```html
+<!-- you need to compile libsass.js first using `grunt libsass:prepare libsass:build` -->
 <script src="libsass/libsass/lib/libsass.js"></script>
+<!-- mapping of Sass.js properties and options to be fed to libsass via the emscripten wrapper -->
 <script src="src/sass.properties.js"></script>
-<script src="src/sass.js"></script>
+<!-- the (synchronous) sass.js abstraction of libsass and emscripten -->
+<script src="src/sass.api.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
   var result = Sass.compile(scss);
@@ -145,7 +160,7 @@ Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, callback);
 Sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, callback);
 ```
 
-### Using the synchronous, non-worker API
+### Using the synchronous API
 
 the expected input and the produced output is the same as with the *preferred* worker API. Only the way how data is passed to and from sass.js differs:
 
@@ -207,7 +222,7 @@ Yields the following `result` object:
     "names": []
   },
   // the files that were used during the compilation
-  "files": null
+  "files": []
 }
 ```
 
@@ -378,6 +393,7 @@ this is the libsass version 3.2 integration branch
   * compiling `3681c480` because of [Fix deallocation of sources to use free instead of delete](https://github.com/sass/libsass/commit/ecf9ff475ea63e04a41c2ea38c52f40407dcd73a)
 * improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
 * improving error error reporting
+* renaming files to make more sense
 * adding `SassWorker._eval()` to execute arbitrary code in the worker context (for debugging emscripten JS API).
 * adding `Sass.lazyFiles()` and `Sass.preloadFiles()`
 * adding configuration options
@@ -396,14 +412,17 @@ this is the libsass version 3.2 integration branch
 #### Breaking Changes
 
 * `Sass.compile` used to return the compiled CSS as string, it now returns an object `{text: "generated_css"}`
-
----
-
-open:
-
-* figure out C-string-arrays for `files`
-* figure out if/how the pointer-pointers in emscripten need to be cleaned
-* figure out if using the memory-ownership methods instead of strdup() is desired
+* distribution files renamed or removed for clarity
+  * `dist/worker.js` *removed*
+  * `dist/sass.worker.js` *removed*
+  * `dist/sass.min.js` *removed*
+  * `dist/sass.worker.js` renamed to `dist/sass.js` (public API for the browser)
+  * `dist/worker.min.js` renamed to `dist/sass.worker.js` (emscripted libsass for the web worker)
+  * `dist/sass.js` renamed to `dist/sass.sync.js` (emscripted libsass synchronous API)
+* source files renamed for clarity
+  * `src/libsass.worker.js` renamed to `src/sass.worker.js` (contains the worker's `onmessage` handler)
+  * `src/sass.js` renamed to `src/sass.api.js` (abstraction of libsass and emscription)
+  * `src/sass.worker.js` renamed to `src/sass.js` (public API using `postMessage` to talk to worker internally)
 
 ### 0.6.3 (March 3rd 2015) ###
 

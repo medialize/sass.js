@@ -2,7 +2,7 @@
   "name": "sass.js",
   "version": "0.0.0",
   "main": [
-    "./dist/sass.min.js",
+    "./dist/sass.js",
     "./dist/sass.worker.js"
   ],
   "ignore": [

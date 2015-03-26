@@ -1,121 +1,51 @@
-(function (root, factory) {
-  'use strict';
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define([], factory);
-  } else if (typeof exports === 'object') {
-    // Node. Does not work with strict CommonJS, but
-    // only CommonJS-like enviroments that support module.exports,
-    // like Node.
-    module.exports = factory();
-  } else {
-    // Browser globals (root is window)
-    root.Sass = factory();
+'use strict';
+/*global Sass, postMessage, onmessage:true, importScripts*/
+importScripts('libsass.js', 'sass.js');
+
+onmessage = function (event) {
+  var result;
+  var synchronous = true;
+  switch (event.data.command) {
+    case 'compile':
+      result = Sass.compile(event.data.text);
+      break;
+    case 'options':
+      result = Sass.options(event.data.options);
+      break;
+    case 'writeFile':
+      result = Sass.writeFile(event.data.filename, event.data.text);
+      break;
+    case 'readFile':
+      result = Sass.readFile(event.data.filename);
+      break;
+    case 'listFiles':
+      result = Sass.listFiles();
+      break;
+    case 'removeFile':
+      result = Sass.removeFile(event.data.filename);
+      break;
+    case 'lazyFiles':
+      result = Sass.lazyFiles(event.data.base, event.data.directory, event.data.files);
+      break;
+    case 'preloadFiles':
+      synchronous = false;
+      Sass.preloadFiles(event.data.base, event.data.directory, event.data.files, function() {
+        postMessage({
+          id: event.data.id,
+          result: undefined
+        });
+      });
+      break;
+    case '_eval':
+      var func = new Function('return ' + event.data.func)();
+      result = func.call(Sass);
+    default:
+      result = {line: 0, message: 'Unknown command ' + event.action};
+      break;
   }
-}(this, function () {
-  'use strict';
-  /*global Worker*/
-  
-  var Sass = {
-    _worker: null,
-    _callbacks: {},
 
-    style: {
-      nested: 0,
-      expanded: 1,
-      compact: 2,
-      compressed: 3
-    },
-    comments: {
-      'none': 0,
-      'default': 1
-    },
-
-    _dispatch: function(options, callback) {
-      options.id = 'cb' + Date.now() + Math.random();
-      Sass._callbacks[options.id] = callback;
-      Sass._worker.postMessage(options);
-    },
-
-    writeFile: function(filename, text, callback) {
-      Sass._dispatch({
-        command: 'writeFile',
-        filename: filename,
-        text: text
-      }, callback);
-    },
-
-    readFile: function(filename, callback) {
-      Sass._dispatch({
-        command: 'readFile',
-        filename: filename
-      }, callback);
-    },
-
-    listFiles: function(callback) {
-      Sass._dispatch({
-        command: 'listFiles'
-      }, callback);
-    },
-
-    removeFile: function(filename, callback) {
-      Sass._dispatch({
-        command: 'removeFile',
-        filename: filename
-      }, callback);
-    },
-
-    lazyFiles: function(base, directory, files, callback) {
-      Sass._dispatch({
-        command: 'lazyFiles',
-        base: base,
-        directory: directory,
-        files: files,
-      }, callback);
-    },
-
-    preloadFiles: function(base, directory, files, callback) {
-      Sass._dispatch({
-        command: 'preloadFiles',
-        base: base,
-        directory: directory,
-        files: files,
-      }, callback);
-    },
-
-    options: function(options, callback) {
-      Sass._dispatch({
-        command: 'options',
-        options: options
-      }, callback);
-    },
-
-    compile: function(text, callback) {
-      Sass._dispatch({
-        command: 'compile',
-        text: text
-      }, callback);
-    },
-
-    _eval: function(func, callback) {
-      Sass._dispatch({
-        command: '_eval',
-        func: String(func)
-      }, callback);
-    },
-
-    initialize: function(workerUrl) {
-      if (Sass._worker) {
-        throw new Error('Sass Worker is already initalized');
-      }
-
-      Sass._worker = new Worker(workerUrl);
-      Sass._worker.addEventListener('message', function(event) {
-        Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result);
-        delete Sass._callbacks[event.data.id];
-      }, false);
-    }
-  };
-
-  return Sass;
-}));
+  synchronous && postMessage({
+    id: event.data.id,
+    result: result
+  });
+};
