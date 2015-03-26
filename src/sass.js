@@ -266,7 +266,8 @@ var Sass = {
           break;
         }
 
-        files.push(Module.Pointer_stringify(_pointer));
+        var _file = Module.Pointer_stringify(_pointer);
+        _file && files.push(_file);
       }
 
       Module.Runtime.stackRestore(_stack);
