@@ -1,6 +1,8 @@
 module.exports = function(grunt) {
   'use strict';
 
+  require('time-grunt')(grunt);
+
   var jshintOptions = grunt.file.readJSON('.jshintrc');
   jshintOptions.reporter = require('jshint-stylish');
 
