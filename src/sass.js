@@ -148,24 +148,6 @@ var Sass = {
     }
   },
 
-  _makePointerPointer: function() {
-    // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
-    // so we allocate a pointer to a pointer on the stack by hand
-    // http://kripken.github.io/emscripten-site/docs/api_reference/advanced-apis.html#allocate
-    // https://github.com/kripken/emscripten/blob/master/src/preamble.js#L545
-    // https://github.com/kripken/emscripten/blob/master/src/preamble.js#L568
-    return Module.allocate([0], 'i8', ALLOC_STACK);
-  },
-
-  _readPointerPointer: function(pointer) {
-    // this is equivalent to *ptr
-    var _pointer = Module.getValue(pointer, '*');
-    /*jshint camelcase:false*/
-    // is the string set? if not, it would be NULL and therefore 0
-    return _pointer ? Module.Pointer_stringify(_pointer) : null;
-    /*jshint camelcase:true*/
-  },
-
   _handleFiles: function(base, directory, files, callback) {
     var _root = Sass._absolutePath(directory || '');
     _root = addTrailingSlash(_root);
@@ -216,6 +198,24 @@ var Sass = {
   preloadFiles: function(base, directory, files, callback) {
     Sass._preloadingFilesCallback = callback || noop;
     Sass._handleFiles(base, directory, files, Sass._handlePreloadFile);
+  },
+
+  _makePointerPointer: function() {
+    // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
+    // so we allocate a pointer to a pointer on the stack by hand
+    // http://kripken.github.io/emscripten-site/docs/api_reference/advanced-apis.html#allocate
+    // https://github.com/kripken/emscripten/blob/master/src/preamble.js#L545
+    // https://github.com/kripken/emscripten/blob/master/src/preamble.js#L568
+    return Module.allocate([0], 'i8', ALLOC_STACK);
+  },
+
+  _readPointerPointer: function(pointer) {
+    // this is equivalent to *ptr
+    var _pointer = Module.getValue(pointer, '*');
+    /*jshint camelcase:false*/
+    // is the string set? if not, it would be NULL and therefore 0
+    return _pointer ? Module.Pointer_stringify(_pointer) : null;
+    /*jshint camelcase:true*/
   },
 
   compile: function(text) {
