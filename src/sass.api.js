@@ -258,16 +258,18 @@ var Sass = {
       var map = this._readPointerPointer(mapPointer);
 
       var files = [];
-      var _listPointer = Module.getValue(filesPointer, '*');
-      // TODO: are we limited to 32bit?
-      for (var i=0; true; i+=4) {
-        var _pointer = Module.getValue(_listPointer + i, '*');
-        if (!_pointer) {
-          break;
-        }
+      var _listPointer = filesPointer && Module.getValue(filesPointer, '*');
+      if (_listPointer) {
+        // TODO: are we limited to 32bit?
+        for (var i=0; true; i+=4) {
+          var _pointer = Module.getValue(_listPointer + i, '*');
+          if (!_pointer) {
+            break;
+          }
 
-        var _file = Module.Pointer_stringify(_pointer);
-        _file && files.push(_file);
+          var _file = Module.Pointer_stringify(_pointer);
+          _file && files.push(_file);
+        }
       }
 
       Module.Runtime.stackRestore(_stack);
