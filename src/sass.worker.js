@@ -24,6 +24,9 @@ onmessage = function (event) {
     case 'removeFile':
       result = Sass.removeFile(event.data.filename);
       break;
+    case 'clearFiles':
+      result = Sass.clearFiles();
+      break;
     case 'lazyFiles':
       result = Sass.lazyFiles(event.data.base, event.data.directory, event.data.files);
       break;

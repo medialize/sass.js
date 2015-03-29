@@ -148,6 +148,10 @@ var Sass = {
     }
   },
 
+  clearFiles: function() {
+    Sass.listFiles().forEach(Sass.removeFile);
+  },
+
   _handleFiles: function(base, directory, files, callback) {
     var _root = Sass._absolutePath(directory || '');
     _root = addTrailingSlash(_root);

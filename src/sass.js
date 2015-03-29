@@ -65,6 +65,12 @@
       }, callback);
     },
 
+    clearFiles: function(callback) {
+      Sass._dispatch({
+        command: 'clearFiles'
+      }, callback);
+    },
+
     lazyFiles: function(base, directory, files, callback) {
       Sass._dispatch({
         command: 'lazyFiles',

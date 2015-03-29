@@ -151,6 +151,9 @@ Sass.listFiles(function callback(list) {
   // (array) list contains the paths of all registered files
 });
 
+// remove all files
+Sass.clearFiles(function callback() {});
+
 // preload a set of files
 // see chapter »Working With Files« below
 Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, callback);
@@ -184,6 +187,9 @@ var content = Sass.readFile(filename);
 
 // list all files (regardless of directory structure)
 var list = Sass.listFiles();
+
+// remove all files
+Sass.clearFiles();
 
 // preload a set of files
 // see chapter »Working With Files« below
@@ -396,6 +402,7 @@ this is the libsass version 3.2 integration branch
 * renaming files to make more sense
 * adding `SassWorker._eval()` to execute arbitrary code in the worker context (for debugging emscripten JS API).
 * adding `Sass.lazyFiles()` and `Sass.preloadFiles()`
+* adding `Sass.clearFiles()` to wipe all files known to `Sass.listFiles()`
 * adding configuration options
   * `precision` - Precision for outputting fractional numbers (`0` using libsass default)
   * `indentedSyntax` - Treat source string as SASS (as opposed to SCSS)
