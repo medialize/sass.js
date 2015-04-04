@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Sass.js Sync Console</title>
+</head>
+<body>
+  <h1>Sass.js Sync Console</h1>
+  <p>This document loads the <em>synchronous</em> sass.js. Please open your browser's DevTools to use the API.</p>
+
+  <h2>Try the following example:</h2>
+  <pre>Sass.writeFile('testfile.scss', '@import "sub/deeptest";\n.testfile { content: "loaded"; }');
+Sass.writeFile('sub/deeptest.scss', '.deeptest { content: "loaded"; }');
+Sass.options({ style: Sass.style.expanded });
+var result = Sass.compile('@import "testfile";');
+console.log("compiled", result.text);</pre>
+
+  <script src="dist/sass.sync.js"></script>
+</body>
+</html>

@@ -8,8 +8,7 @@ Have a go at the [playground](http://medialize.github.com/sass.js/playground.htm
 
 ## Loading the Sass.js API
 
-Sass.js comes in two pieces: `sass.js` being the API available to the browser, `sass.worker.js` being the emscripted libsass that runs in a [Web Worker](https://developer.mozilla.org/en/docs/Web/API/Worker). For use in contexts where Web Workers are not available, `sass.sync.js` can be used for the synchronous API described below.
-Prior to version `0.7.0` there used to be a way to load libsass without using a Web Worker - this has been removed for simplicity.
+Sass.js comes in two pieces: `sass.js` being the API available to the browser, `sass.worker.js` being the emscripted libsass that runs in a [Web Worker](https://developer.mozilla.org/en/docs/Web/API/Worker). For use in contexts where Web Workers are not available, `sass.sync.js` can be used for the synchronous API described below. The regular way of running sass.js is by way of [`sass.worker.html`](sass.worker.html):
 
 ```html
 <script src="dist/sass.js"></script>
@@ -25,7 +24,7 @@ Prior to version `0.7.0` there used to be a way to load libsass without using a 
 </script>
 ```
 
-It is possible - but *not recommended* to use Sass.js without in the main RunLoop instead of using a Worker:
+It is possible - but *not recommended* to use Sass.js without in the main RunLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html):
 
 ```html
 <script src="dist/sass.sync.js"></script>
@@ -45,7 +44,7 @@ var result = Sass.compile(scss);
 console.log(result);
 ```
 
-After cloning this repository you can run `grunt libsass:prepare libsass:build` (explained below) and then run sass.js off its source files by using `console.html`
+After cloning this repository you can run `grunt libsass:prepare libsass:build` (explained below) and then run sass.js off its source files by running [`sass.source.html`](sass.source.html)
 
 
 > Note: you need to have run `grunt libsass:prepare libsass:build` before this is possible
@@ -394,9 +393,7 @@ this is the libsass version 3.2 integration branch
   * allowing builds without forced download of libsass.git every time
   * providing emscripten debug mode
 * Upgrading build infrastructure and API to libsass 3.2
-  * [libsass 3.2 beta.1](https://github.com/sass/libsass/releases/tag/3.2.0-beta.1)
-  * [libsass 3.2 beta.2](https://github.com/sass/libsass/releases/tag/3.2.0-beta.2)
-  * compiling `3681c480` because of [Fix deallocation of sources to use free instead of delete](https://github.com/sass/libsass/commit/ecf9ff475ea63e04a41c2ea38c52f40407dcd73a)
+  * [libsass 3.2 beta.4](https://github.com/sass/libsass/releases/tag/3.2.0-beta.4)
 * improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
 * improving error error reporting
 * renaming files to make more sense
@@ -430,6 +427,10 @@ this is the libsass version 3.2 integration branch
   * `src/libsass.worker.js` renamed to `src/sass.worker.js` (contains the worker's `onmessage` handler)
   * `src/sass.js` renamed to `src/sass.api.js` (abstraction of libsass and emscription)
   * `src/sass.worker.js` renamed to `src/sass.js` (public API using `postMessage` to talk to worker internally)
+* example files renamed for clarity
+  * `sass.sync.html` *added*
+  * `console.html` renamed to `sass.source.html`
+  * `worker.html` renamed to `sass.worker.html`
 
 ### 0.6.3 (March 3rd 2015) ###
 
