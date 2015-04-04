@@ -33,7 +33,7 @@ module.exports = function(grunt) {
               // prevent emscripted libsass from exporting itself
               .replace(/module\['exports'\] = Module;/, '')
               // libsass and sass API are inlined, so no need to load them
-              .replace(/importScripts\('sass\.min\.js'\);/, '');
+              .replace(/importScripts\((['"])libsass.js\1,\s*\1sass.js\1\);/, '');
           }
         }
       },
