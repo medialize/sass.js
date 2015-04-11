@@ -101,7 +101,8 @@ module.exports = function GruntfileVersions(grunt) {
     'get-emscripten-version',
     'get-libsass-version',
     'get-sass-version',
-    'save-versions'
+    'mkdir:dist',
+    'save-versions',
   ]);
 
 };
