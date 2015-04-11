@@ -2,118 +2,16 @@ module.exports = function(grunt) {
   'use strict';
 
   require('time-grunt')(grunt);
-
-  var jshintOptions = grunt.file.readJSON('.jshintrc');
-  jshintOptions.reporter = require('jshint-stylish');
+  require('jit-grunt')(grunt, {
+    // mappings
+  });
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     libsassVersion: '3.2.0-beta.5',
-
-    clean: {
-      libsass: ['libsass/libsass'],
-      dist: ['dist'],
-      build: ['dist/*.txt', 'dist/sass.worker.concat.js']
-    },
-
-    concat: {
-      sass: {
-        src: ['src/sass.js'],
-        dest: 'dist/sass.js',
-        options: {
-          banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - web worker - <%= grunt.template.today("yyyy-mm-dd") %> */'
-        }
-      },
-      worker: {
-        src: ['libsass/libsass/lib/libsass.js', 'src/sass.properties.js', 'src/sass.api.js', 'src/sass.worker.js'],
-        dest: 'dist/sass.worker.concat.js',
-        options: {
-          process: function (content) {
-            return content
-              // prevent emscripted libsass from exporting itself
-              .replace(/module\['exports'\] = Module;/, '')
-              // libsass and sass API are inlined, so no need to load them
-              .replace(/importScripts\((['"])libsass.js\1,\s*\1sass.js\1\);/, '');
-          }
-        }
-      },
-      sync: {
-        src: ['libsass/libsass/lib/libsass.js', 'src/sass.properties.js', 'src/sass.api.js'],
-        dest: 'dist/sass.sync.js',
-        options: {
-          banner: ['/*! <%= pkg.name %> - v<%= pkg.version %> - libsass v<%= libsassVersion %> - <%= grunt.template.today("yyyy-mm-dd") %> */',
-            '(function (root, factory) {',
-            '  \'use strict\';',
-            '  if (typeof define === \'function\' && define.amd) {',
-            '    define([], factory);',
-            '  } else if (typeof exports === \'object\') {',
-            '    module.exports = factory();',
-            '  } else {',
-            '    root.Sass = factory();',
-            '  }',
-            '}(this, function () {'].join('\n'),
-          footer: 'return Sass;\n}));',
-          process: function (content) {
-            // prevent emscripted libsass from exporting itself
-            return content.replace(/module\['exports'\] = Module;/, '');
-          }
-        }
-      },
-      'worker-banner': {
-        src: ['dist/sass.worker.js'],
-        dest: 'dist/sass.worker.js',
-        options: {
-          banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - libsass v<%= libsassVersion %> - <%= grunt.template.today("yyyy-mm-dd") %> */\n',
-        }
-      }
-    },
-
-    'closure-compiler': {
-      worker: {
-        closurePath: './bin/closure-compiler',
-        js: 'dist/sass.worker.concat.js',
-        jsOutputFile: 'dist/sass.worker.js',
-        options: {
-          /*jshint camelcase:false*/
-          compilation_level: 'SIMPLE_OPTIMIZATIONS',
-          language_in: 'ECMASCRIPT5'
-          /*jshint camelcase:true*/
-        }
-      }
-    },
-
-    shell: {
-      prepareLibsass: {
-        command: '(cd libsass && /bin/bash ./prepare.sh "<%= libsassVersion %>")',
-      },
-      buildLibsass: {
-        command: '(cd libsass && /bin/bash ./build.sh "<%= libsassVersion %>")',
-      },
-      buildLibsassDebug: {
-        command: '(cd libsass && /bin/bash ./build.sh "<%= libsassVersion %>" debug)',
-      },
-    },
-
-    mochaTest: {
-      src: ['test/**/test.*.js']
-    },
-
-    jshint: {
-      options: jshintOptions,
-      target: [
-        'Gruntfile.js',
-        'src/**/*.js',
-        'test/**/*.js'
-      ]
-    }
   });
 
-  grunt.loadNpmTasks('grunt-shell');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-closure-compiler');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadTasks('grunt-tasks');
 
   // aliases to build libsass from git using emscripten
   grunt.registerTask('libsass:prepare', ['shell:prepareLibsass']);

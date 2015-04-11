@@ -52,6 +52,7 @@
     "grunt-contrib-jshint": "~0.11.1",
     "grunt-mocha-test": "~0.12.7",
     "grunt-shell": "~1.1.2",
+    "jit-grunt": "^0.9.1",
     "jshint-stylish": "~1.0.1",
     "node-sass": "~2.0.1",
     "time-grunt": "^1.1.0"
