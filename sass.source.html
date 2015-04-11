@@ -18,6 +18,11 @@ console.log("compiled", result.text);</pre>
 
   <script>
     var Module = {
+      // emscripten is looking for "libsass.js.mem" (relative to this document by default),
+      // via the prefix we redirect that request relative to libsass.js
+      // see http://kripken.github.io/emscripten-site/docs/tools_reference/emcc.html#emcc-memory-init-file
+      // NOTE: this is hard-coded to "dist/" in dist/sass.sync.js and irrelevant for dist/sass.worker.js
+      memoryInitializerPrefixURL: 'libsass/libsass/lib/',
       // see http://kripken.github.io/emscripten-site/docs/getting_started/FAQ.html#how-can-i-tell-when-the-page-is-fully-loaded-and-it-is-safe-to-call-compiled-functions
       onRuntimeInitialized: function() {
         console.log("runtime initialized, ready to go!");

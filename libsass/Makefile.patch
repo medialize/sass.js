@@ -20,7 +20,7 @@
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
-+		--memory-init-file 0
++		--memory-init-file 1
 +
 +js-debug: static
 +	emcc lib/libsass.a -o lib/libsass.js \
@@ -32,7 +32,7 @@
 +		-s SAFE_HEAP=1 \
 +		-s DEMANGLE_SUPPORT=1 \
 +		--minify 0 \
-+		--memory-init-file 0
++		--memory-init-file 1
 +
  lib:
  	$(MKDIR) lib
@@ -42,7 +42,7 @@
  
  clean:
 -	$(RM) $(RCOBJECTS) $(COBJECTS) $(OBJECTS) $(LIBRARIES) lib/*.a lib/*.so lib/*.dll lib/*.la
-+	$(RM) $(RCOBJECTS) $(COBJECTS) $(OBJECTS) $(LIBRARIES) lib/*.a lib/*.so lib/*.dll lib/*.la lib/*.js
++	$(RM) $(RCOBJECTS) $(COBJECTS) $(OBJECTS) $(LIBRARIES) lib/*.a lib/*.so lib/*.dll lib/*.la lib/*.js lib/*.js.mem
  
  
  .PHONY: all debug debug-static debug-shared static shared install install-static install-shared sassc clean

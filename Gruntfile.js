@@ -15,8 +15,16 @@ module.exports = function(grunt) {
 
   // aliases to build libsass from git using emscripten
   grunt.registerTask('libsass:prepare', ['shell:prepareLibsass']);
-  grunt.registerTask('libsass:build', ['shell:buildLibsass']);
-  grunt.registerTask('libsass:debug', ['shell:buildLibsassDebug']);
+  grunt.registerTask('libsass:build', [
+    'shell:buildLibsass',
+    'mkdir:dist',
+    'shell:copyLibsassMem'
+  ]);
+  grunt.registerTask('libsass:debug', [
+    'shell:buildLibsassDebug',
+    'mkdir:dist',
+    'shell:copyLibsassMem'
+  ]);
 
   // concatenate source files and libsass.js
   grunt.registerTask('build:worker', [
@@ -31,6 +39,7 @@ module.exports = function(grunt) {
   // full build pipeline
   grunt.registerTask('build', [
     'clean:dist',
+    'mkdir:dist',
     'libsass:prepare',
     'versions',
     'libsass:build',
@@ -40,6 +49,7 @@ module.exports = function(grunt) {
   ]);
   grunt.registerTask('build:debug', [
     'clean:dist',
+    'mkdir:dist',
     'libsass:prepare',
     'versions',
     'libsass:debug',

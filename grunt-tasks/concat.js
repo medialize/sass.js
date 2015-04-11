@@ -41,7 +41,13 @@ module.exports = function GruntfileConcat(grunt) {
           '  } else {',
           '    root.Sass = factory();',
           '  }',
-          '}(this, function () {'].join('\n'),
+          '}(this, function () {',
+          // NOTE: this will load "dist/libsass.js.mem" relative to CWD,
+          // that's fine in Node, potentially catastrophic in the browser.
+          // That's fine, since sass.sync.js is NOT recommended
+          // to be used in the browser anyway.
+          'var Module = { memoryInitializerPrefixURL: \'dist/\' };',
+        ].join('\n'),
         footer: 'return Sass;\n}));',
         process: function (content) {
           // prevent emscripted libsass from exporting itself

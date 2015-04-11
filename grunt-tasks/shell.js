@@ -11,6 +11,9 @@ module.exports = function GruntfileShell(grunt) {
     buildLibsassDebug: {
       command: '(cd libsass && /bin/bash ./build.sh "<%= libsassVersion %>" debug)',
     },
+    copyLibsassMem: {
+      command: '(cp libsass/libsass/lib/libsass.js.mem ./dist/libsass.js.mem)',
+    },
   });
 
 };
