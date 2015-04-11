@@ -1,4 +1,8 @@
-/*! sass.js - v0.0.0 - web worker - 2015-03-27 */(function (root, factory) {
+/*! sass.js - v0.0.0 (1712509) - built 2015-04-11
+  providing libsass 3.2.0-beta.5 (f82a41b)
+  via emscripten 1.30.2 (dac9f88)
+ */
+(function (root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
@@ -62,6 +66,12 @@
       Sass._dispatch({
         command: 'removeFile',
         filename: filename
+      }, callback);
+    },
+
+    clearFiles: function(callback) {
+      Sass._dispatch({
+        command: 'clearFiles'
       }, callback);
     },
 
