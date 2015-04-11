@@ -16,7 +16,7 @@
  
 +js: static
 +	emcc lib/libsass.a -o lib/libsass.js \
-+ 		-O2 \
++ 		-O3 \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
