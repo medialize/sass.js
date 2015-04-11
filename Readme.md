@@ -1,8 +1,8 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at v3.2.0). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/andrew/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at v3.2.0). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified the worker weighs 2.6MB, gzipped it's still 700KB. If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
+> A fair warning: minified the worker weighs 2.3MB, gzipped it's still 546KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
 Have a go at the [playground](http://medialize.github.com/sass.js/playground.html) to fiddle with what sass.js has to offer.
 
@@ -27,6 +27,11 @@ Sass.js comes in two pieces: `sass.js` being the API available to the browser, `
 It is possible - but *not recommended* to use Sass.js without in the main RunLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html):
 
 ```html
+<!--
+  Not that "dist/libsass.js.mem" is loaded relative to document.URL
+  That's ok for Node and sass.js test pages, but certainly not for production.
+  Use the worker variant instead!
+-->
 <script src="dist/sass.sync.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
@@ -45,9 +50,6 @@ console.log(result);
 ```
 
 After cloning this repository you can run `grunt libsass:prepare libsass:build` (explained below) and then run sass.js off its source files by running [`sass.source.html`](sass.source.html)
-
-
-> Note: you need to have run `grunt libsass:prepare libsass:build` before this is possible
 
 ```html
 <!-- you need to compile libsass.js first using `grunt libsass:prepare libsass:build` -->
@@ -327,16 +329,19 @@ While Sass.js does not plan on providing file maps to SASS projects, it contains
 
 ## Building Sass.js ##
 
-You need [NodeJS](http://nodejs.org/), [grunt](http://gruntjs.com/) and of course [emscripten](http://kripken.github.io/emscripten-site/).
+To compile libsass to JS you need [emscripten](http://emscripten.org), to build sass.js additionally need [grunt](http://gruntjs.com/).
 
 ```bash
 grunt build
 # destination:
+#   dist/libsass.js.mem
 #   dist/sass.js
 #   dist/sass.min.js
 #   dist/sass.worker.js
+#   dist/versions.json
 #   dist/worker.js
 #   dist/worker.min.js
+
 ```
 
 ### Building sass.js in emscripten debug mode ###
@@ -344,9 +349,11 @@ grunt build
 ```bash
 grunt build:debug
 # destination:
+#   dist/libsass.js.mem
 #   dist/sass.js
 #   dist/sass.min.js
 #   dist/sass.worker.js
+#   dist/versions.json
 #   dist/worker.js
 #   dist/worker.min.js
 ```
@@ -363,6 +370,7 @@ grunt libsass:debug
 
 # destination:
 #   libsass/libsass/lib/libsass.js
+#   libsass/libsass/lib/libsass.js.mem
 ```
 
 If you don't like grunt, run with the shell:
@@ -378,6 +386,7 @@ LIBSASS_VERSION="3.1.0"
 
 # destination:
 #   libsass/libsass/lib/libsass.js
+#   libsass/libsass/lib/libsass.js.mem
 ```
 
 ---
@@ -397,6 +406,7 @@ this is the libsass version 3.2 integration branch
 * improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
 * improving error error reporting
 * renaming files to make more sense
+* adding `dist/libsass.js.mem`, optimized memory file created by emscripten
 * adding `SassWorker._eval()` to execute arbitrary code in the worker context (for debugging emscripten JS API).
 * adding `Sass.lazyFiles()` and `Sass.preloadFiles()`
 * adding `Sass.clearFiles()` to wipe all files known to `Sass.listFiles()`
@@ -415,6 +425,7 @@ this is the libsass version 3.2 integration branch
 
 #### Breaking Changes
 
+* synchronous API (formerly `dist/sass.js` and `dist/sass.min.js`) is now *required* to be loaded from a directory called `dist` relative to `document.URL` (irrelevant for use in Node!)
 * `Sass.compile` used to return the compiled CSS as string, it now returns an object `{text: "generated_css"}`
 * distribution files renamed or removed for clarity
   * `dist/worker.js` *removed*
