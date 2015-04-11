@@ -87,7 +87,7 @@ module.exports = function GruntfileVersions(grunt) {
     });
   });
 
-  grunt.registerTask('get-sass-version', function () {
+  grunt.registerTask('get-sassjs-version', function () {
     var done = this.async();
 
     if (!grunt.config.data.versions) {
@@ -96,6 +96,8 @@ module.exports = function GruntfileVersions(grunt) {
 
     var versions = grunt.config.data.versions;
     getGitMeta('.', function(data) {
+      data.branch = data.version;
+      data.version = grunt.config.data.pkg.version;
       versions.sassjs = data;
       done();
     });
@@ -110,7 +112,7 @@ module.exports = function GruntfileVersions(grunt) {
   grunt.registerTask('versions', [
     'get-emscripten-version',
     'get-libsass-version',
-    'get-sass-version',
+    'get-sassjs-version',
     'mkdir:dist',
     'save-versions',
   ]);

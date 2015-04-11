@@ -8,7 +8,8 @@
     "commit": "f82a41b"
   },
   "sassjs": {
-    "version": "libsass/3.2",
-    "commit": "1712509"
+    "version": "0.0.0",
+    "commit": "19dd017",
+    "branch": "libsass/3.2"
   }
 }
