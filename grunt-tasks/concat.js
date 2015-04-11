@@ -1,12 +1,16 @@
 module.exports = function GruntfileConcat(grunt) {
   'use strict';
 
+  var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> (<%= versions.sassjs.commit %>) - built <%= grunt.template.today("yyyy-mm-dd") %>\n'
+    + '  providing libsass <%= versions.libsass.version %> (<%= versions.libsass.commit %>)\n'
+    + '  via emscripten <%= versions.emscripten.version %> (<%= versions.emscripten.commit %>)\n */\n'
+
   grunt.config('concat', {
     sass: {
       src: ['src/sass.js'],
       dest: 'dist/sass.js',
       options: {
-        banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - web worker - <%= grunt.template.today("yyyy-mm-dd") %> */'
+        banner: banner,
       }
     },
     worker: {
@@ -26,7 +30,8 @@ module.exports = function GruntfileConcat(grunt) {
       src: ['libsass/libsass/lib/libsass.js', 'src/sass.properties.js', 'src/sass.api.js'],
       dest: 'dist/sass.sync.js',
       options: {
-        banner: ['/*! <%= pkg.name %> - v<%= pkg.version %> - libsass v<%= libsassVersion %> - <%= grunt.template.today("yyyy-mm-dd") %> */',
+        banner: [
+          banner,
           '(function (root, factory) {',
           '  \'use strict\';',
           '  if (typeof define === \'function\' && define.amd) {',
@@ -48,7 +53,7 @@ module.exports = function GruntfileConcat(grunt) {
       src: ['dist/sass.worker.js'],
       dest: 'dist/sass.worker.js',
       options: {
-        banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - libsass v<%= libsassVersion %> - <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+        banner: banner,
       }
     }
   });

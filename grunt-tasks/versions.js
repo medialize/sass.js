@@ -49,6 +49,11 @@ module.exports = function GruntfileVersions(grunt) {
   grunt.registerTask('get-emscripten-version', function () {
     var done = this.async();
 
+    if (!grunt.config.data.versions) {
+      grunt.config.data.versions = {};
+    }
+
+    var versions = grunt.config.data.versions;
     childProcess.exec('emcc --version', function (err, stdout, stderr){
       if (err) {
         grunt.log.error("`emcc --version` failed with: " + err.code + '\n' + strderr);
@@ -59,7 +64,7 @@ module.exports = function GruntfileVersions(grunt) {
       // "emcc (Emscripten GCC-like replacement) 1.30.2 (commit dac9f88335dd74b377bedbc2ad7d3b64f0c9bb15)"
       var tokens = line.match(/emcc \([^)]+\) ([\d.]+) \(commit ([^)]+)\)/);
 
-      grunt.config.data.emscripten_version = {
+      versions.emscripten = {
         version: tokens[1],
         commit: tokens[2].slice(0, 7),
       };
@@ -71,8 +76,13 @@ module.exports = function GruntfileVersions(grunt) {
   grunt.registerTask('get-libsass-version', function () {
     var done = this.async();
 
+    if (!grunt.config.data.versions) {
+      grunt.config.data.versions = {};
+    }
+
+    var versions = grunt.config.data.versions;
     getGitMeta('libsass/libsass/', function(data) {
-      grunt.config.data.libsass_version = data;
+      versions.libsass = data;
       done();
     });
   });
@@ -80,20 +90,20 @@ module.exports = function GruntfileVersions(grunt) {
   grunt.registerTask('get-sass-version', function () {
     var done = this.async();
 
+    if (!grunt.config.data.versions) {
+      grunt.config.data.versions = {};
+    }
+
+    var versions = grunt.config.data.versions;
     getGitMeta('.', function(data) {
-      grunt.config.data.sassjs_version = data;
+      versions.sassjs = data;
       done();
     });
   });
 
   grunt.registerTask('save-versions', function () {
     var done = this.async();
-    var versions = {
-      emscripten: grunt.config.data.emscripten_version,
-      libsass: grunt.config.data.libsass_version,
-      sassjs: grunt.config.data.sassjs_version,
-    };
-    var _versions = JSON.stringify(versions, null, 2);
+    var _versions = JSON.stringify(grunt.config.data.versions, null, 2);
     fs.writeFile('dist/versions.json', _versions, done);
   });
 

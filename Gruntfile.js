@@ -19,13 +19,33 @@ module.exports = function(grunt) {
   grunt.registerTask('libsass:debug', ['shell:buildLibsassDebug']);
 
   // concatenate source files and libsass.js
-  grunt.registerTask('build:worker', ['concat:worker', 'closure-compiler:worker', 'concat:worker-banner', 'clean:build']);
+  grunt.registerTask('build:worker', [
+    'concat:worker',
+    'closure-compiler:worker',
+    'concat:worker-banner',
+    'clean:build'
+  ]);
   grunt.registerTask('build:sass', ['concat:sass']);
   grunt.registerTask('build:sync', ['concat:sync']);
 
   // full build pipeline
-  grunt.registerTask('build', ['clean:dist', 'libsass:prepare', 'libsass:build', 'build:sass', 'build:worker', 'build:sync']);
-  grunt.registerTask('build:debug', ['clean:dist', 'libsass:prepare', 'libsass:debug', 'build:sass', 'build:worker']);
+  grunt.registerTask('build', [
+    'clean:dist',
+    'libsass:prepare',
+    'versions',
+    'libsass:build',
+    'build:sass',
+    'build:worker',
+    'build:sync'
+  ]);
+  grunt.registerTask('build:debug', [
+    'clean:dist',
+    'libsass:prepare',
+    'versions',
+    'libsass:debug',
+    'build:sass',
+    'build:worker'
+  ]);
 
   grunt.registerTask('lint', 'jshint');
   grunt.registerTask('test', 'mochaTest');
