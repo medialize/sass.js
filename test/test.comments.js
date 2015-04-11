@@ -9,10 +9,11 @@ describe('option.comments', function() {
     var source = '@import "testfile";\n\n$foo:123px;\n\n.m {\n  width:$foo;\n}';
     var expected = '/* line 1, /sass/testfile.scss */\n.imported {\n  content: "testfile"; }\n\n/* line 5, stdin */\n.m {\n  width: 123px; }\n';
     
+    Sass.options('defaults');
     Sass.options({comments: true});
+
     Sass.writeFile('testfile.scss', '.imported { content: "testfile"; }');
     var result = Sass.compile(source);
-    Sass.options({comments: false});
 
     expect(result.text).to.equal(expected);
     

@@ -34,6 +34,9 @@ var Sass = {
   _options: {
     // filled by properties
   },
+  _defaultOptions: {
+    // filled by properties
+  },
   _optionTypes: {
     // filled by properties
   },
@@ -45,6 +48,11 @@ var Sass = {
   Module: Module,
 
   options: function(options) {
+    if (options === 'defaults') {
+      this.options(this._defaultOptions);
+      return;
+    }
+
     if (typeof options !== 'object') {
       return;
     }
@@ -307,6 +315,6 @@ properties.forEach(function(property) {
     return;
   }
 
-  Sass._options[property.key] = property.initial;
+  Sass._options[property.key] = Sass._defaultOptions[property.key] = property.initial;
   Sass._optionTypes[property.key] = property.coerce;
 });

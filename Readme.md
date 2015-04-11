@@ -87,7 +87,8 @@ Sass.compile(text, function callback(result) {
   // (string) result.formatted human readable error message containing all details
 });
 
-// set compile style options
+// set libsass compile options
+// (provided options are merged onto previously set options)
 Sass.options({
   // Format output: nested, expanded, compact, compressed
   style: Sass.style.nested,
@@ -126,6 +127,9 @@ Sass.options({
   // Disable sourceMappingUrl in css output
   sourceMapOmitUrl: true,
 }, function callback(){});
+
+// reset options to sass.js defaults (listed above)
+Sass.options('defaults', function callback(){});
 
 // register a file to be available for @import
 Sass.writeFile(filename, text, function callback(success) {
@@ -172,10 +176,13 @@ the expected input and the produced output is the same as with the *preferred* w
 // compile text to SCSS
 var result = Sass.compile(text);
 
-// set compile style options
+// set libsass compile options
 Sass.options({
   // see worker API for list of options
 });
+
+// reset options to sass.js defaults (see worker API)
+Sass.options('defaults');
 
 // register a file to be available for @import
 var success = Sass.writeFile(filename, text);
@@ -406,6 +413,7 @@ this is the libsass version 3.2 integration branch
 * improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
 * improving error error reporting
 * renaming files to make more sense
+* adding `.options('defaults')` to reset options to sass.js defaults
 * adding `dist/libsass.js.mem`, optimized memory file created by emscripten
 * adding `SassWorker._eval()` to execute arbitrary code in the worker context (for debugging emscripten JS API).
 * adding `Sass.lazyFiles()` and `Sass.preloadFiles()`

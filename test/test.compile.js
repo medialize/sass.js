@@ -8,7 +8,11 @@ describe('Sass.compile()', function() {
   it('should return CSS', function(done) {
     var source = '$foo:123px;\n\n.m {\n  width:$foo;\n}';
     var expected = '.m {\n  width: 123px; }\n';
+
+    Sass.options('defaults');
+
     var result = Sass.compile(source);
+
     expect(result).to.be.a('object');
     expect(result.map).to.be.a('object');
     expect(result.text).to.equal(expected);
@@ -18,7 +22,11 @@ describe('Sass.compile()', function() {
 
   it('should return parse errors', function(done) {
     var source = '$foo:123px;\n\n.m {\n  width:$foo;\n}\n\nfoobar';
+
+    Sass.options('defaults');
+
     var result = Sass.compile(source);
+
     expect(result).to.be.a('object');
     expect(result.line).to.equal(7);
     expect(result.message).to.equal('invalid top-level expression');

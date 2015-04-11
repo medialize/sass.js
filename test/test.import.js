@@ -9,8 +9,11 @@ describe('@import', function() {
     var source = '@import "testfile";';
     var expected = '.imported {\n  content: "testfile"; }\n';
 
+    Sass.options('defaults');
+
     Sass.writeFile('testfile.scss', '.imported { content: "testfile"; }');
     var result = Sass.compile(source);
+
     expect(result.text).to.equal(expected);
 
     done();
@@ -20,8 +23,11 @@ describe('@import', function() {
     var source = '@import "some-dir/testfile";';
     var expected = '.imported {\n  content: "testfile"; }\n';
 
+    Sass.options('defaults');
+
     Sass.writeFile('some-dir/testfile.scss', '.imported { content: "testfile"; }');
     var result = Sass.compile(source);
+
     expect(result.text).to.equal(expected);
 
     done();
@@ -31,9 +37,12 @@ describe('@import', function() {
     var source = '@import "some-dir/testfile";';
     var expected = '.imported {\n  content: "bar"; }\n\n.imported {\n  content: "testfile"; }\n';
 
+    Sass.options('defaults');
+
     Sass.writeFile('some-dir/testfile.scss', '@import "foo/bar";.imported { content: "testfile"; }');
     Sass.writeFile('some-dir/foo/bar.scss', '.imported { content: "bar"; }');
     var result = Sass.compile(source);
+
     expect(result.text).to.equal(expected);
 
     done();
@@ -41,7 +50,11 @@ describe('@import', function() {
 
   it('should fail unknown files', function(done) {
     var source = '@import "unknown-file";';
+
+    Sass.options('defaults');
+
     var result = Sass.compile(source);
+
     expect(result).to.be.a('object');
     expect(result.line).to.equal(1);
     expect(result.message).to.equal('file to import not found or unreadable: unknown-file\nCurrent dir: ');
