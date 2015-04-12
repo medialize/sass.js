@@ -7,7 +7,13 @@ onmessage = function (event) {
   var synchronous = true;
   switch (event.data.command) {
     case 'compile':
-      result = Sass.compile(event.data.text);
+      synchronous = false;
+      Sass.compile(event.data.text, function(result) {
+        postMessage({
+          id: event.data.id,
+          result: result
+        });
+      });
       break;
     case 'options':
       result = Sass.options(event.data.options);

@@ -13,11 +13,12 @@ describe('option.comments', function() {
     Sass.options({comments: true});
 
     Sass.writeFile('testfile.scss', '.imported { content: "testfile"; }');
-    var result = Sass.compile(source);
 
-    expect(result.text).to.equal(expected);
-    
-    done();
+    Sass.compile(source, function(result) {
+      expect(result.text).to.equal(expected);
+
+      done();
+    });
   });
 
 });

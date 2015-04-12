@@ -147,28 +147,4 @@ var properties = [
     source: 'sass',
     key: '_path',
   },
-  {
-    // char **source_map_string,
-    type: 'i8',
-    source: 'func',
-    key: 'mapPointer',
-  },
-  {
-    // char **included_files,
-    type: 'i8',
-    source: 'func',
-    key: 'filesPointer',
-  },
-  {
-    // char **error_message,
-    type: 'i8',
-    source: 'func',
-    key: 'errorPointer',
-  },
-  {
-    // char **error_json,
-    type: 'i8',
-    source: 'func',
-    key: 'jsonPointer',
-  },
 ];

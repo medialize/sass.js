@@ -12,8 +12,9 @@
   <pre>Sass.writeFile('testfile.scss', '@import "sub/deeptest";\n.testfile { content: "loaded"; }');
 Sass.writeFile('sub/deeptest.scss', '.deeptest { content: "loaded"; }');
 Sass.options({ style: Sass.style.expanded });
-var result = Sass.compile('@import "testfile";');
-console.log("compiled", result.text);</pre>
+Sass.compile('@import "testfile";', function(result) {
+  console.log("compiled", result.text);
+});</pre>
 
   <script src="dist/sass.sync.js"></script>
 </body>

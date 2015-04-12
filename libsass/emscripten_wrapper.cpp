@@ -2,8 +2,9 @@
 #include <cstring>
 #include "sass_context.h"
 #include "emscripten_wrapper.hpp"
+#include <emscripten.h>
 
-char *sass_compile_emscripten(
+void sass_compile_emscripten(
   char *source_string,
   int output_style,
   int precision,
@@ -18,14 +19,9 @@ char *sass_compile_emscripten(
   char *output_path,
   char *indent,
   char *linefeed,
-  char *include_paths,
-  char **source_map_string,
-  char ***included_files,
-  char **error_message,
-  char **error_json
+  char *include_paths
 ) {
-  char *output_string;
-
+  // transform input
   Sass_Output_Style sass_output_style = (Sass_Output_Style)output_style;
 
   // initialize context
@@ -55,24 +51,30 @@ char *sass_compile_emscripten(
   // compile
   int status = sass_compile_data_context(data_ctx);
 
-  // extract results
-  *included_files = NULL;
-  *source_map_string = NULL;
-  *error_message = NULL;
-  *error_json = NULL;
+  // returning data to JS via callback rather than regular function return value and C pointer fun,
+  // because emscripten does not inform JavaScript when an (empterpreter) async function is done.
+  // Since (char *) is a pointer (int) we can abuse EM_ASM_INT() to pass that back to JavaScript.
+  // NOTE: Because we're performing tasks *after* we informed the JavaScript of success/error,
+  // we need to make sure that those callbacks don't mess with the stack or prematurely
+  // unblock anything vital to the still running C function
   if (status == 0) {
-    output_string = sass_context_take_output_string(ctx);
-    *source_map_string = sass_context_take_source_map_string(ctx);
-    *included_files = sass_context_take_included_files(ctx);
+    EM_ASM_INT({
+      Sass._sassCompileEmscriptenSuccess($0, $1, $2);
+    },
+      sass_context_get_output_string(ctx),
+      sass_context_get_source_map_string(ctx),
+      sass_context_get_included_files(ctx)
+    );
   } else {
-    output_string = NULL;
-    *error_message = sass_context_take_error_message(ctx);
-    *error_json = sass_context_take_error_json(ctx);
+    EM_ASM_INT({
+      Sass._sassCompileEmscriptenError($0, $1);
+    },
+      sass_context_get_error_json(ctx),
+      sass_context_get_error_message(ctx)
+    );
   }
 
   // clean up
   sass_delete_data_context(data_ctx);
-
-  return output_string;
 }
 

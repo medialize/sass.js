@@ -212,45 +212,80 @@ var Sass = {
     Sass._handleFiles(base, directory, files, Sass._handlePreloadFile);
   },
 
-  _makePointerPointer: function() {
-    // in C we would use char *ptr; foo(&ptr) - in EMScripten this is not possible,
-    // so we allocate a pointer to a pointer on the stack by hand
-    // http://kripken.github.io/emscripten-site/docs/api_reference/advanced-apis.html#allocate
-    // https://github.com/kripken/emscripten/blob/master/src/preamble.js#L545
-    // https://github.com/kripken/emscripten/blob/master/src/preamble.js#L568
-    return Module.allocate([0], 'i8', ALLOC_STACK);
+  _readString: function(pointer) {
+    return pointer && Module.Pointer_stringify(pointer) || null;
   },
 
-  _readPointerPointer: function(pointer) {
-    // this is equivalent to *ptr
-    var _pointer = Module.getValue(pointer, '*');
-    /*jshint camelcase:false*/
-    // is the string set? if not, it would be NULL and therefore 0
-    return _pointer ? Module.Pointer_stringify(_pointer) : null;
-    /*jshint camelcase:true*/
+  _readJson: function(pointer) {
+    var test = pointer && Module.Pointer_stringify(pointer) || null;
+    return test && JSON.parse(test) || null;
   },
 
-  compile: function(text) {
+  _readStringArray: function(pointer) {
+    var list = [];
+    if (!pointer) {
+      return list;
+    }
+
+    // TODO: are we limited to 32bit?
+    for (var i=0; true; i+=4) {
+      var _pointer = Module.getValue(pointer + i, '*');
+      if (!_pointer) {
+        break;
+      }
+
+      var _item = Module.Pointer_stringify(_pointer);
+      _item && list.push(_item);
+    }
+
+    return list;
+  },
+
+  compile: function(text, callback) {
+    if (!callback) {
+      throw new Error('Sass.compile() requires callback function as second paramter!');
+    }
+
     try {
-      var _stack = Module.Runtime.stackSave();
-      var errorPointer = this._makePointerPointer();
-      var jsonPointer = this._makePointerPointer();
-      var mapPointer = this._makePointerPointer();
-      var filesPointer = this._makePointerPointer();
+      if (Sass._sassCompileEmscriptenSuccess) {
+        throw new Error('only one Sass.compile() can run concurrently, wait for the currently running task to finish!');
+      }
 
       var context = {
         sass: this,
         options: this._options,
         func: {
           text: text,
-          errorPointer: errorPointer,
-          jsonPointer: jsonPointer,
-          mapPointer: mapPointer,
-          filesPointer: filesPointer,
         },
       };
 
-      var result = Module.ccall(
+      function done(result) {
+        // give emscripten a chance to finish the C function and clean up
+        // before we resume our JavaScript duties
+        (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(function() {
+          // we're done, the next invocation may come
+          Sass._sassCompileEmscriptenSuccess = null;
+          Sass._sassCompileEmscriptenError = null;
+          callback(result);
+        })
+      }
+
+      Sass._sassCompileEmscriptenSuccess = function(result, map, filesPointer) {
+        done({
+          status: 0,
+          text: Sass._readString(result),
+          map: Sass._readJson(map),
+          files: Sass._readStringArray(filesPointer),
+        });
+      };
+
+      Sass._sassCompileEmscriptenError = function(error, message) {
+        var result = Sass._readJson(error) || {};
+        result.formatted = Sass._readString(message);
+        done(result);
+      };
+
+      Module.ccall(
         // C function to call
         'sass_compile_emscripten',
         // return type
@@ -264,47 +299,13 @@ var Sass = {
           return context[property.source][property.key];
         })
       );
-
-      var message = this._readPointerPointer(errorPointer);
-      var error = this._readPointerPointer(jsonPointer);
-      var map = this._readPointerPointer(mapPointer);
-
-      var files = [];
-      var _listPointer = filesPointer && Module.getValue(filesPointer, '*');
-      if (_listPointer) {
-        // TODO: are we limited to 32bit?
-        for (var i=0; true; i+=4) {
-          var _pointer = Module.getValue(_listPointer + i, '*');
-          if (!_pointer) {
-            break;
-          }
-
-          var _file = Module.Pointer_stringify(_pointer);
-          _file && files.push(_file);
-        }
-      }
-
-      Module.Runtime.stackRestore(_stack);
-
-      if (error) {
-        var _error = JSON.parse(error);
-        _error.formatted = message;
-        return _error;
-      }
-
-      return {
-        status: 0,
-        text: result,
-        map: map && JSON.parse(map),
-        files: files
-      };
     } catch(e) {
-      return {
+      done({
         status: 99,
         line: null,
         message: e.message,
         error: e
-      };
+      });
     }
   }
 };

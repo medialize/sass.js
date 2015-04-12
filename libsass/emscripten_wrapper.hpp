@@ -7,7 +7,7 @@ extern "C" {
 using namespace std;
 #endif
 
-char *sass_compile_emscripten(
+void sass_compile_emscripten(
   char *source_string,
   int output_style,
   int precision,
@@ -22,11 +22,7 @@ char *sass_compile_emscripten(
   char *output_path,
   char *indent,
   char *linefeed,
-  char *include_paths,
-  char **source_map_string,
-  char ***included_files,
-  char **error_message,
-  char **error_json
+  char *include_paths
 );
 
 #ifdef __cplusplus

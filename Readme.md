@@ -24,7 +24,7 @@ Sass.js comes in two pieces: `sass.js` being the API available to the browser, `
 </script>
 ```
 
-It is possible - but *not recommended* to use Sass.js without in the main RunLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html):
+It is possible - but *not recommended* to use Sass.js in the main EventLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html):
 
 ```html
 <!--
@@ -36,7 +36,9 @@ It is possible - but *not recommended* to use Sass.js without in the main RunLoo
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
   var result = Sass.compile(scss);
-  console.log(result);
+  Sass.compile(scss, function(result) {
+    console.log(result);
+  });
 </script>
 ```
 
@@ -45,9 +47,12 @@ In NodeJS you can use the synchronous API as follows:
 ```js
 Sass = require('sass.js');
 var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-var result = Sass.compile(scss);
-console.log(result);
+Sass.compile(scss, function(result) {
+  console.log(result);
+});
 ```
+
+// TODO: webworker in node using https://www.npmjs.com/package/webworker-threads
 
 After cloning this repository you can run `grunt libsass:prepare libsass:build` (explained below) and then run sass.js off its source files by running [`sass.source.html`](sass.source.html)
 
@@ -60,8 +65,9 @@ After cloning this repository you can run `grunt libsass:prepare libsass:build` 
 <script src="src/sass.api.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  var result = Sass.compile(scss);
-  console.log(result);
+  Sass.compile(scss, function(result) {
+    console.log(result);
+  });
 </script>
 ```
 
@@ -174,7 +180,9 @@ the expected input and the produced output is the same as with the *preferred* w
 
 ```js
 // compile text to SCSS
-var result = Sass.compile(text);
+Sass.compile(text, function callback(result) {
+  // see worker API for details
+});
 
 // set libsass compile options
 Sass.options({
@@ -434,7 +442,8 @@ this is the libsass version 3.2 integration branch
 #### Breaking Changes
 
 * synchronous API (formerly `dist/sass.js` and `dist/sass.min.js`) is now *required* to be loaded from a directory called `dist` relative to `document.URL` (irrelevant for use in Node!)
-* `Sass.compile` used to return the compiled CSS as string, it now returns an object `{text: "generated_css"}`
+* synchronous `Sass.compile()` now requires a callback it passes the result to instead of returning it (because "synchronous API" does not refer to the function being synchronous, but running in the same EventLoop)
+* `Sass.compile()` used to return the compiled CSS as string, it now returns an object `{text: "generated_css"}`
 * distribution files renamed or removed for clarity
   * `dist/worker.js` *removed*
   * `dist/sass.worker.js` *removed*

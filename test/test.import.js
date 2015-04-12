@@ -12,11 +12,12 @@ describe('@import', function() {
     Sass.options('defaults');
 
     Sass.writeFile('testfile.scss', '.imported { content: "testfile"; }');
-    var result = Sass.compile(source);
 
-    expect(result.text).to.equal(expected);
+    Sass.compile(source, function(result) {
+      expect(result.text).to.equal(expected);
 
-    done();
+      done();
+    });
   });
 
   it('should allow directories', function(done) {
@@ -26,11 +27,12 @@ describe('@import', function() {
     Sass.options('defaults');
 
     Sass.writeFile('some-dir/testfile.scss', '.imported { content: "testfile"; }');
-    var result = Sass.compile(source);
 
-    expect(result.text).to.equal(expected);
+    Sass.compile(source, function(result) {
+      expect(result.text).to.equal(expected);
 
-    done();
+      done();
+    });
   });
   
   it('should resolve nested imports', function(done) {
@@ -41,11 +43,12 @@ describe('@import', function() {
 
     Sass.writeFile('some-dir/testfile.scss', '@import "foo/bar";.imported { content: "testfile"; }');
     Sass.writeFile('some-dir/foo/bar.scss', '.imported { content: "bar"; }');
-    var result = Sass.compile(source);
 
-    expect(result.text).to.equal(expected);
+    Sass.compile(source, function(result) {
+      expect(result.text).to.equal(expected);
 
-    done();
+      done();
+    });
   });
 
   it('should fail unknown files', function(done) {
@@ -53,13 +56,13 @@ describe('@import', function() {
 
     Sass.options('defaults');
 
-    var result = Sass.compile(source);
+    Sass.compile(source, function(result) {
+      expect(result).to.be.a('object');
+      expect(result.line).to.equal(1);
+      expect(result.message).to.equal('file to import not found or unreadable: unknown-file\nCurrent dir: ');
 
-    expect(result).to.be.a('object');
-    expect(result.line).to.equal(1);
-    expect(result.message).to.equal('file to import not found or unreadable: unknown-file\nCurrent dir: ');
-
-    done();
+      done();
+    });
   });
 
 });

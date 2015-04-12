@@ -11,13 +11,13 @@ describe('Sass.compile()', function() {
 
     Sass.options('defaults');
 
-    var result = Sass.compile(source);
+    Sass.compile(source, function(result) {
+      expect(result).to.be.a('object');
+      expect(result.map).to.be.a('object');
+      expect(result.text).to.equal(expected);
 
-    expect(result).to.be.a('object');
-    expect(result.map).to.be.a('object');
-    expect(result.text).to.equal(expected);
-
-    done();
+      done();
+    });
   });
 
   it('should return parse errors', function(done) {
@@ -25,13 +25,13 @@ describe('Sass.compile()', function() {
 
     Sass.options('defaults');
 
-    var result = Sass.compile(source);
+    Sass.compile(source, function(result) {
+      expect(result).to.be.a('object');
+      expect(result.line).to.equal(7);
+      expect(result.message).to.equal('invalid top-level expression');
 
-    expect(result).to.be.a('object');
-    expect(result.line).to.equal(7);
-    expect(result.message).to.equal('invalid top-level expression');
-
-    done();
+      done();
+    });
   });
   
 });
