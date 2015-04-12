@@ -15,7 +15,9 @@
 }(this, function () {
   'use strict';
   /*global Worker*/
-  
+
+  var noop = function(){};
+
   var Sass = {
     _worker: null,
     _callbacks: {},
@@ -37,76 +39,10 @@
       Sass._worker.postMessage(options);
     },
 
-    writeFile: function(filename, text, callback) {
-      Sass._dispatch({
-        command: 'writeFile',
-        filename: filename,
-        text: text
-      }, callback);
-    },
-
-    readFile: function(filename, callback) {
-      Sass._dispatch({
-        command: 'readFile',
-        filename: filename
-      }, callback);
-    },
-
-    listFiles: function(callback) {
-      Sass._dispatch({
-        command: 'listFiles'
-      }, callback);
-    },
-
-    removeFile: function(filename, callback) {
-      Sass._dispatch({
-        command: 'removeFile',
-        filename: filename
-      }, callback);
-    },
-
-    clearFiles: function(callback) {
-      Sass._dispatch({
-        command: 'clearFiles'
-      }, callback);
-    },
-
-    lazyFiles: function(base, directory, files, callback) {
-      Sass._dispatch({
-        command: 'lazyFiles',
-        base: base,
-        directory: directory,
-        files: files,
-      }, callback);
-    },
-
-    preloadFiles: function(base, directory, files, callback) {
-      Sass._dispatch({
-        command: 'preloadFiles',
-        base: base,
-        directory: directory,
-        files: files,
-      }, callback);
-    },
-
-    options: function(options, callback) {
-      Sass._dispatch({
-        command: 'options',
-        options: options
-      }, callback);
-    },
-
-    compile: function(text, callback) {
-      Sass._dispatch({
-        command: 'compile',
-        text: text
-      }, callback);
-    },
-
     _eval: function(func, callback) {
       Sass._dispatch({
         command: '_eval',
-        func: String(func)
+        args: [String(func)]
       }, callback);
     },
 
@@ -122,6 +58,24 @@
       }, false);
     }
   };
+
+  var commands = 'writeFile readFile listFiles removeFile clearFiles lazyFiles preloadFiles options compile';
+  var slice = [].slice;
+  commands.split(' ').forEach(function(command) {
+    Sass[command] = function() {
+      var callback = slice.call(arguments, -1)[0];
+      var args = slice.call(arguments, 0, -1);
+      if (typeof callback !== 'function') {
+        args.push(callback);
+        callback = noop;
+      }
+
+      Sass._dispatch({
+        command: command,
+        args: args
+      }, callback);
+    };
+  });
 
   return Sass;
 }));

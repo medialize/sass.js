@@ -47,7 +47,7 @@ var Sass = {
   FS: FS,
   Module: Module,
 
-  options: function(options) {
+  options: function(options, callback) {
     if (options === 'defaults') {
       this.options(this._defaultOptions);
       return;
@@ -68,6 +68,8 @@ var Sass = {
       // force expected data type
       this._options[key] = _type(options[key]);
     }, this);
+
+    callback && callback();
   },
 
   _absolutePath: function(filename) {
@@ -105,7 +107,7 @@ var Sass = {
     }
   },
 
-  writeFile: function(filename, text) {
+  writeFile: function(filename, text, callback) {
     var _absolute = filename.slice(0, 1) === '/';
     var path = Sass._absolutePath(filename);
     try {
@@ -117,28 +119,31 @@ var Sass = {
         Sass._ensurePath(filename);
         FS.symlink(path, filename);
       }
-      return true;
+      callback && callback(true);
     } catch(e) {
-      return false;
+      callback && callback(false);
     }
   },
 
-  readFile: function(filename) {
+  readFile: function(filename, callback) {
     var path = Sass._absolutePath(filename);
+    var result;
     try {
-      return FS.readFile(path, {encoding: 'utf8'});
-    } catch(e) {
-      return undefined;
-    }
+      result = FS.readFile(path, {encoding: 'utf8'});
+    } catch(e) {}
+
+    callback && callback(result);
   },
 
-  listFiles: function() {
-    return Object.keys(Sass._files).map(function(path) {
+  listFiles: function(callback) {
+    var list = Object.keys(Sass._files).map(function(path) {
       return Sass._files[path];
     });
+
+    callback && callback(list);
   },
 
-  removeFile: function(filename) {
+  removeFile: function(filename, callback) {
     var _absolute = filename.slice(0, 1) === '/';
     var path = Sass._absolutePath(filename);
     try {
@@ -150,14 +155,15 @@ var Sass = {
         FS.unlink(filename);
       }
 
-      return true;
+      callback && callback(true);
     } catch(e) {
-      return false;
+      callback && callback(false);
     }
   },
 
-  clearFiles: function() {
+  clearFiles: function(callback) {
     Sass.listFiles().forEach(Sass.removeFile);
+    callback && callback();
   },
 
   _handleFiles: function(base, directory, files, callback) {
@@ -203,8 +209,9 @@ var Sass = {
     request.send();
   },
 
-  lazyFiles: function(base, directory, files) {
+  lazyFiles: function(base, directory, files, callback) {
     Sass._handleFiles(base, directory, files, Sass._handleLazyFile);
+    callback && callback();
   },
 
   preloadFiles: function(base, directory, files, callback) {

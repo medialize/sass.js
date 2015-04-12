@@ -42,7 +42,7 @@ It is possible - but *not recommended* to use Sass.js in the main EventLoop inst
 </script>
 ```
 
-In NodeJS you can use the synchronous API as follows:
+In NodeJS you can use the synchronous API (as in "executed in the same EventLoop") as follows:
 
 ```js
 Sass = require('sass.js');
@@ -61,7 +61,7 @@ After cloning this repository you can run `grunt libsass:prepare libsass:build` 
 <script src="libsass/libsass/lib/libsass.js"></script>
 <!-- mapping of Sass.js options to be fed to libsass via the emscripten wrapper -->
 <script src="src/sass.options.js"></script>
-<!-- the (synchronous) sass.js abstraction of libsass and emscripten -->
+<!-- the sass.js abstraction of libsass and emscripten -->
 <script src="src/sass.api.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
@@ -167,49 +167,11 @@ Sass.clearFiles(function callback() {});
 
 // preload a set of files
 // see chapter »Working With Files« below
-Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, callback);
+Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
 
 // register a set of files to be (synchronously) loaded when required
 // see chapter »Working With Files« below
-Sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, callback);
-```
-
-### Using the synchronous API
-
-the expected input and the produced output is the same as with the *preferred* worker API. Only the way how data is passed to and from sass.js differs:
-
-```js
-// compile text to SCSS
-Sass.compile(text, function callback(result) {
-  // see worker API for details
-});
-
-// set libsass compile options
-Sass.options({
-  // see worker API for list of options
-});
-
-// reset options to sass.js defaults (see worker API)
-Sass.options('defaults');
-
-// register a file to be available for @import
-var success = Sass.writeFile(filename, text);
-
-// remove a file
-var success = Sass.removeFile(filename);
-
-// get a file's content
-var content = Sass.readFile(filename);
-
-// list all files (regardless of directory structure)
-var list = Sass.listFiles();
-
-// remove all files
-Sass.clearFiles();
-
-// preload a set of files
-// see chapter »Working With Files« below
-Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, callback);
+Sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
 ```
 
 ### `compile()` Response Object
@@ -421,6 +383,7 @@ this is the libsass version 3.2 integration branch
 * improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
 * improving error error reporting
 * renaming files to make more sense
+* improving synchronous API to perfectly mirror the worker API
 * adding `.options('defaults')` to reset options to sass.js defaults
 * adding `dist/libsass.js.mem`, optimized memory file created by emscripten
 * adding `SassWorker._eval()` to execute arbitrary code in the worker context (for debugging emscripten JS API).
@@ -442,7 +405,7 @@ this is the libsass version 3.2 integration branch
 #### Breaking Changes
 
 * synchronous API (formerly `dist/sass.js` and `dist/sass.min.js`) is now *required* to be loaded from a directory called `dist` relative to `document.URL` (irrelevant for use in Node!)
-* synchronous `Sass.compile()` now requires a callback it passes the result to instead of returning it (because "synchronous API" does not refer to the function being synchronous, but running in the same EventLoop)
+* synchronous API now has the *exact same* signature as the worker API, meaning all responses are not returned, but passed to callback functions instead.
 * `Sass.compile()` used to return the compiled CSS as string, it now returns an object `{text: "generated_css"}`
 * distribution files renamed or removed for clarity
   * `dist/worker.js` *removed*
