@@ -24,6 +24,8 @@ Sass.js comes in two pieces: `sass.js` being the API available to the browser, `
 </script>
 ```
 
+### Synchronous API (browser)
+
 It is possible - but *not recommended* to use Sass.js in the main EventLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html):
 
 ```html
@@ -42,7 +44,9 @@ It is possible - but *not recommended* to use Sass.js in the main EventLoop inst
 </script>
 ```
 
-In NodeJS you can use the synchronous API (as in "executed in the same EventLoop") as follows:
+### Synchronous API (NodeJS)
+
+While you probably want to use [node-sass](https://github.com/sass/node-sass) for performance reasons, sass.js also runs on NodeJS. You can use the synchronous API (as in "executed in the main EventLoop") as follows:
 
 ```js
 Sass = require('sass.js');
@@ -52,7 +56,9 @@ Sass.compile(scss, function(result) {
 });
 ```
 
-// TODO: webworker in node using https://www.npmjs.com/package/webworker-threads
+[webworker-threads](https://www.npmjs.com/package/webworker-threads) could be the key to running sass.js in a non-blocking fashion, but it (currently) has its problems with [typed arrays](https://github.com/audreyt/node-webworker-threads/issues/18#issuecomment-92098583).
+
+### Synchronous API From Source (browser)
 
 After cloning this repository you can run `grunt libsass:prepare libsass:build` (explained below) and then run sass.js off its source files by running [`sass.source.html`](sass.source.html)
 
