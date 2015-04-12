@@ -32,13 +32,13 @@ var Sass = {
   },
 
   _options: {
-    // filled by properties
+    // filled by sass.options.js
   },
   _defaultOptions: {
-    // filled by properties
+    // filled by sass.options.js
   },
   _optionTypes: {
-    // filled by properties
+    // filled by sass.options.js
   },
 
   _files: {},
@@ -251,14 +251,6 @@ var Sass = {
         throw new Error('only one Sass.compile() can run concurrently, wait for the currently running task to finish!');
       }
 
-      var context = {
-        sass: this,
-        options: this._options,
-        func: {
-          text: text,
-        },
-      };
-
       function done(result) {
         // give emscripten a chance to finish the C function and clean up
         // before we resume our JavaScript duties
@@ -291,13 +283,13 @@ var Sass = {
         // return type
         'string',
         // parameter types
-        properties.map(function(property) {
-          return property.type;
-        }),
+        ['string'].concat(options.map(function(option) {
+          return option.type;
+        })).concat(['string']),
         // arguments for invocation
-        properties.map(function(property) {
-          return context[property.source][property.key];
-        })
+        [text].concat(options.map(function(option) {
+          return Sass._options[option.key];
+        })).concat([Sass._path])
       );
     } catch(e) {
       done({
@@ -310,12 +302,8 @@ var Sass = {
   }
 };
 
-// register options based on properties description
-properties.forEach(function(property) {
-  if (property.source !== 'options') {
-    return;
-  }
-
-  Sass._options[property.key] = Sass._defaultOptions[property.key] = property.initial;
-  Sass._optionTypes[property.key] = property.coerce;
+// register options maintained in sass.options.js
+options.forEach(function(option) {
+  Sass._options[option.key] = Sass._defaultOptions[option.key] = option.initial;
+  Sass._optionTypes[option.key] = option.coerce;
 });

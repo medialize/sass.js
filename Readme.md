@@ -59,8 +59,8 @@ After cloning this repository you can run `grunt libsass:prepare libsass:build` 
 ```html
 <!-- you need to compile libsass.js first using `grunt libsass:prepare libsass:build` -->
 <script src="libsass/libsass/lib/libsass.js"></script>
-<!-- mapping of Sass.js properties and options to be fed to libsass via the emscripten wrapper -->
-<script src="src/sass.properties.js"></script>
+<!-- mapping of Sass.js options to be fed to libsass via the emscripten wrapper -->
+<script src="src/sass.options.js"></script>
 <!-- the (synchronous) sass.js abstraction of libsass and emscripten -->
 <script src="src/sass.api.js"></script>
 <script>
