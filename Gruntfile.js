@@ -54,7 +54,8 @@ module.exports = function(grunt) {
     'versions',
     'libsass:debug',
     'build:sass',
-    'build:worker'
+    'build:worker',
+    'build:sync'
   ]);
 
   grunt.registerTask('lint', 'jshint');

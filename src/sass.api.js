@@ -1,24 +1,6 @@
 /*global Module, FS, ALLOC_STACK*/
 /*jshint strict:false*/
 
-function noop(){}
-
-function stripLeadingSlash(text) {
-  return text.slice(0, 1) === '/' ? text.slice(1) : text;
-}
-
-function addLeadingSlash(text) {
-  return text.slice(0, 1) !== '/' ? ('/' + text) : text;
-}
-
-function stripTrailingSlash(text) {
-  return text.slice(-1) === '/' ? text.slice(0, -1) : text;
-}
-
-function addTrailingSlash(text) {
-  return text.slice(-1) !== '/' ? (text + '/') : text;
-}
-
 var Sass = {
   style: {
     nested: 0,
@@ -219,35 +201,6 @@ var Sass = {
     Sass._handleFiles(base, directory, files, Sass._handlePreloadFile);
   },
 
-  _readString: function(pointer) {
-    return pointer && Module.Pointer_stringify(pointer) || null;
-  },
-
-  _readJson: function(pointer) {
-    var test = pointer && Module.Pointer_stringify(pointer) || null;
-    return test && JSON.parse(test) || null;
-  },
-
-  _readStringArray: function(pointer) {
-    var list = [];
-    if (!pointer) {
-      return list;
-    }
-
-    // TODO: are we limited to 32bit?
-    for (var i=0; true; i+=4) {
-      var _pointer = Module.getValue(pointer + i, '*');
-      if (!_pointer) {
-        break;
-      }
-
-      var _item = Module.Pointer_stringify(_pointer);
-      _item && list.push(_item);
-    }
-
-    return list;
-  },
-
   compile: function(text, callback) {
     if (!callback) {
       throw new Error('Sass.compile() requires callback function as second paramter!');
@@ -269,18 +222,18 @@ var Sass = {
         })
       }
 
-      Sass._sassCompileEmscriptenSuccess = function(result, map, filesPointer) {
+      Sass._sassCompileEmscriptenSuccess = function(result, map, files) {
         done({
           status: 0,
-          text: Sass._readString(result),
-          map: Sass._readJson(map),
-          files: Sass._readStringArray(filesPointer),
+          text: result,
+          map: map,
+          files: files,
         });
       };
 
       Sass._sassCompileEmscriptenError = function(error, message) {
-        var result = Sass._readJson(error) || {};
-        result.formatted = Sass._readString(message);
+        var result = error || {};
+        result.formatted = message;
         done(result);
       };
 

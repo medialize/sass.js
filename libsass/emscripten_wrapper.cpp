@@ -57,9 +57,14 @@ void sass_compile_emscripten(
   // NOTE: Because we're performing tasks *after* we informed the JavaScript of success/error,
   // we need to make sure that those callbacks don't mess with the stack or prematurely
   // unblock anything vital to the still running C function
+  // see https://github.com/kripken/emscripten/issues/3307#issuecomment-90999205
   if (status == 0) {
     EM_ASM_INT({
-      Sass._sassCompileEmscriptenSuccess($0, $1, $2);
+      Sass._sassCompileEmscriptenSuccess(
+        pointerToString($0),
+        pointerToJson($1),
+        pointerToStringArray($2)
+      );
     },
       sass_context_get_output_string(ctx),
       sass_context_get_source_map_string(ctx),
@@ -67,7 +72,10 @@ void sass_compile_emscripten(
     );
   } else {
     EM_ASM_INT({
-      Sass._sassCompileEmscriptenError($0, $1);
+      Sass._sassCompileEmscriptenError(
+        pointerToJson($0),
+        pointerToString($1)
+      );
     },
       sass_context_get_error_json(ctx),
       sass_context_get_error_message(ctx)

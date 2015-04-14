@@ -14,7 +14,7 @@ module.exports = function GruntfileConcat(grunt) {
       }
     },
     worker: {
-      src: ['libsass/libsass/lib/libsass.js', 'src/sass.options.js', 'src/sass.api.js', 'src/sass.worker.js'],
+      src: ['libsass/libsass/lib/libsass.js', 'src/util.js', 'src/sass.options.js', 'src/sass.api.js', 'src/sass.worker.js'],
       dest: 'dist/sass.worker.concat.js',
       options: {
         process: function (content) {
@@ -27,7 +27,7 @@ module.exports = function GruntfileConcat(grunt) {
       }
     },
     sync: {
-      src: ['libsass/libsass/lib/libsass.js', 'src/sass.options.js', 'src/sass.api.js'],
+      src: ['libsass/libsass/lib/libsass.js', 'src/util.js', 'src/sass.options.js', 'src/sass.api.js'],
       dest: 'dist/sass.sync.js',
       options: {
         banner: [
