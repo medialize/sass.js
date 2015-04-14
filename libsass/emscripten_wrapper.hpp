@@ -25,6 +25,11 @@ void sass_compile_emscripten(
   char *include_paths
 );
 
+struct Sass_Import** sass_importer_emscripten(
+  const char* cur_path, Sass_Importer_Entry cb,
+  struct Sass_Compiler* comp
+);
+
 #ifdef __cplusplus
 }
 #endif

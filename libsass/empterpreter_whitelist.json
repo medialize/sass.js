@@ -1,0 +1,12 @@
+[
+  "_sass_compile_emscripten",
+  "_sass_compile_data_context",
+  "__Z20sass_compile_contextP12Sass_ContextN4Sass7Context4DataE",
+  "_sass_compiler_parse",
+  "__ZN4Sass7Context12parse_stringEv",
+  "__ZN4Sass7Context10parse_fileEv",
+  "__ZN4Sass6Parser5parseEv",
+  "__ZN4Sass6Parser12parse_importEv",
+  "__ZN4Sass6Parser9do_importERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEEPNS_6ImportENS1_6vectorIP13Sass_ImporterNS5_ISE_EEEEb",
+  "_sass_importer_emscripten"
+]

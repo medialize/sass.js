@@ -241,7 +241,7 @@ var Sass = {
         // C function to call
         'sass_compile_emscripten',
         // return type
-        'string',
+        null,
         // parameter types
         ['string'].concat(options.map(function(option) {
           return option.type;
@@ -249,7 +249,9 @@ var Sass = {
         // arguments for invocation
         [text].concat(options.map(function(option) {
           return Sass._options[option.key];
-        })).concat([Sass._path])
+        })).concat([Sass._path]),
+        // we're not expecting synchronous return value
+        { async: true }
       );
     } catch(e) {
       done({
