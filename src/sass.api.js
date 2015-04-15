@@ -243,13 +243,13 @@ var Sass = {
         // return type
         null,
         // parameter types
-        ['string'].concat(options.map(function(option) {
+        ['string', 'string', 'bool'].concat(options.map(function(option) {
           return option.type;
-        })).concat(['string']),
+        })),
         // arguments for invocation
-        [text].concat(options.map(function(option) {
+        [text, Sass._path, 0].concat(options.map(function(option) {
           return Sass._options[option.key];
-        })).concat([Sass._path]),
+        })),
         // we're not expecting synchronous return value
         { async: true }
       );

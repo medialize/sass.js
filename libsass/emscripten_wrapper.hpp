@@ -9,6 +9,8 @@ using namespace std;
 
 void sass_compile_emscripten(
   char *source_string,
+  char *include_paths,
+  bool custom_importer,
   int output_style,
   int precision,
   bool source_comments,
@@ -21,8 +23,7 @@ void sass_compile_emscripten(
   char *input_path,
   char *output_path,
   char *indent,
-  char *linefeed,
-  char *include_paths
+  char *linefeed
 );
 
 struct Sass_Import** sass_importer_emscripten(

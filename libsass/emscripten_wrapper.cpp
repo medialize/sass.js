@@ -6,6 +6,8 @@
 
 void sass_compile_emscripten(
   char *source_string,
+  char *include_paths,
+  bool custom_importer,
   int output_style,
   int precision,
   bool source_comments,
@@ -18,8 +20,7 @@ void sass_compile_emscripten(
   char *input_path,
   char *output_path,
   char *indent,
-  char *linefeed,
-  char *include_paths
+  char *linefeed
 ) {
   // transform input
   Sass_Output_Style sass_output_style = (Sass_Output_Style)output_style;
@@ -47,12 +48,13 @@ void sass_compile_emscripten(
   sass_option_set_source_map_root(ctx_opt, source_map_root);
   // void sass_option_set_c_functions (struct Sass_Options* options, Sass_C_Function_List c_functions);
 
-  // // setup custom importer
-  double priority = 0;
-  void* cookie = 0;
-  Sass_Importer_List importers = sass_make_importer_list(1);
-  importers[0] = sass_make_importer(sass_importer_emscripten, priority, cookie);
-  sass_option_set_c_importers(ctx_opt, importers);
+  if (custom_importer) {
+    double priority = 0;
+    void* cookie = 0;
+    Sass_Importer_List importers = sass_make_importer_list(1);
+    importers[0] = sass_make_importer(sass_importer_emscripten, priority, cookie);
+    sass_option_set_c_importers(ctx_opt, importers);
+  }
 
   // compile
   int status = sass_compile_data_context(data_ctx);
