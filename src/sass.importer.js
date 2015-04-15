@@ -1,4 +1,5 @@
-/*global Module, FS, PATH*/
+/*global FS, PATH, Sass, stringToPointer*/
+/*jshint strict:false*/
 
 var Importer = {
   _running: false,

@@ -1,7 +1,9 @@
+/*jshint strict:false, unused:false*/
+
 var BooleanNumber = function(input) {
   // in emscripten you pass booleans as integer 0 and 1
   return Number(Boolean(input));
-}
+};
 
 // map of arguments required by the emscripten wrapper (order relevant!)
 // to not have to touch various different spots in this file,

@@ -112,17 +112,12 @@ describe('importer', function() {
 
   it('should transport errors', function(done) {
     var source = '@import "testfile";';
-    var expected = '.yolo{content:"injected"}.testfile{content:"loaded"}\n';
-    var expectedFiles = [
-      '/sass/sub/deeptest.scss',
-      '/sass/testfile.scss'
-    ];
 
     Sass.clearFiles();
     Sass.importer(function(request, done) {
       var result = {};
       if (request.current === 'sub/deeptest') {
-        result.error = "nope nope nope";
+        result.error = 'nope nope nope';
       }
 
       done(result);
@@ -136,8 +131,8 @@ describe('importer', function() {
 
     Sass.compile(source, function(result) {
       expect(result.state).not.to.equal(0);
-      expect(result.message).to.equal("nope nope nope");
-      expect(result.file).to.equal("/sass/testfile.scss");
+      expect(result.message).to.equal('nope nope nope');
+      expect(result.file).to.equal('/sass/testfile.scss');
       expect(result.line).to.equal(1);
       expect(result.column).to.equal(9);
 
@@ -147,11 +142,6 @@ describe('importer', function() {
 
   it('should catch errors', function(done) {
     var source = '@import "testfile";';
-    var expected = '.yolo{content:"injected"}.testfile{content:"loaded"}\n';
-    var expectedFiles = [
-      '/sass/sub/deeptest.scss',
-      '/sass/testfile.scss'
-    ];
 
     Sass.clearFiles();
     Sass.importer(function(request, done) {
@@ -170,8 +160,8 @@ describe('importer', function() {
 
     Sass.compile(source, function(result) {
       expect(result.state).not.to.equal(0);
-      expect(result.message).to.equal("nope nope nope");
-      expect(result.file).to.equal("/sass/testfile.scss");
+      expect(result.message).to.equal('nope nope nope');
+      expect(result.file).to.equal('/sass/testfile.scss');
       expect(result.line).to.equal(1);
       expect(result.column).to.equal(9);
 

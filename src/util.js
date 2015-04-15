@@ -1,4 +1,5 @@
 /*global Module*/
+/*jshint strict:false, unused:false*/
 
 function noop(){}
 
@@ -21,6 +22,7 @@ function addTrailingSlash(text) {
 
 
 function pointerToString(pointer) {
+  /*jshint camelcase:false*/
   return pointer && Module.Pointer_stringify(pointer) || null;
 }
 
@@ -31,7 +33,7 @@ function stringToPointer(text) {
 }
 
 function pointerToJson(pointer) {
-  var test = pointer && Module.Pointer_stringify(pointer) || null;
+  var test = pointerToString(pointer);
   return test && JSON.parse(test) || null;
 }
 
@@ -48,7 +50,7 @@ function pointerToStringArray(pointer) {
       break;
     }
 
-    var _item = Module.Pointer_stringify(_pointer);
+    var _item = pointerToString(_pointer);
     _item && list.push(_item);
   }
 

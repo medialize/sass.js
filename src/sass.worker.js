@@ -21,7 +21,7 @@ var methods = {
     // an importer was un/set
     // we need to register a callback that will pipe
     // things through the worker
-    Sass.importer(callback ? _importerInit : null)
+    Sass.importer(callback ? _importerInit : null);
   },
 };
 

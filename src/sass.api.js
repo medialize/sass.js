@@ -1,4 +1,4 @@
-/*global Module, FS, ALLOC_STACK*/
+/*global Module, FS, PATH, stripLeadingSlash, addTrailingSlash, XMLHttpRequest, noop, options*/
 /*jshint strict:false*/
 
 var Sass = {
@@ -192,7 +192,7 @@ var Sass = {
 
     Sass._preloadingFiles++;
     var request = new XMLHttpRequest();
-    request.onload = function(response) {
+    request.onload = function() {
       Sass.writeFile(path.slice(Sass._path.length) + file, this.responseText);
 
       Sass._preloadingFiles--;
@@ -202,7 +202,7 @@ var Sass = {
       }
     };
 
-    request.open("get", url, true);
+    request.open('get', url, true);
     request.send();
   },
 
@@ -226,7 +226,7 @@ var Sass = {
         throw new Error('only one Sass.compile() can run concurrently, wait for the currently running task to finish!');
       }
 
-      function done(result) {
+      var done = function done(result) {
         // give emscripten a chance to finish the C function and clean up
         // before we resume our JavaScript duties
         (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(function() {
@@ -234,8 +234,8 @@ var Sass = {
           Sass._sassCompileEmscriptenSuccess = null;
           Sass._sassCompileEmscriptenError = null;
           callback(result);
-        })
-      }
+        });
+      };
 
       Sass._sassCompileEmscriptenSuccess = function(result, map, files) {
         done({
