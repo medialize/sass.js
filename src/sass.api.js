@@ -144,8 +144,13 @@ var Sass = {
   },
 
   clearFiles: function(callback) {
-    Sass.listFiles().forEach(Sass.removeFile);
-    callback && callback();
+    Sass.listFiles(function(list) {
+      list.forEach(function(file) {
+        Sass.removeFile(file);
+      });
+
+      callback && callback();
+    });
   },
 
   _handleFiles: function(base, directory, files, callback) {
