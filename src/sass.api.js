@@ -27,6 +27,7 @@ var Sass = {
   _path: '/sass/',
 
   FS: FS,
+  PATH: PATH,
   Module: Module,
 
   options: function(options, callback) {
@@ -51,6 +52,15 @@ var Sass = {
       this._options[key] = _type(options[key]);
     }, this);
 
+    callback && callback();
+  },
+
+  importer: function(importerCallback, callback) {
+    if (typeof importerCallback !== 'function' && importerCallback !== null) {
+      throw new Error('importer callback must either be a function or null');
+    }
+
+    this._importer = importerCallback;
     callback && callback();
   },
 
@@ -252,7 +262,7 @@ var Sass = {
           return option.type;
         })),
         // arguments for invocation
-        [text, Sass._path, 0].concat(options.map(function(option) {
+        [text, Sass._path, Number(Boolean(this._importer))].concat(options.map(function(option) {
           return Sass._options[option.key];
         })),
         // we're not expecting synchronous return value

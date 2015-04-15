@@ -17,6 +17,7 @@
   /*global Worker*/
 
   var noop = function(){};
+  var slice = [].slice;
 
   var Sass = {
     _worker: null,
@@ -39,6 +40,40 @@
       Sass._worker.postMessage(options);
     },
 
+    _importerInit: function(args) {
+      // importer API done callback pushing results
+      // back to the worker
+      var done = function done(result) {
+        Sass._worker.postMessage({
+          command: '_importerFinish',
+          args: [result]
+        });
+      };
+
+      try {
+        Sass._importer(args[0], done);
+      } catch(e) {
+        done({ error: e.message });
+        throw e;
+      }
+    },
+
+    importer: function(importerCallback, callback) {
+      if (typeof importerCallback !== 'function' && importerCallback !== null) {
+        throw new Error('importer callback must either be a function or null');
+      }
+
+      // callback is executed in the main EventLoop
+      Sass._importer = importerCallback;
+      // tell worker to activate importer callback
+      Sass._worker.postMessage({
+        command: 'importer',
+        args: [Boolean(importerCallback)]
+      });
+
+      callback && callback();
+    },
+
     initialize: function(workerUrl) {
       if (Sass._worker) {
         throw new Error('Sass Worker is already initalized');
@@ -46,6 +81,10 @@
 
       Sass._worker = new Worker(workerUrl);
       Sass._worker.addEventListener('message', function(event) {
+        if (event.data.command) {
+          Sass[event.data.command](event.data.args);
+        }
+
         Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result);
         delete Sass._callbacks[event.data.id];
       }, false);
@@ -53,7 +92,6 @@
   };
 
   var commands = 'writeFile readFile listFiles removeFile clearFiles lazyFiles preloadFiles options compile';
-  var slice = [].slice;
   commands.split(' ').forEach(function(command) {
     Sass[command] = function() {
       var callback = slice.call(arguments, -1)[0];

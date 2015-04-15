@@ -178,6 +178,23 @@ Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, function callback() {
 // register a set of files to be (synchronously) loaded when required
 // see chapter »Working With Files« below
 Sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
+
+// intercept file loading requests from libsass
+Sass.importer(function(request, done) {
+  // (object) request
+  // (string) request.current path libsass wants to load (content of »@import "<path>";«)
+  // (string) request.previous absolute path of previously imported file ("stdin" if first)
+  // (string) request.resolved currentPath resolved against previousPath
+  // (string) request.path absolute path in file system, null if not found
+  // -------------------------------
+  // (object) result
+  // (string) result.path the absolute path to load from file system
+  // (string) result.content the content to use instead of loading a file
+  // (string) result.error the error message to print and abort the compilation
+
+  // asynchronous callback
+  done(result);
+});
 ```
 
 ### `compile()` Response Object
@@ -307,6 +324,45 @@ Note that `Sass.lazyFiles()` can slow down the perceived performance of `Sass.co
 
 While Sass.js does not plan on providing file maps to SASS projects, it contains two mappings to serve as an example how your project can approach the problem: [`maps/bourbon.js`](maps/bourbon.js) and [`maps/drublic-sass-mixins.js`](maps/drublic-sass-mixins.js).
 
+
+### Importer Callback Function
+
+Since libsass 3.2 a callback allows us to hook into the compilation process. The callback allows us to intercept libsass' attempts to process `@import "<path>";` declarations. The request object contains the `<path>` to be imported in `request.current` and the fully qualified path of the file containing the `@import` statement in `request.previous`. For convenience `request.resolved` contains a relative resolution of `current` against `previous`. To allow importer callbacks to overwrite *everything*, but not have to deal with any of libsass' default file resolution `request.path` contains the file's path found in the file system (including the variations like `@import "foo";` resolving to `…/_foo.scss`).
+
+```js
+// register a custom importer callback
+Sass.importer(function(request, done) {
+  if (request.path) {
+    // sass.js already found a file,
+    // we probably want to just load that
+    done();
+  } else if (request.current === 'content') {
+    // provide a specific content
+    // (e.g. downloaded on demand)
+    done({
+      content: '.some { content: "from anywhere"; }'
+    })
+  } else if (request.current === 'redirect') {
+    // provide a specific content
+    done({
+      path: '/sass/to/some/other.scss'
+    })
+  } else if (request.current === 'error') {
+    // provide content directly
+    // note that there is no cache
+    done({
+      error: 'import failed because bacon.'
+    })
+  } else {
+    // let libsass handle the import
+    done();
+  }
+});
+// unregister custom reporter callback
+Sass.importer(null);
+```
+
+
 ---
 
 
@@ -394,6 +450,7 @@ this is the libsass version 3.2 integration branch
 * adding `dist/libsass.js.mem`, optimized memory file created by emscripten
 * adding `Sass.lazyFiles()` and `Sass.preloadFiles()`
 * adding `Sass.clearFiles()` to wipe all files known to `Sass.listFiles()`
+* adding `Sass.importer()` to intercept file loading requests from libsass
 * adding configuration options
   * `precision` - Precision for outputting fractional numbers (`0` using libsass default)
   * `indentedSyntax` - Treat source string as SASS (as opposed to SCSS)
