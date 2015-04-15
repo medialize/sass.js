@@ -99,7 +99,7 @@ struct Sass_Import** sass_importer_emscripten(
   struct Sass_Compiler* comp
 ) {
   struct Sass_Import* previous = sass_compiler_get_last_import(comp);
-  const char* prev_path = sass_import_get_path(previous);
+  const char* prev_base = sass_import_get_base(previous);
   // struct Sass_Context* ctx = sass_compiler_get_context(comp);
   // struct Sass_Options* opts = sass_context_get_options(ctx);
 
@@ -113,7 +113,7 @@ struct Sass_Import** sass_importer_emscripten(
       pointerToString($0),
       pointerToString($1)
     );
-  }, cur_path, prev_path);
+  }, cur_path, prev_base);
 
 
   // check if the JS importer callback has already finished,
