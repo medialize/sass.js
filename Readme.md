@@ -392,7 +392,6 @@ this is the libsass version 3.2 integration branch
 * improving synchronous API to perfectly mirror the worker API
 * adding `.options('defaults')` to reset options to sass.js defaults
 * adding `dist/libsass.js.mem`, optimized memory file created by emscripten
-* adding `SassWorker._eval()` to execute arbitrary code in the worker context (for debugging emscripten JS API).
 * adding `Sass.lazyFiles()` and `Sass.preloadFiles()`
 * adding `Sass.clearFiles()` to wipe all files known to `Sass.listFiles()`
 * adding configuration options

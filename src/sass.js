@@ -39,13 +39,6 @@
       Sass._worker.postMessage(options);
     },
 
-    _eval: function(func, callback) {
-      Sass._dispatch({
-        command: '_eval',
-        args: [String(func)]
-      }, callback);
-    },
-
     initialize: function(workerUrl) {
       if (Sass._worker) {
         throw new Error('Sass Worker is already initalized');

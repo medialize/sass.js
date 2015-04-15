@@ -13,13 +13,7 @@ onmessage = function (event) {
 
   var method = Sass[event.data.command];
 
-  if (event.data.command === '_eval') {
-    method = function(callback) {
-      var func = new Function('return ' + event.data.func)();
-      result = func.call(Sass);
-      callback(result);
-    }
-  } else if (!method) {
+  if (!method) {
     return done({
       line: 0,
       message: 'Unknown command ' + event.action
