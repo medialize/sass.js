@@ -57,6 +57,21 @@ module.exports = function(grunt) {
     'build:worker',
     'build:sync'
   ]);
+  // simplifications for development
+  grunt.registerTask('rebuild', [
+    'versions',
+    'libsass:build',
+    'build:sass',
+    'build:worker',
+    'build:sync'
+  ]);
+  grunt.registerTask('rebuild:debug', [
+    'versions',
+    'libsass:debug',
+    'build:sass',
+    'build:worker',
+    'build:sync'
+  ]);
 
   grunt.registerTask('lint', 'jshint');
   grunt.registerTask('test', 'mochaTest');
