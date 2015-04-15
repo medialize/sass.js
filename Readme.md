@@ -254,13 +254,13 @@ Yields the following `result` object:
   // the file the problem occurred in
   "file": "stdin",
   // the line the problem occurred on
-  "line": 5,
+  "line": 7,
   // the character on the line the problem started with
-  "column": 2,
+  "column": 1,
   // the problem description
   "message": "invalid top-level expression",
   // human readable formatting of the error
-  "formatted": "Error: invalid top-level expression\n        on line 5 of stdin\n>> }\n   -^\n"
+  "formatted": "Error: invalid top-level expression\n        on line 7 of stdin\n>> bad-token-test\n   ^\n"
 }
 ```
 
@@ -268,9 +268,9 @@ where the `formatted` properties contains a human readable presentation of the p
 
 ```
 Error: invalid top-level expression
-        on line 5 of stdin
->> }
-   -^
+        on line 7 of stdin
+>> bad-token-test
+   ^
 ```
 
 ### Working With Files
