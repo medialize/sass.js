@@ -1,6 +1,6 @@
-/*! sass.js - v0.0.0 (1c01355) - built 2015-04-12
+/*! sass.js - v0.0.0 (d0648d6) - built 2015-04-15
   providing libsass 3.2.0-beta.5 (f82a41b)
-  via emscripten 1.30.2 (dac9f88)
+  via emscripten 1.30.6 (f52c5f1)
  */
 (function (root, factory) {
   'use strict';
@@ -21,6 +21,7 @@
   /*global Worker*/
 
   var noop = function(){};
+  var slice = [].slice;
 
   var Sass = {
     _worker: null,
@@ -43,11 +44,38 @@
       Sass._worker.postMessage(options);
     },
 
-    _eval: function(func, callback) {
-      Sass._dispatch({
-        command: '_eval',
-        args: [String(func)]
-      }, callback);
+    _importerInit: function(args) {
+      // importer API done callback pushing results
+      // back to the worker
+      var done = function done(result) {
+        Sass._worker.postMessage({
+          command: '_importerFinish',
+          args: [result]
+        });
+      };
+
+      try {
+        Sass._importer(args[0], done);
+      } catch(e) {
+        done({ error: e.message });
+        throw e;
+      }
+    },
+
+    importer: function(importerCallback, callback) {
+      if (typeof importerCallback !== 'function' && importerCallback !== null) {
+        throw new Error('importer callback must either be a function or null');
+      }
+
+      // callback is executed in the main EventLoop
+      Sass._importer = importerCallback;
+      // tell worker to activate importer callback
+      Sass._worker.postMessage({
+        command: 'importer',
+        args: [Boolean(importerCallback)]
+      });
+
+      callback && callback();
     },
 
     initialize: function(workerUrl) {
@@ -57,6 +85,10 @@
 
       Sass._worker = new Worker(workerUrl);
       Sass._worker.addEventListener('message', function(event) {
+        if (event.data.command) {
+          Sass[event.data.command](event.data.args);
+        }
+
         Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result);
         delete Sass._callbacks[event.data.id];
       }, false);
@@ -64,7 +96,6 @@
   };
 
   var commands = 'writeFile readFile listFiles removeFile clearFiles lazyFiles preloadFiles options compile';
-  var slice = [].slice;
   commands.split(' ').forEach(function(command) {
     Sass[command] = function() {
       var callback = slice.call(arguments, -1)[0];
