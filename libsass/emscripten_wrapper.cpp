@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <cstring>
 #include "sass_context.h"
+#include "sass_functions.h"
 #include "emscripten_wrapper.hpp"
 #include <emscripten.h>
 
@@ -52,8 +53,23 @@ void sass_compile_emscripten(
     double priority = 0;
     void* cookie = 0;
     Sass_Importer_List importers = sass_make_importer_list(1);
+    // Sass_Importer_Entry emscripten_importer = sass_make_importer(sass_importer_emscripten, priority, cookie);
+    // sass_importer_set_list_entry(importers, 0, emscripten_importer);
     importers[0] = sass_make_importer(sass_importer_emscripten, priority, cookie);
     sass_option_set_c_importers(ctx_opt, importers);
+  }
+
+  if (true) {
+    void* cookie = 0;
+    Sass_Function_List functions = sass_make_function_list(2);
+
+    Sass_Function_Entry fn_foo = sass_make_function("foo()", sass_function_emscripten, cookie);
+    sass_function_set_list_entry(functions, 0, fn_foo);
+
+    Sass_Function_Entry fn_bar = sass_make_function("bar($one, $two:2)", sass_function_emscripten, cookie);
+    sass_function_set_list_entry(functions, 1, fn_bar);
+
+    sass_option_set_c_functions(ctx_opt, functions);
   }
 
   // compile
@@ -165,4 +181,111 @@ struct Sass_Import** sass_importer_emscripten(
   // have the next importer (likely libsass default file loader) determine
   // how to proceed
   return NULL;
+}
+
+// https://github.com/sass/libsass/pull/1000
+// https://github.com/sass/libsass/wiki/API-Sass-Function
+// https://github.com/sass/libsass/wiki/API-Sass-Function-Example
+// -----
+// https://github.com/sass/libsass/wiki/API-Sass-Value
+// https://github.com/sass/libsass/wiki/API-Sass-Value-Example
+// https://github.com/sass/libsass/wiki/Custom-Functions-internal
+union Sass_Value* sass_function_emscripten(
+  const union Sass_Value* s_args,
+  Sass_Function_Entry cb,
+  struct Sass_Options* opts
+) {
+  // https://github.com/sass/libsass/wiki/Custom-Functions-internal#signature
+  const char *signature = sass_function_get_signature(cb);
+  //void *cookie = sass_function_get_cookie(cb);
+
+  EM_ASM_INT({
+    console.log("function()", pointerToString($0));
+  }, signature);
+
+  sass_value_to_js(s_args);
+
+  return sass_make_number(123, "px");
+}
+
+void sass_value_to_js(const union Sass_Value* value) {
+  // maybe we can use a switch instead?
+  // enum Sass_Tag sass_value_get_tag (value[i]);
+  if (sass_value_is_null(value)) {
+    EM_ASM( Values.add(null); );
+  } else if (sass_value_is_number(value)) {
+    EM_ASM_ARGS({
+      Values.add(new Values.Number($0, pointerToString($1)));
+    },
+      sass_number_get_value(value), // double
+      sass_number_get_unit(value) // int (string pointer)
+    );
+    
+  } else if (sass_value_is_string(value)) {
+    EM_ASM_INT({
+      Values.add(new Values.String(pointerToString($0)));
+    },
+      sass_string_get_value(value)
+    );
+  } else if (sass_value_is_boolean(value)) {
+    EM_ASM_INT({
+      Values.add(new Values.Boolean($0));
+    },
+      sass_boolean_get_value(value)
+    );
+  } else if (sass_value_is_color(value)) {
+    EM_ASM_DOUBLE({
+      Values.add(new Values.Color($0, $1, $2, $3));
+    },
+      sass_color_get_r(value),
+      sass_color_get_g(value),
+      sass_color_get_b(value),
+      sass_color_get_a(value)
+    );
+  } else if (sass_value_is_list(value)) {
+    EM_ASM_INT({
+      Values.push(new Values.List($0));
+    },
+      sass_list_get_separator(value)
+    );
+
+    size_t i;
+    size_t length = sass_list_get_length(value);
+    for (i = 0; i < length; ++i) {
+      sass_value_to_js(sass_list_get_value(value, i));
+    }
+
+    EM_ASM( Values.pop(); );
+  } else if (sass_value_is_map(value)) {
+    EM_ASM( Values.push(new Values.Map()); );
+
+    size_t i;
+    size_t length = sass_map_get_length(value);
+    for (i = 0; i < length; ++i) {
+      sass_value_to_js(sass_map_get_key(value, i));
+      sass_value_to_js(sass_map_get_value(value, i));
+    }
+
+    EM_ASM( Values.pop(); );
+
+  } else if (sass_value_is_error(value)) {
+    EM_ASM_INT({
+      Values.add(new Values.Error(pointerToString($0)));
+    },
+      sass_error_get_message(value)
+    );
+  } else if (sass_value_is_warning(value)) {
+    EM_ASM_INT({
+      Values.add(new Values.Warning(pointerToString($0)));
+    },
+      sass_warning_get_message(value)
+    );
+  } else {
+    // unknown value
+    EM_ASM( Values.add(undefined); );
+  }
+}
+
+const union Sass_Value* sass_value_from_js() {
+  
 }

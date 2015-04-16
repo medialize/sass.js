@@ -31,6 +31,15 @@ struct Sass_Import** sass_importer_emscripten(
   struct Sass_Compiler* comp
 );
 
+union Sass_Value* sass_function_emscripten(
+  const union Sass_Value* s_args,
+  Sass_Function_Entry cb,
+  struct Sass_Options* opts
+);
+
+void sass_value_to_js(const union Sass_Value* value);
+const union Sass_Value* sass_value_from_js();
+
 #ifdef __cplusplus
 }
 #endif
