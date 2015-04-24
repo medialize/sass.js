@@ -2,8 +2,10 @@
 #include <cstring>
 #include "sass_context.h"
 #include "sass_functions.h"
+#include "sass_values.cpp"
 #include "emscripten_wrapper.hpp"
 #include <emscripten.h>
+#include <emscripten/bind.h>
 
 void sass_compile_emscripten(
   char *source_string,
@@ -188,7 +190,7 @@ struct Sass_Import** sass_importer_emscripten(
 // https://github.com/sass/libsass/wiki/API-Sass-Function-Example
 // -----
 // https://github.com/sass/libsass/wiki/API-Sass-Value
-// https://github.com/sass/libsass/wiki/API-Sass-Value-Example
+// https://github.com/sass/libsass/wiki/API-Sass-Value-Internal
 // https://github.com/sass/libsass/wiki/Custom-Functions-internal
 union Sass_Value* sass_function_emscripten(
   const union Sass_Value* s_args,
@@ -203,9 +205,34 @@ union Sass_Value* sass_function_emscripten(
     console.log("function()", pointerToString($0));
   }, signature);
 
+  EM_ASM( Values.reset(); );
   sass_value_to_js(s_args);
+  EM_ASM( console.log(Values.collect()); );
 
-  return sass_make_number(123, "px");
+  if (false) {
+    // simple value
+    return sass_make_number(123, "px");
+  }
+
+  if (true) {
+    // number without unit?
+    return sass_make_number(123, 0);
+  }
+
+  if (false) {
+    // comma separated list
+    Sass_Value *list = sass_make_list(2, SASS_COMMA);
+    sass_list_set_value(list, 0, sass_make_number(111, "px"));
+    sass_list_set_value(list, 1, sass_make_number(222, "em"));
+    return list;
+  }
+  
+  if (false) {
+    // pass-through
+    return (union Sass_Value*) s_args;
+  }
+  
+  return NULL;
 }
 
 void sass_value_to_js(const union Sass_Value* value) {
@@ -288,4 +315,19 @@ void sass_value_to_js(const union Sass_Value* value) {
 
 const union Sass_Value* sass_value_from_js() {
   
+}
+
+
+using namespace emscripten;
+EMSCRIPTEN_BINDINGS(sassjs) {
+  //emscripten::function("momma", &Sass_, allow_raw_pointers());
+  emscripten::enum_<Sass_Separator>("Sass_Separator")
+          .value("SASS_COMMA", SASS_COMMA)
+          .value("SASS_COMMA", SASS_SPACE)
+          ;
+
+  emscripten::value_object<Sass_Number>("Sass_Number")
+          .field("value", &Sass_Number::value)
+          .field("unit", &Sass_Number::unit, allow_raw_pointers())
+          ;
 }

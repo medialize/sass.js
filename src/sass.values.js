@@ -112,18 +112,30 @@ var Values = (function(){
   var Values = {
     _stack: [],
     _index: -1,
+    reset: function() {
+      Values._stack = [];
+      Values._index = -1;
+      Values._root = null;
+    },
+    collect: function() {
+      var root = Values._root;
+      Values.reset();
+      return root;
+    },
     add: function(value) {
       var frame = Values._stack[Values._index];
       if (!frame) {
-        throw new Error('Cannot add to empty value stack');
+        Values._root = value;
+      } else {
+        frame.add(value);
       }
-
-      frame.add(value);
     },
     push: function(value) {
       var frame = Values._stack[Values._index];
       if (frame) {
         frame.add(value);
+      } else {
+        Values._root = value;
       }
 
       Values._stack.push(value);

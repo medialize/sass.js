@@ -10,19 +10,20 @@
  
  CSOURCES = cencode.c
  
-@@ -187,6 +188,33 @@
+@@ -187,6 +188,34 @@
  static: lib/libsass.a
  shared: $(LIBRARIES)
  
 +js: static
 +	emcc lib/libsass.a -o lib/libsass.js \
-+ 		-O3 \
++		-O3 \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
 +		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
++		--bind \
 +		--memory-init-file 1
 +
 +js-debug: static
