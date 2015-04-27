@@ -439,7 +439,6 @@ LIBSASS_VERSION="3.1.0"
   * compile [libsass 3.2.0](https://github.com/sass/libsass/releases/tag/3.2.0)
   * allowing builds without forced download of libsass.git every time
   * providing emscripten debug mode
-  * [libsass 3.2 beta.4](https://github.com/sass/libsass/releases/tag/3.2.0-beta.4)
 * improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
 * renaming files to make more sense
 * improving synchronous API to perfectly mirror the worker API
@@ -465,7 +464,7 @@ LIBSASS_VERSION="3.1.0"
 
 * synchronous API (formerly `dist/sass.js` and `dist/sass.min.js`) is now *required* to be loaded from a directory called `dist` relative to `document.URL` (irrelevant for use in Node!)
 * synchronous API now has the *exact same* signature as the worker API, meaning responses are not returned, but passed to callback functions instead.
-* `Sass.compile()` used to return the compiled CSS as string, it now [returns an object](#compile-response-object)
+* `Sass.compile()` used to return the compiled CSS as string, it now [returns an object](https://github.com/medialize/sass.js#compile-response-object)
 * distribution files renamed or removed for clarity
   * `dist/worker.js` *removed*
   * `dist/sass.worker.js` *removed*
