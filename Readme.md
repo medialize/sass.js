@@ -1,10 +1,8 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at v3.2.0). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.0](https://github.com/sass/libsass/releases/tag/3.2.0)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
 > A fair warning: minified the worker weighs 2.3MB, gzipped it's still 546KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
-
-Have a go at the [playground](http://medialize.github.com/sass.js/playground.html) to fiddle with what sass.js has to offer.
 
 ## Loading the Sass.js API
 
@@ -433,17 +431,16 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
-### master (libsass/3.2 integration) ###
+### 0.7.0 (April 27th 2015) ###
 
-this is the libsass version 3.2 integration branch
+**NOTE:** This release contains several breaking changes!
 
-* improving build infrastructure
+* Upgrading build infrastructure
+  * compile [libsass 3.2.0](https://github.com/sass/libsass/releases/tag/3.2.0)
   * allowing builds without forced download of libsass.git every time
   * providing emscripten debug mode
-* Upgrading build infrastructure and API to libsass 3.2
   * [libsass 3.2 beta.4](https://github.com/sass/libsass/releases/tag/3.2.0-beta.4)
 * improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
-* improving error error reporting
 * renaming files to make more sense
 * improving synchronous API to perfectly mirror the worker API
 * adding `.options('defaults')` to reset options to sass.js defaults
@@ -467,8 +464,8 @@ this is the libsass version 3.2 integration branch
 #### Breaking Changes
 
 * synchronous API (formerly `dist/sass.js` and `dist/sass.min.js`) is now *required* to be loaded from a directory called `dist` relative to `document.URL` (irrelevant for use in Node!)
-* synchronous API now has the *exact same* signature as the worker API, meaning all responses are not returned, but passed to callback functions instead.
-* `Sass.compile()` used to return the compiled CSS as string, it now returns an object `{text: "generated_css"}`
+* synchronous API now has the *exact same* signature as the worker API, meaning responses are not returned, but passed to callback functions instead.
+* `Sass.compile()` used to return the compiled CSS as string, it now [returns an object](#compile-response-object)
 * distribution files renamed or removed for clarity
   * `dist/worker.js` *removed*
   * `dist/sass.worker.js` *removed*
