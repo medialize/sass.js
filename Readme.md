@@ -530,7 +530,7 @@ LIBSASS_VERSION="3.1.0"
 ## Credits
 
 * the [sass group](https://github.com/sass), especially [team libsass](https://github.com/sass/libsass)
-* team [emscripten](https://github.com/kripken/emscripten), especially [Alan Zakai](https://github.com/kripken)
+* team [emscripten](https://github.com/kripken/emscripten), especially [Alon Zakai](https://github.com/kripken)
 
 ## License
 
