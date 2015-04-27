@@ -1,51 +1,77 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for emscripted [libsass](https://github.com/sass/libsass) (at v3.1.0). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/andrew/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.0](https://github.com/sass/libsass/releases/tag/3.2.0)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified it's 2.2MB, gzipped it's 611KB. [node-sass](https://github.com/andrew/node-sass) is about 20 times faster than Sass.js
-
-see the [live demo](http://medialize.github.com/sass.js/)
-
+> A fair warning: minified the worker weighs 2.3MB, gzipped it's still 546KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
 ## Loading the Sass.js API
 
-Sass.js comes in two flavors – the synchronous in-document `sass.js` and the asynchronous worker `sass.worker.js`. The primary API - wrapping the Emscripten runtime - is provided with `sass.js` (it is used internally by `sass.worker.js` as well). `sass.worker.js` mimics the same API (adding callbacks for the asynchronous part) and passes all the function calls through to the [web worker](https://developer.mozilla.org/en/docs/Web/API/Worker).
+Sass.js comes in two pieces: `sass.js` being the API available to the browser, `sass.worker.js` being the emscripted libsass that runs in a [Web Worker](https://developer.mozilla.org/en/docs/Web/API/Worker). For use in contexts where Web Workers are not available, `sass.sync.js` can be used for the synchronous API described below. The regular way of running sass.js is by way of [`sass.worker.html`](sass.worker.html):
 
 ```html
-<script src="dist/sass.worker.js"></script>
+<script src="dist/sass.js"></script>
 <script>
-  // loading libsass.worker
-  Sass.initialize('dist/worker.min.js');
+  // telling sass.js where it can find the worker,
+  // url is relative to document.URL
+  Sass.initialize('dist/sass.worker.js');
 
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  Sass.compile(scss, function(css) {
-      console.log(css);
+  Sass.compile(scss, function(result) {
+    console.log(result);
   });
 </script>
 ```
 
-It is possible - but *not recommended* to use sass.js without in the main RunLoop instead of using a Worker:
+### Synchronous API (browser)
+
+It is possible - but *not recommended* to use Sass.js in the main EventLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html):
 
 ```html
-<script src="dist/sass.min.js"></script>
+<!--
+  Not that "dist/libsass.js.mem" is loaded relative to document.URL
+  That's ok for Node and sass.js test pages, but certainly not for production.
+  Use the worker variant instead!
+-->
+<script src="dist/sass.sync.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  var css = Sass.compile(scss);
-  console.log(css);
+  var result = Sass.compile(scss);
+  Sass.compile(scss, function(result) {
+    console.log(result);
+  });
 </script>
 ```
 
-You can - for debugging purposes - load `sass.js` from source files. Emscripten litters the global scope with ~400 variables, so this MUST never be used in production!
+### Synchronous API (NodeJS)
 
-> Note: you need to have run `grunt build:libsass` before this is possible
+While you probably want to use [node-sass](https://github.com/sass/node-sass) for performance reasons, sass.js also runs on NodeJS. You can use the synchronous API (as in "executed in the main EventLoop") as follows:
+
+```js
+Sass = require('sass.js');
+var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
+Sass.compile(scss, function(result) {
+  console.log(result);
+});
+```
+
+[webworker-threads](https://www.npmjs.com/package/webworker-threads) could be the key to running sass.js in a non-blocking fashion, but it (currently) has its problems with [typed arrays](https://github.com/audreyt/node-webworker-threads/issues/18#issuecomment-92098583).
+
+### Synchronous API From Source (browser)
+
+After cloning this repository you can run `grunt libsass:prepare libsass:build` (explained below) and then run sass.js off its source files by running [`sass.source.html`](sass.source.html)
 
 ```html
+<!-- you need to compile libsass.js first using `grunt libsass:prepare libsass:build` -->
 <script src="libsass/libsass/lib/libsass.js"></script>
-<script src="src/sass.js"></script>
+<!-- mapping of Sass.js options to be fed to libsass via the emscripten wrapper -->
+<script src="src/sass.options.js"></script>
+<!-- the sass.js abstraction of libsass and emscripten -->
+<script src="src/sass.api.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  var css = Sass.compile(scss);
-  console.log(css);
+  Sass.compile(scss, function(result) {
+    console.log(result);
+  });
 </script>
 ```
 
@@ -57,16 +83,63 @@ You can - for debugging purposes - load `sass.js` from source files. Emscripten 
 ```js
 // compile text to SCSS
 Sass.compile(text, function callback(result) {
-  // (string) result is the compiled CSS
+  // (object) result compilation result
+  // (number) result.status success status (0 in success case)
+  // (string) result.text compiled CSS string
+  // (object) result.map SourceMap
+  // (array)  result.files list of files used during compilation
+  // -------------------------------
+  // (number) result.status success status (not 0 in error case)
+  // (string) result.file the file path the occurred in
+  // (number) result.line the line the error occurred on
+  // (number) result.column the character offset in that line the error began with
+  // (string) result.message the error message
+  // (string) result.formatted human readable error message containing all details
 });
 
-// set compile style options
+// set libsass compile options
+// (provided options are merged onto previously set options)
 Sass.options({
-  // format output: nested, expanded, compact, compressed
+  // Format output: nested, expanded, compact, compressed
   style: Sass.style.nested,
-  // add line comments to output: none, default
-  comments: Sass.comments.none
+  // Precision for outputting fractional numbers
+  // (0 is libsass default precision)
+  precision: 0,
+  // If you want inline source comments
+  comments: false,
+  // Treat source_string as SASS (as opposed to SCSS)
+  indentedSyntax: false,
+  // String to be used for indentation
+  indent: '  ',
+  // String to be used to for line feeds
+  linefeed: '\n',
+
+  // Path to source map file
+  // Enables the source map generating
+  // Used to create sourceMappingUrl
+  sourceMapFile: 'file',
+  // Pass-through as sourceRoot property
+  sourceMapRoot: 'root',
+  // The input path is used for source map generation.
+  // It can be used to define something with string
+  // compilation or to overload the input file path.
+  // It is set to "stdin" for data contexts
+  // and to the input file on file contexts.
+  inputPath: 'stdin',
+  // The output path is used for source map generation.
+  // Libsass will not write to this file, it is just
+  // used to create information in source-maps etc.
+  outputPath: 'stdout',
+  // Embed included contents in maps
+  sourceMapContents: true,
+  // Embed sourceMappingUrl as data uri
+  sourceMapEmbed: false,
+  // Disable sourceMappingUrl in css output
+  sourceMapOmitUrl: true,
 }, function callback(){});
+
+// reset options to sass.js defaults (listed above)
+Sass.options('defaults', function callback(){});
 
 // register a file to be available for @import
 Sass.writeFile(filename, text, function callback(success) {
@@ -92,44 +165,121 @@ Sass.readFile(filename, function callback(content) {
 Sass.listFiles(function callback(list) {
   // (array) list contains the paths of all registered files
 });
+
+// remove all files
+Sass.clearFiles(function callback() {});
+
+// preload a set of files
+// see chapter »Working With Files« below
+Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
+
+// register a set of files to be (synchronously) loaded when required
+// see chapter »Working With Files« below
+Sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
+
+// intercept file loading requests from libsass
+Sass.importer(function(request, done) {
+  // (object) request
+  // (string) request.current path libsass wants to load (content of »@import "<path>";«)
+  // (string) request.previous absolute path of previously imported file ("stdin" if first)
+  // (string) request.resolved currentPath resolved against previousPath
+  // (string) request.path absolute path in file system, null if not found
+  // -------------------------------
+  // (object) result
+  // (string) result.path the absolute path to load from file system
+  // (string) result.content the content to use instead of loading a file
+  // (string) result.error the error message to print and abort the compilation
+
+  // asynchronous callback
+  done(result);
+});
 ```
 
-### Using the synchronous, non-worker API
+### `compile()` Response Object
+
+Compiling the following source:
+
+```scss
+$someVar: 123px; .some-selector { width: $someVar; }
+```
+
+Yields the following `result` object:
 
 ```js
-// compile text to SCSS
-var result = Sass.compile(text);
+{
+  // status 0 means everything is ok,
+  // any other value means an error occured
+  "status": 0,
+  // the compiled CSS
+  "text": ".some-selector {\n  width: 123px; }\n",
+  // the SourceMap for this compilation
+  "map": {
+    "version": 3,
+    "sourceRoot": "root",
+    "file": "stdout",
+    "sources": [
+      "stdin"
+    ],
+    "sourcesContent": [
+      "$someVar: 123px; .some-selector { width: $someVar; }"
+    ],
+    "mappings": "AAAiB,cAAc,CAAC;EAAE,KAAK,EAA7B,KAAK,GAAkB",
+    "names": []
+  },
+  // the files that were used during the compilation
+  "files": []
+}
+```
 
-// set compile style options
-Sass.options({
-  // format output: nested, expanded, compact, compressed
-  style: Sass.style.nested,
-  // add line comments to output: none, default
-  comments: Sass.comments.none
-});
+Compiling the following (invalid) source:
 
-// register a file to be available for @import
-var success = Sass.writeFile(filename, text);
+```scss
+$foo: 123px;
 
-// remove a file
-var success = Sass.removeFile(filename);
+.bar {
+  width: $bar;
+}
 
-// get a file's content
-var content = Sass.readFile(filename);
+bad-token-test
+```
 
-// list all files (regardless of directory structure)
-var list = Sass.listFiles();
+Yields the following `result` object:
+
+```js
+{
+  // status other than 0 means an error occured
+  "status": 1,
+  // the file the problem occurred in
+  "file": "stdin",
+  // the line the problem occurred on
+  "line": 7,
+  // the character on the line the problem started with
+  "column": 1,
+  // the problem description
+  "message": "invalid top-level expression",
+  // human readable formatting of the error
+  "formatted": "Error: invalid top-level expression\n        on line 7 of stdin\n>> bad-token-test\n   ^\n"
+}
+```
+
+where the `formatted` properties contains a human readable presentation of the problem:
+
+```
+Error: invalid top-level expression
+        on line 7 of stdin
+>> bad-token-test
+   ^
 ```
 
 ### Working With Files
 
-Chances are you want to use one of the readily available Sass mixins (e.g. [drublic/sass-mixins](https://github.com/drublic/Sass-Mixins) or [Bourbon](https://github.com/thoughtbot/bourbon)). While Sass.js doesn't feature a full-blown "loadBurbon()", registering files is possible:
+Chances are you want to use one of the readily available Sass mixins (e.g. [drublic/sass-mixins](https://github.com/drublic/Sass-Mixins) or [Bourbon](https://github.com/thoughtbot/bourbon)). While Sass.js doesn't feature a full-blown "loadBurbon()", registering individual files is possible:
 
 ```js
 Sass.writeFile('one.scss', '.one { width: 123px; }');
 Sass.writeFile('some-dir/two.scss', '.two { width: 123px; }');
 Sass.compile('@import "one"; @import "some-dir/two";', function(result) {
-  console.log(result);
+  console.log(result.text);
 });
 ```
 
@@ -143,37 +293,194 @@ outputs
   width: 123px; }
 ```
 
+To make things somewhat more comfortable, Sass.js provides 2 methods to load batches of files. `Sass.lazyFiles()` registers the files and only loads them when they're loaded by libsass - the catch is this HTTP request has to be made synchronously (and thus only works within the WebWorker). `Sass.preloadFiles()` downloads the registered files immediately (asynchronously, also working in the synchronous API):
+
+```js
+// HTTP requests are made relative to worker
+var base = '../scss/';
+// equals 'http://medialize.github.io/sass.js/scss/'
+
+// the directory files should be made available in
+var directory = '';
+
+// the files to load (relative to both base and directory)
+var files = [
+  'demo.scss',
+  'example.scss',
+  '_importable.scss',
+  'deeper/_some.scss',
+];
+
+// register the files to load when necessary
+Sass.lazyFiles(base, directory, files, function() { console.log('files registered, not loaded') });
+
+// download the files immediately
+Sass.preloadFiles(base, directory, files, function() { console.log('files loaded') });
+```
+
+Note that `Sass.lazyFiles()` can slow down the perceived performance of `Sass.compile()` because of the synchronous HTTP requests. They're made in sequence, not in parallel.
+
+While Sass.js does not plan on providing file maps to SASS projects, it contains two mappings to serve as an example how your project can approach the problem: [`maps/bourbon.js`](maps/bourbon.js) and [`maps/drublic-sass-mixins.js`](maps/drublic-sass-mixins.js).
+
+
+### Importer Callback Function
+
+Since libsass 3.2 a callback allows us to hook into the compilation process. The callback allows us to intercept libsass' attempts to process `@import "<path>";` declarations. The request object contains the `<path>` to be imported in `request.current` and the fully qualified path of the file containing the `@import` statement in `request.previous`. For convenience `request.resolved` contains a relative resolution of `current` against `previous`. To allow importer callbacks to overwrite *everything*, but not have to deal with any of libsass' default file resolution `request.path` contains the file's path found in the file system (including the variations like `@import "foo";` resolving to `…/_foo.scss`).
+
+```js
+// register a custom importer callback
+Sass.importer(function(request, done) {
+  if (request.path) {
+    // sass.js already found a file,
+    // we probably want to just load that
+    done();
+  } else if (request.current === 'content') {
+    // provide a specific content
+    // (e.g. downloaded on demand)
+    done({
+      content: '.some { content: "from anywhere"; }'
+    })
+  } else if (request.current === 'redirect') {
+    // provide a specific content
+    done({
+      path: '/sass/to/some/other.scss'
+    })
+  } else if (request.current === 'error') {
+    // provide content directly
+    // note that there is no cache
+    done({
+      error: 'import failed because bacon.'
+    })
+  } else {
+    // let libsass handle the import
+    done();
+  }
+});
+// unregister custom reporter callback
+Sass.importer(null);
+```
+
+
 ---
 
 
-## Building sass.js ##
+## Building Sass.js ##
+
+To compile libsass to JS you need [emscripten](http://emscripten.org), to build sass.js additionally need [grunt](http://gruntjs.com/).
 
 ```bash
 grunt build
 # destination:
+#   dist/libsass.js.mem
 #   dist/sass.js
 #   dist/sass.min.js
 #   dist/sass.worker.js
+#   dist/versions.json
+#   dist/worker.js
+#   dist/worker.min.js
+
+```
+
+### Building sass.js in emscripten debug mode ###
+
+```bash
+grunt build:debug
+# destination:
+#   dist/libsass.js.mem
+#   dist/sass.js
+#   dist/sass.min.js
+#   dist/sass.worker.js
+#   dist/versions.json
 #   dist/worker.js
 #   dist/worker.min.js
 ```
 
-### Building libsass.js ###
+### Building only libsass.js ###
 
 ```bash
-# using grunt:
-grunt build:libsass
-# using bash:
-(cd libsass && build-libsass.sh)
+# import libsass repository
+grunt libsass:prepare
+# invoke emscripten
+grunt libsass:build
+# invoke emscripten in debug mode
+grunt libsass:debug
 
 # destination:
 #   libsass/libsass/lib/libsass.js
+#   libsass/libsass/lib/libsass.js.mem
+```
+
+If you don't like grunt, run with the shell:
+
+```bash
+LIBSASS_VERSION="3.1.0"
+# import libsass repository
+(cd libsass && ./prepare.sh ${LIBSASS_VERSION})
+# invoke emscripten
+(cd libsass && ./build.sh ${LIBSASS_VERSION})
+# invoke emscripten in debug mode
+(cd libsass && ./build.sh ${LIBSASS_VERSION} debug)
+
+# destination:
+#   libsass/libsass/lib/libsass.js
+#   libsass/libsass/lib/libsass.js.mem
 ```
 
 ---
 
 
 ## Changelog
+
+### 0.7.0 (April 27th 2015) ###
+
+**NOTE:** This release contains several breaking changes!
+
+* Upgrading build infrastructure
+  * compile [libsass 3.2.0](https://github.com/sass/libsass/releases/tag/3.2.0)
+  * allowing builds without forced download of libsass.git every time
+  * providing emscripten debug mode
+  * [libsass 3.2 beta.4](https://github.com/sass/libsass/releases/tag/3.2.0-beta.4)
+* improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
+* renaming files to make more sense
+* improving synchronous API to perfectly mirror the worker API
+* adding `.options('defaults')` to reset options to sass.js defaults
+* adding `dist/libsass.js.mem`, optimized memory file created by emscripten
+* adding `Sass.lazyFiles()` and `Sass.preloadFiles()`
+* adding `Sass.clearFiles()` to wipe all files known to `Sass.listFiles()`
+* adding `Sass.importer()` to intercept file loading requests from libsass
+* adding configuration options
+  * `precision` - Precision for outputting fractional numbers (`0` using libsass default)
+  * `indentedSyntax` - Treat source string as SASS (as opposed to SCSS)
+  * `indent` - String to be used for indentation (2 spaces)
+  * `linefeed` - String to be used to for line feeds (`\n`)
+  * `sourceMapRoot` - Pass-through as sourceRoot property
+  * `sourceMapFile` - Path to source map file (enables generating source maps)
+  * `sourceMapContents` - embed include contents in maps
+  * `sourceMapEmbed` - embed sourceMappingUrl as data URI
+  * `sourceMapOmitUrl` - Disable sourceMappingUrl in CSS output
+  * `inputPath` - source map generation source (`stdin`)
+  * `outputPath` - source map generation target
+
+#### Breaking Changes
+
+* synchronous API (formerly `dist/sass.js` and `dist/sass.min.js`) is now *required* to be loaded from a directory called `dist` relative to `document.URL` (irrelevant for use in Node!)
+* synchronous API now has the *exact same* signature as the worker API, meaning responses are not returned, but passed to callback functions instead.
+* `Sass.compile()` used to return the compiled CSS as string, it now [returns an object](#compile-response-object)
+* distribution files renamed or removed for clarity
+  * `dist/worker.js` *removed*
+  * `dist/sass.worker.js` *removed*
+  * `dist/sass.min.js` *removed*
+  * `dist/sass.worker.js` renamed to `dist/sass.js` (public API for the browser)
+  * `dist/worker.min.js` renamed to `dist/sass.worker.js` (emscripted libsass for the web worker)
+  * `dist/sass.js` renamed to `dist/sass.sync.js` (emscripted libsass synchronous API)
+* source files renamed for clarity
+  * `src/libsass.worker.js` renamed to `src/sass.worker.js` (contains the worker's `onmessage` handler)
+  * `src/sass.js` renamed to `src/sass.api.js` (abstraction of libsass and emscription)
+  * `src/sass.worker.js` renamed to `src/sass.js` (public API using `postMessage` to talk to worker internally)
+* example files renamed for clarity
+  * `sass.sync.html` *added*
+  * `console.html` renamed to `sass.source.html`
+  * `worker.html` renamed to `sass.worker.html`
 
 ### 0.6.3 (March 3rd 2015) ###
 
@@ -221,7 +528,11 @@ grunt build:libsass
 * [Sebastian Golasch](https://github.com/asciidisco) - [@asciidisco](https://twitter.com/asciidisco)
 * [Rodney Rehm](http://rodneyrehm.de/en/) - [@rodneyrehm](https://twitter.com/rodneyrehm)
 
+## Credits
+
+* the [sass group](https://github.com/sass), especially [team libsass](https://github.com/sass/libsass)
+* team [emscripten](https://github.com/kripken/emscripten), especially [Alan Zakai](https://github.com/kripken)
 
 ## License
 
-Sass.js is - as [libsass](https://github.com/hcatlin/libsass) and [Emscripten](https://github.com/kripken/emscripten/) are - published under the [MIT License](http://opensource.org/licenses/mit-license).
+Sass.js is - as [libsass](https://github.com/sass/libsass) and [emscripten](https://github.com/kripken/emscripten/) are - published under the [MIT License](http://opensource.org/licenses/mit-license).
