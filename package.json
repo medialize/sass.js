@@ -4,10 +4,7 @@
   "title": "Sass.js - API for emscripted libsass",
   "description": "Sass.js is a convenience API for the JavaScript libsass (compiled with Emscripten)",
   "homepage": "http://medialize.github.com/sass.js/",
-  "author": {
-    "name": "Rodney Rehm",
-    "url": "http://rodneyrehm.de/"
-  },
+  "author": "Rodney Rehm (mail+github@rodneyrehm.de) <http://rodneyrehm.de>",
   "contributors": [
     {
       "name": "Sebastian Golasch",
