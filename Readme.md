@@ -4,6 +4,10 @@ Sass parser in JavaScript. This is a convenience API for [emscripted](https://gi
 
 > A fair warning: minified the worker weighs 2.3MB, gzipped it's still 546KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
+---
+
+Have a look at the [Interactive Playground](http://medialize.github.io/playground.sass.js/)
+
 ## Loading the Sass.js API
 
 Sass.js comes in two pieces: `sass.js` being the API available to the browser, `sass.worker.js` being the emscripted libsass that runs in a [Web Worker](https://developer.mozilla.org/en/docs/Web/API/Worker). For use in contexts where Web Workers are not available, `sass.sync.js` can be used for the synchronous API described below. The regular way of running sass.js is by way of [`sass.worker.html`](sass.worker.html):
