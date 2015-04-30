@@ -452,7 +452,7 @@ LIBSASS_VERSION="3.1.0"
 
 ### 0.7.1 (April 30th 2015) ###
 
-* upgrading to compile [libsass 3.2.1](https://github.com/sass/libsass/releases/tag/3.2.1)
+* upgrading to [libsass 3.2.1](https://github.com/sass/libsass/releases/tag/3.2.1)
 
 ### 0.7.0 (April 27th 2015) ###
 
