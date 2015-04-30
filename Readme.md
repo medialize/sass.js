@@ -435,6 +435,10 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
+### branch improve-options ###
+
+* fixing `Sass.options('defaults', callback)` to actually fire the callback
+
 ### 0.7.2 (April 30th 2015) ###
 
 * fixing option `precision` so that by default Sass.js won't overwrite libsass default precision (`5`)
