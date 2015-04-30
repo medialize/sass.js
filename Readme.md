@@ -100,6 +100,10 @@ Sass.compile(text, function callback(result) {
   // (string) result.message the error message
   // (string) result.formatted human readable error message containing all details
 });
+// it is possible to set options for a specific compile() call,
+// rather than "gobally" for all compile() calls.
+// see Sass.options() for details
+Sass.compile(text, options, callback);
 
 // set libsass compile options
 // (provided options are merged onto previously set options)
@@ -438,6 +442,9 @@ LIBSASS_VERSION="3.1.0"
 ### branch improve-options ###
 
 * fixing `Sass.options('defaults', callback)` to actually fire the callback
+* improving `Sass.compile()` to accept options to temporarily set for that invocation, extending the signature to
+  * `Sass.compile(source, callback)`
+  * `Sass.compile(source, options, callback)`
 
 ### 0.7.2 (April 30th 2015) ###
 

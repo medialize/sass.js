@@ -55,6 +55,15 @@ var Sass = {
     callback && callback();
   },
 
+  _cloneOptions: function() {
+    var o = {};
+    Object.keys(Sass._options).forEach(function(key) {
+      o[key] = Sass._options[key];
+    });
+
+    return o;
+  },
+
   importer: function(importerCallback, callback) {
     if (typeof importerCallback !== 'function' && importerCallback !== null) {
       throw new Error('importer callback must either be a function or null');
@@ -216,9 +225,18 @@ var Sass = {
     Sass._handleFiles(base, directory, files, Sass._handlePreloadFile);
   },
 
-  compile: function(text, callback) {
+  compile: function(text, _options, callback) {
+    if (typeof _options === 'function') {
+      callback = _options;
+      _options = null;
+    }
+
     if (!callback) {
-      throw new Error('Sass.compile() requires callback function as second paramter!');
+      throw new Error('Sass.compile() requires callback function as second (or third) paramter!');
+    }
+
+    if (_options !== null && typeof _options !== 'object') {
+      throw new Error('Sass.compile() requires second argument to be an object (options) or a function (callback)');
     }
 
     var done = function done(result) {
@@ -239,6 +257,12 @@ var Sass = {
         throw new Error('only one Sass.compile() can run concurrently, wait for the currently running task to finish!');
       }
 
+      // temporarily - for the duration of this .compile() - overwrite options
+      var _previousOptions = null;
+      if (_options) {
+        _previousOptions = Sass._cloneOptions();
+        Sass.options(_options);
+      }
 
       Sass._sassCompileEmscriptenSuccess = function(result, map, files) {
         done({
