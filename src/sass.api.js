@@ -41,7 +41,7 @@ var Sass = {
     }
 
     Object.keys(options).forEach(function(key) {
-      var _type = this._optionTypes[key];
+      var _type = Sass._optionTypes[key];
 
       // no need to import crap
       if (!_type) {
@@ -49,8 +49,8 @@ var Sass = {
       }
 
       // force expected data type
-      this._options[key] = _type(options[key]);
-    }, this);
+      Sass._options[key] = _type(options[key]);
+    });
 
     callback && callback();
   },
@@ -60,7 +60,7 @@ var Sass = {
       throw new Error('importer callback must either be a function or null');
     }
 
-    this._importer = importerCallback;
+    Sass._importer = importerCallback;
     callback && callback();
   },
 
@@ -262,7 +262,7 @@ var Sass = {
           return option.type;
         })),
         // arguments for invocation
-        [text, Sass._path, Number(Boolean(this._importer))].concat(options.map(function(option) {
+        [text, Sass._path, Number(Boolean(Sass._importer))].concat(options.map(function(option) {
           return Sass._options[option.key];
         })),
         // we're not expecting synchronous return value
