@@ -435,9 +435,9 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
-### master (will become 0.7.2) ###
+### 0.7.2 (April 30th 2015) ###
 
-* fixing option `precision` so that `-1` will *not* set that option in libsass to use its default (which currently is `5`)
+* fixing option `precision` so that by default Sass.js won't overwrite libsass default precision (`5`)
 
 ### 0.7.1 (April 30th 2015) ###
 
