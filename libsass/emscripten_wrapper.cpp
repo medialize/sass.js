@@ -31,7 +31,11 @@ void sass_compile_emscripten(
   struct Sass_Options* ctx_opt = sass_context_get_options(ctx);
 
   // configure context
-  sass_option_set_precision(ctx_opt, precision);
+  if (precision > -1) {
+    // if we set a precision libsass will use that blindly, with
+    // 0 being a valid precision - i.e. the precision of "integer"
+    sass_option_set_precision(ctx_opt, precision);
+  }
   sass_option_set_output_style(ctx_opt, sass_output_style);
   sass_option_set_source_comments(ctx_opt, source_comments);
   sass_option_set_source_map_embed(ctx_opt, source_map_embed);
