@@ -107,8 +107,8 @@ Sass.options({
   // Format output: nested, expanded, compact, compressed
   style: Sass.style.nested,
   // Precision for outputting fractional numbers
-  // (0 is libsass default precision)
-  precision: 0,
+  // (-1 will use the libsass default, which currently is 5)
+  precision: -1,
   // If you want inline source comments
   comments: false,
   // Treat source_string as SASS (as opposed to SCSS)
@@ -434,6 +434,10 @@ LIBSASS_VERSION="3.1.0"
 
 
 ## Changelog
+
+### master (will become 0.7.2) ###
+
+* fixing option `precision` so that `-1` will *not* set that option in libsass to use its default (which currently is `5`)
 
 ### 0.7.1 (April 30th 2015) ###
 
