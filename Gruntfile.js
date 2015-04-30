@@ -8,7 +8,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    libsassVersion: '3.2.0',
+    libsassVersion: '3.2.1',
   });
 
   grunt.loadTasks('grunt-tasks');
