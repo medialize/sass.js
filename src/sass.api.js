@@ -221,21 +221,24 @@ var Sass = {
       throw new Error('Sass.compile() requires callback function as second paramter!');
     }
 
+    var done = function done(result) {
+      // give emscripten a chance to finish the C function and clean up
+      // before we resume our JavaScript duties
+      (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(function() {
+        // we're done, the next invocation may come
+        Sass._sassCompileEmscriptenSuccess = null;
+        Sass._sassCompileEmscriptenError = null;
+        // reset options to what they were before they got temporarily overwritten
+        _previousOptions && Sass.options(_previousOptions);
+        callback(result);
+      });
+    };
+
     try {
       if (Sass._sassCompileEmscriptenSuccess) {
         throw new Error('only one Sass.compile() can run concurrently, wait for the currently running task to finish!');
       }
 
-      var done = function done(result) {
-        // give emscripten a chance to finish the C function and clean up
-        // before we resume our JavaScript duties
-        (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(function() {
-          // we're done, the next invocation may come
-          Sass._sassCompileEmscriptenSuccess = null;
-          Sass._sassCompileEmscriptenError = null;
-          callback(result);
-        });
-      };
 
       Sass._sassCompileEmscriptenSuccess = function(result, map, files) {
         done({
