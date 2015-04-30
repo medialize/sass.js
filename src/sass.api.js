@@ -109,6 +109,21 @@ var Sass = {
   },
 
   writeFile: function(filename, text, callback) {
+    if (typeof filename === 'object') {
+      callback = text;
+      text = null;
+
+      var map = {};
+      Object.keys(filename).forEach(function(file) {
+        Sass.writeFile(file, filename[file], function(result) {
+          map[file] = result;
+        });
+      });
+
+      callback && callback(map);
+      return;
+    }
+
     var _absolute = filename.slice(0, 1) === '/';
     var path = Sass._absolutePath(filename);
     try {
@@ -127,6 +142,18 @@ var Sass = {
   },
 
   readFile: function(filename, callback) {
+    if (Array.isArray(filename)) {
+      var map = {};
+      filename.forEach(function(file) {
+        Sass.readFile(file, function(result) {
+          map[file] = result;
+        });
+      });
+
+      callback && callback(map);
+      return;
+    }
+
     var path = Sass._absolutePath(filename);
     var result;
     try {
@@ -145,6 +172,18 @@ var Sass = {
   },
 
   removeFile: function(filename, callback) {
+    if (Array.isArray(filename)) {
+      var map = {};
+      filename.forEach(function(file) {
+        Sass.removeFile(file, function(result) {
+          map[file] = result;
+        });
+      });
+
+      callback && callback(map);
+      return;
+    }
+
     var _absolute = filename.slice(0, 1) === '/';
     var path = Sass._absolutePath(filename);
     try {

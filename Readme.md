@@ -155,6 +155,18 @@ Sass.writeFile(filename, text, function callback(success) {
   //   `true` when the write was OK,
   //   `false` when it failed
 });
+// register multiple files
+Sass.writeFile({
+  'filename-1.scss': 'content-1',
+  'filename-2.scss': 'content-2',
+}, function callback(result) {
+  // (object) result is
+  //    result['filename-1.scss']: success
+  //    result['filename-2.scss']: success
+  // (boolean) success is
+  //   `true` when the write was OK,
+  //   `false` when it failed
+});
 
 // remove a file
 Sass.removeFile(filename, function callback(success) {
@@ -162,9 +174,26 @@ Sass.removeFile(filename, function callback(success) {
   //   `true` when deleting the file was OK,
   //   `false` when it failed
 });
+// remove multiple files
+Sass.removeFile([filename1, filename2], function callback(result) {
+  // (object) result is
+  //    result[filename1]: success
+  //    result[filename2]: success
+  // (boolean) success is
+  //   `true` when deleting the file was OK,
+  //   `false` when it failed
+});
 
 // get a file's content
 Sass.readFile(filename, function callback(content) {
+  // (string) content is the file's content,
+  //   `undefined` when the read failed
+});
+// read multiple files
+Sass.readFile([filename1, filename2], function callback(result) {
+  // (object) result is
+  //    result[filename1]: content
+  //    result[filename2]: content
   // (string) content is the file's content,
   //   `undefined` when the read failed
 });
@@ -445,6 +474,9 @@ LIBSASS_VERSION="3.1.0"
 * improving `Sass.compile()` to accept options to temporarily set for that invocation, extending the signature to
   * `Sass.compile(source, callback)`
   * `Sass.compile(source, options, callback)`
+* improving `Sass.writeFile()` to accept a map of files to write
+* improving `Sass.readFile()` to accept an array of files to read
+* improving `Sass.removeFile()` to accept an array of files to remove
 
 ### 0.7.2 (April 30th 2015) ###
 
