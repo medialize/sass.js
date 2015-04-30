@@ -32,7 +32,7 @@ var Sass = {
 
   options: function(options, callback) {
     if (options === 'defaults') {
-      this.options(this._defaultOptions);
+      Sass.options(Sass._defaultOptions, callback);
       return;
     }
 
