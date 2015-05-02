@@ -472,7 +472,7 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
-### master (will become 0.8.0) ###
+### 0.8.0 (May 2nd 2015) ###
 
 * upgrading to [libsass 3.2.2](https://github.com/sass/libsass/releases/tag/3.2.2)
 * adding `Sass.compileFile()` to compile directly from file system
