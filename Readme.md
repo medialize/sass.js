@@ -1,8 +1,8 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.0](https://github.com/sass/libsass/releases/tag/3.2.0)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.1](https://github.com/sass/libsass/releases/tag/3.2.1)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified the worker weighs 2.3MB, gzipped it's still 546KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
+> A fair warning: minified the worker weighs 2.3MB, gzipped it's still 551KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
 ---
 
@@ -472,7 +472,7 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
-### branch improve-options ###
+### master (will become 0.8.0) ###
 
 * adding `Sass.compileFile()` to compile directly from file system
 * fixing `Sass.options('defaults', callback)` to actually fire the callback
