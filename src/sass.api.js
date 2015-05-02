@@ -32,7 +32,7 @@ var Sass = {
 
   options: function(options, callback) {
     if (options === 'defaults') {
-      this.options(this._defaultOptions);
+      Sass.options(Sass._defaultOptions, callback);
       return;
     }
 
@@ -41,7 +41,7 @@ var Sass = {
     }
 
     Object.keys(options).forEach(function(key) {
-      var _type = this._optionTypes[key];
+      var _type = Sass._optionTypes[key];
 
       // no need to import crap
       if (!_type) {
@@ -49,10 +49,19 @@ var Sass = {
       }
 
       // force expected data type
-      this._options[key] = _type(options[key]);
-    }, this);
+      Sass._options[key] = _type(options[key]);
+    });
 
     callback && callback();
+  },
+
+  _cloneOptions: function() {
+    var o = {};
+    Object.keys(Sass._options).forEach(function(key) {
+      o[key] = Sass._options[key];
+    });
+
+    return o;
   },
 
   importer: function(importerCallback, callback) {
@@ -60,7 +69,7 @@ var Sass = {
       throw new Error('importer callback must either be a function or null');
     }
 
-    this._importer = importerCallback;
+    Sass._importer = importerCallback;
     callback && callback();
   },
 
@@ -100,6 +109,21 @@ var Sass = {
   },
 
   writeFile: function(filename, text, callback) {
+    if (typeof filename === 'object') {
+      callback = text;
+      text = null;
+
+      var map = {};
+      Object.keys(filename).forEach(function(file) {
+        Sass.writeFile(file, filename[file], function(result) {
+          map[file] = result;
+        });
+      });
+
+      callback && callback(map);
+      return;
+    }
+
     var _absolute = filename.slice(0, 1) === '/';
     var path = Sass._absolutePath(filename);
     try {
@@ -118,6 +142,18 @@ var Sass = {
   },
 
   readFile: function(filename, callback) {
+    if (Array.isArray(filename)) {
+      var map = {};
+      filename.forEach(function(file) {
+        Sass.readFile(file, function(result) {
+          map[file] = result;
+        });
+      });
+
+      callback && callback(map);
+      return;
+    }
+
     var path = Sass._absolutePath(filename);
     var result;
     try {
@@ -136,6 +172,18 @@ var Sass = {
   },
 
   removeFile: function(filename, callback) {
+    if (Array.isArray(filename)) {
+      var map = {};
+      filename.forEach(function(file) {
+        Sass.removeFile(file, function(result) {
+          map[file] = result;
+        });
+      });
+
+      callback && callback(map);
+      return;
+    }
+
     var _absolute = filename.slice(0, 1) === '/';
     var path = Sass._absolutePath(filename);
     try {
@@ -216,26 +264,44 @@ var Sass = {
     Sass._handleFiles(base, directory, files, Sass._handlePreloadFile);
   },
 
-  compile: function(text, callback) {
-    if (!callback) {
-      throw new Error('Sass.compile() requires callback function as second paramter!');
+  compile: function(text, _options, callback, _compileFile) {
+    if (typeof _options === 'function') {
+      callback = _options;
+      _options = null;
     }
+
+    if (!callback) {
+      throw new Error('Sass.compile() requires callback function as second (or third) paramter!');
+    }
+
+    if (_options !== null && typeof _options !== 'object') {
+      throw new Error('Sass.compile() requires second argument to be an object (options) or a function (callback)');
+    }
+
+    var done = function done(result) {
+      // give emscripten a chance to finish the C function and clean up
+      // before we resume our JavaScript duties
+      (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(function() {
+        // we're done, the next invocation may come
+        Sass._sassCompileEmscriptenSuccess = null;
+        Sass._sassCompileEmscriptenError = null;
+        // reset options to what they were before they got temporarily overwritten
+        _previousOptions && Sass.options(_previousOptions);
+        callback(result);
+      });
+    };
 
     try {
       if (Sass._sassCompileEmscriptenSuccess) {
         throw new Error('only one Sass.compile() can run concurrently, wait for the currently running task to finish!');
       }
 
-      var done = function done(result) {
-        // give emscripten a chance to finish the C function and clean up
-        // before we resume our JavaScript duties
-        (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(function() {
-          // we're done, the next invocation may come
-          Sass._sassCompileEmscriptenSuccess = null;
-          Sass._sassCompileEmscriptenError = null;
-          callback(result);
-        });
-      };
+      // temporarily - for the duration of this .compile() - overwrite options
+      var _previousOptions = null;
+      if (_options) {
+        _previousOptions = Sass._cloneOptions();
+        Sass.options(_options);
+      }
 
       Sass._sassCompileEmscriptenSuccess = function(result, map, files) {
         done({
@@ -258,11 +324,21 @@ var Sass = {
         // return type
         null,
         // parameter types
-        ['string', 'string', 'bool'].concat(options.map(function(option) {
+        [
+          'string',
+          'string',
+          'bool',
+          'bool',
+        ].concat(options.map(function(option) {
           return option.type;
         })),
         // arguments for invocation
-        [text, Sass._path, Number(Boolean(this._importer))].concat(options.map(function(option) {
+        [
+          text,
+          Sass._path,
+          Number(Boolean(_compileFile)),
+          Number(Boolean(Sass._importer)),
+        ].concat(options.map(function(option) {
           return Sass._options[option.key];
         })),
         // we're not expecting synchronous return value
@@ -276,7 +352,19 @@ var Sass = {
         error: e
       });
     }
-  }
+  },
+  compileFile: function(filename, _options, callback) {
+    var path = Sass._absolutePath(filename);
+    if (typeof _options === 'function') {
+      callback = _options;
+      _options = {};
+    }
+
+    _options.sourceMapRoot = path;
+    _options.inputPath = path;
+
+    return Sass.compile(path, _options, callback, true);
+  },
 };
 
 // register options maintained in sass.options.js

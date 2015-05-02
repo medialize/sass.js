@@ -1,8 +1,8 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.0](https://github.com/sass/libsass/releases/tag/3.2.0)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.2](https://github.com/sass/libsass/releases/tag/3.2.2)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified the worker weighs 2.3MB, gzipped it's still 546KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
+> A fair warning: minified the worker weighs 2.3MB, gzipped it's still 551KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
 ---
 
@@ -100,6 +100,14 @@ Sass.compile(text, function callback(result) {
   // (string) result.message the error message
   // (string) result.formatted human readable error message containing all details
 });
+// it is possible to set options for a specific compile() call,
+// rather than "gobally" for all compile() calls.
+// see Sass.options() for details
+Sass.compile(text, options, callback);
+
+// compile file to SCSS
+Sass.compileFile(filename, callback);
+Sass.compileFile(filename, options, callback);
 
 // set libsass compile options
 // (provided options are merged onto previously set options)
@@ -151,6 +159,18 @@ Sass.writeFile(filename, text, function callback(success) {
   //   `true` when the write was OK,
   //   `false` when it failed
 });
+// register multiple files
+Sass.writeFile({
+  'filename-1.scss': 'content-1',
+  'filename-2.scss': 'content-2',
+}, function callback(result) {
+  // (object) result is
+  //    result['filename-1.scss']: success
+  //    result['filename-2.scss']: success
+  // (boolean) success is
+  //   `true` when the write was OK,
+  //   `false` when it failed
+});
 
 // remove a file
 Sass.removeFile(filename, function callback(success) {
@@ -158,9 +178,26 @@ Sass.removeFile(filename, function callback(success) {
   //   `true` when deleting the file was OK,
   //   `false` when it failed
 });
+// remove multiple files
+Sass.removeFile([filename1, filename2], function callback(result) {
+  // (object) result is
+  //    result[filename1]: success
+  //    result[filename2]: success
+  // (boolean) success is
+  //   `true` when deleting the file was OK,
+  //   `false` when it failed
+});
 
 // get a file's content
 Sass.readFile(filename, function callback(content) {
+  // (string) content is the file's content,
+  //   `undefined` when the read failed
+});
+// read multiple files
+Sass.readFile([filename1, filename2], function callback(result) {
+  // (object) result is
+  //    result[filename1]: content
+  //    result[filename2]: content
   // (string) content is the file's content,
   //   `undefined` when the read failed
 });
@@ -435,13 +472,29 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
+### 0.8.1 (May 2nd 2015) ###
+
+* upgrading to [libsass 3.2.2](https://github.com/sass/libsass/releases/tag/3.2.2)
+* adding `Sass.compileFile()` to compile directly from file system
+* fixing `Sass.options('defaults', callback)` to actually fire the callback
+* improving `Sass.compile()` to accept options to temporarily set for that invocation, extending the signature to
+  * `Sass.compile(source, callback)`
+  * `Sass.compile(source, options, callback)`
+* improving `Sass.writeFile()` to accept a map of files to write
+* improving `Sass.readFile()` to accept an array of files to read
+* improving `Sass.removeFile()` to accept an array of files to remove
+
+### 0.8.0 (May 2nd 2015) ###
+
+(failed and unpublished from npm, removed tag, see 0.8.1, I'm sorry)
+
 ### 0.7.2 (April 30th 2015) ###
 
 * fixing option `precision` so that by default Sass.js won't overwrite libsass default precision (`5`)
 
 ### 0.7.1 (April 30th 2015) ###
 
-* upgrading to compile [libsass 3.2.1](https://github.com/sass/libsass/releases/tag/3.2.1)
+* upgrading to [libsass 3.2.1](https://github.com/sass/libsass/releases/tag/3.2.1)
 
 ### 0.7.0 (April 27th 2015) ###
 

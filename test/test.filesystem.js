@@ -81,6 +81,95 @@ describe('filesystem', function() {
     done();
   });
 
+  it('should write multiple files', function(done) {
+    Sass.clearFiles();
+
+    Sass.writeFile({
+      'first.scss': 'my-first-content',
+      'sub/second.scss': 'my-second-content',
+    }, function(result) {
+      expect(result['first.scss']).to.equal(true);
+      expect(result['sub/second.scss']).to.equal(true);
+
+      expect(Sass._files['/sass/first.scss']).to.be.a('string');
+      expect(Sass.FS.stat('/sass/first.scss')).to.be.a('object');
+
+      expect(Sass._files['/sass/sub/second.scss']).to.be.a('string');    
+      expect(Sass.FS.stat('/sass/sub/second.scss')).to.be.a('object');
+
+      done();
+    });
+  });
+
+  it('should read multiple files', function(done) {
+    Sass.clearFiles();
+
+    var files = ['first.scss', 'second.scss', 'third.scss'];
+    Sass.writeFile('first.scss', 'my-first-content');
+    Sass.writeFile('second.scss', 'my-second-content');
+    Sass.readFile(files, function(result) {
+      expect(result['first.scss']).to.equal('my-first-content');
+      expect(result['second.scss']).to.equal('my-second-content');
+      expect(result['third.scss']).to.equal(undefined);
+
+      done();
+    });
+
+  });
+
+  it('should remove multiple files', function(done) {
+    Sass.clearFiles();
+
+    var files = ['first.scss', 'second.scss', 'third.scss'];
+    Sass.writeFile('first.scss', 'my-first-content');
+    Sass.writeFile('second.scss', 'my-second-content');
+    expect(Sass._files['/sass/first.scss']).to.be.a('string');
+    expect(Sass._files['/sass/second.scss']).to.be.a('string');
+    expect(Sass.FS.stat('/sass/first.scss')).to.be.a('object');
+    expect(Sass.FS.stat('/sass/second.scss')).to.be.a('object');
+
+    Sass.removeFile(files, function(result) {
+      try {
+        expect(result['first.scss']).to.equal(true);
+        expect(result['second.scss']).to.equal(true);
+        expect(result['third.scss']).to.equal(false);
+
+        files.forEach(function(file) {
+          expect(Sass._files['/sass/' + file]).to.equal(undefined);
+          try {
+            Sass.FS.stat('/sass/' + file);
+            expect(false).to.equal(true);
+          } catch(e) {}
+        });
+        done();
+      } catch(e) {
+        done(e);
+      }
+    });
+  });
+
+  it('should compile file', function(done) {
+    Sass.clearFiles();
+
+    Sass.writeFile({
+      'hello.scss': '@import "sub/world"; .hello { content: "file"; }',
+      'sub/world.scss': '.sub-world { content: "file"; }',
+    });
+
+    var expected = '.sub-world{content:"file"}.hello{content:"file"}\n';
+
+    Sass.options('defaults');
+    Sass.options({style: Sass.style.compressed});
+
+    Sass.compileFile('hello.scss', function(result) {
+      expect(result).to.be.a('object');
+      expect(result.map).to.be.a('object');
+      expect(result.text).to.equal(expected);
+
+      done();
+    });
+  });
+
   it.skip('should preload files', function(done) {
     done();
   });
