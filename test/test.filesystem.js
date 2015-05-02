@@ -148,6 +148,28 @@ describe('filesystem', function() {
     });
   });
 
+  it('should compile file', function(done) {
+    Sass.clearFiles();
+
+    Sass.writeFile({
+      'hello.scss': '@import "sub/world"; .hello { content: "file"; }',
+      'sub/world.scss': '.sub-world { content: "file"; }',
+    });
+
+    var expected = '.sub-world{content:"file"}.hello{content:"file"}\n';
+
+    Sass.options('defaults');
+    Sass.options({style: Sass.style.compressed});
+
+    Sass.compileFile('hello.scss', function(result) {
+      expect(result).to.be.a('object');
+      expect(result.map).to.be.a('object');
+      expect(result.text).to.equal(expected);
+
+      done();
+    });
+  });
+
   it.skip('should preload files', function(done) {
     done();
   });

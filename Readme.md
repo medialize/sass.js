@@ -105,6 +105,10 @@ Sass.compile(text, function callback(result) {
 // see Sass.options() for details
 Sass.compile(text, options, callback);
 
+// compile file to SCSS
+Sass.compileFile(filename, callback);
+Sass.compileFile(filename, options, callback);
+
 // set libsass compile options
 // (provided options are merged onto previously set options)
 Sass.options({
@@ -470,6 +474,7 @@ LIBSASS_VERSION="3.1.0"
 
 ### branch improve-options ###
 
+* adding `Sass.compileFile()` to compile directly from file system
 * fixing `Sass.options('defaults', callback)` to actually fire the callback
 * improving `Sass.compile()` to accept options to temporarily set for that invocation, extending the signature to
   * `Sass.compile(source, callback)`

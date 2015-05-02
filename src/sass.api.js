@@ -264,7 +264,7 @@ var Sass = {
     Sass._handleFiles(base, directory, files, Sass._handlePreloadFile);
   },
 
-  compile: function(text, _options, callback) {
+  compile: function(text, _options, callback, _compileFile) {
     if (typeof _options === 'function') {
       callback = _options;
       _options = null;
@@ -324,11 +324,21 @@ var Sass = {
         // return type
         null,
         // parameter types
-        ['string', 'string', 'bool'].concat(options.map(function(option) {
+        [
+          'string',
+          'string',
+          'bool',
+          'bool',
+        ].concat(options.map(function(option) {
           return option.type;
         })),
         // arguments for invocation
-        [text, Sass._path, Number(Boolean(Sass._importer))].concat(options.map(function(option) {
+        [
+          text,
+          Sass._path,
+          Number(Boolean(_compileFile)),
+          Number(Boolean(Sass._importer)),
+        ].concat(options.map(function(option) {
           return Sass._options[option.key];
         })),
         // we're not expecting synchronous return value
@@ -342,7 +352,19 @@ var Sass = {
         error: e
       });
     }
-  }
+  },
+  compileFile: function(filename, _options, callback) {
+    var path = Sass._absolutePath(filename);
+    if (typeof _options === 'function') {
+      callback = _options;
+      _options = {};
+    }
+
+    _options.sourceMapRoot = path;
+    _options.inputPath = path;
+
+    return Sass.compile(path, _options, callback, true);
+  },
 };
 
 // register options maintained in sass.options.js

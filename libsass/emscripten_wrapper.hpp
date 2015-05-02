@@ -10,6 +10,7 @@ using namespace std;
 void sass_compile_emscripten(
   char *source_string,
   char *include_paths,
+  bool compile_file,
   bool custom_importer,
   int output_style,
   int precision,

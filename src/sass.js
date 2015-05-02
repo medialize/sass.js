@@ -91,7 +91,7 @@
     }
   };
 
-  var commands = 'writeFile readFile listFiles removeFile clearFiles lazyFiles preloadFiles options compile';
+  var commands = 'writeFile readFile listFiles removeFile clearFiles lazyFiles preloadFiles options compile compileFile';
   commands.split(' ').forEach(function(command) {
     Sass[command] = function() {
       var callback = slice.call(arguments, -1)[0];
