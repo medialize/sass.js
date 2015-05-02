@@ -1,5 +1,5 @@
-/*! sass.js - v0.7.2 (90b7ce0) - built 2015-04-30
-  providing libsass 3.2.1 (e716caa)
+/*! sass.js - v0.8.1 (0103668) - built 2015-05-02
+  providing libsass 3.2.2 (66631c0)
   via emscripten 1.31.3 (5ce6ee5)
  */
 (function (root, factory) {
@@ -95,7 +95,7 @@
     }
   };
 
-  var commands = 'writeFile readFile listFiles removeFile clearFiles lazyFiles preloadFiles options compile';
+  var commands = 'writeFile readFile listFiles removeFile clearFiles lazyFiles preloadFiles options compile compileFile';
   commands.split(' ').forEach(function(command) {
     Sass[command] = function() {
       var callback = slice.call(arguments, -1)[0];
