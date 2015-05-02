@@ -472,7 +472,7 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
-### 0.8.0 (May 2nd 2015) ###
+### 0.8.1 (May 2nd 2015) ###
 
 * upgrading to [libsass 3.2.2](https://github.com/sass/libsass/releases/tag/3.2.2)
 * adding `Sass.compileFile()` to compile directly from file system
@@ -483,6 +483,10 @@ LIBSASS_VERSION="3.1.0"
 * improving `Sass.writeFile()` to accept a map of files to write
 * improving `Sass.readFile()` to accept an array of files to read
 * improving `Sass.removeFile()` to accept an array of files to remove
+
+### 0.8.0 (May 2nd 2015) ###
+
+(failed and unpublished from npm, removed tag, see 0.8.1, I'm sorry)
 
 ### 0.7.2 (April 30th 2015) ###
 
