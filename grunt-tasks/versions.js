@@ -15,21 +15,21 @@ module.exports = function GruntfileVersions(grunt) {
     // f82a41b
     childProcess.exec('git rev-parse --short HEAD', {cwd: path}, function (err, stdout, stderr){
       if (err) {
-        grunt.log.error("obtaining git commit failed with: " + err.code + '\n' + strderr);
+        grunt.log.error('obtaining git commit failed with: ' + err.code + '\n' + stderr);
         return;
       }
 
       data.commit = stdout.slice(0, -1);
       // git symbolic-ref HEAD
       // refs/heads/master
-      childProcess.exec('git symbolic-ref HEAD', {cwd: path}, function (err, stdout, stderr){
+      childProcess.exec('git symbolic-ref HEAD', {cwd: path}, function (err, stdout /*, stderr*/){
         if (err) {
           // git describe --tags
           // 3.2.0-beta.5-32-g0dd6543 (last tag contained)
           // 3.2.0-beta.5 (immediate tag)
           childProcess.exec('git describe --tags', {cwd: path}, function (err, stdout, stderr){
             if (err) {
-              grunt.log.error("obtaining git tag failed with: " + err.code + '\n' + strderr);
+              grunt.log.error('obtaining git tag failed with: ' + err.code + '\n' + stderr);
               return;
             }
 
@@ -56,7 +56,7 @@ module.exports = function GruntfileVersions(grunt) {
     var versions = grunt.config.data.versions;
     childProcess.exec('emcc --version', function (err, stdout, stderr){
       if (err) {
-        grunt.log.error("`emcc --version` failed with: " + err.code + '\n' + strderr);
+        grunt.log.error('`emcc --version` failed with: ' + err.code + '\n' + stderr);
         return;
       }
 

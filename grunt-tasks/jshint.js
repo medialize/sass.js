@@ -8,6 +8,7 @@ module.exports = function GruntfileShell(grunt) {
     options: jshintOptions,
     target: [
       'Gruntfile.js',
+      'grunt-tasks/**/*.js',
       'src/**/*.js',
       'test/**/*.js'
     ]

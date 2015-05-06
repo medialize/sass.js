@@ -1,9 +1,11 @@
 module.exports = function GruntfileConcat(grunt) {
   'use strict';
 
+  /*jshint laxbreak:true */
   var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> (<%= versions.sassjs.commit %>) - built <%= grunt.template.today("yyyy-mm-dd") %>\n'
     + '  providing libsass <%= versions.libsass.version %> (<%= versions.libsass.commit %>)\n'
-    + '  via emscripten <%= versions.emscripten.version %> (<%= versions.emscripten.commit %>)\n */\n'
+    + '  via emscripten <%= versions.emscripten.version %> (<%= versions.emscripten.commit %>)\n */\n';
+  /*jshint laxbreak:false */
 
   grunt.config('concat', {
     sass: {
