@@ -62,11 +62,12 @@ module.exports = function GruntfileVersions(grunt) {
 
       var line = stdout.split('\n')[0];
       // "emcc (Emscripten GCC-like replacement) 1.30.2 (commit dac9f88335dd74b377bedbc2ad7d3b64f0c9bb15)"
-      var tokens = line.match(/emcc \([^)]+\) ([\d.]+) \(commit ([^)]+)\)/);
+      // "emcc (Emscripten GCC-like replacement) 1.32.0 ()"
+      var tokens = line.match(/emcc \([^)]+\) ([\d.]+)(?: \(commit ([^)]+)\))?/);
 
       versions.emscripten = {
         version: tokens[1],
-        commit: tokens[2].slice(0, 7),
+        commit: tokens[2] && tokens[2].slice(0, 7) || null,
       };
 
       done();
