@@ -19,6 +19,7 @@ module.exports = function GruntfileConcat(grunt) {
       src: ['libsass/libsass/lib/libsass.js', 'src/sass.util.js', 'src/sass.options.js', 'src/sass.importer.js', 'src/sass.api.js', 'src/sass.worker.js'],
       dest: 'dist/sass.worker.concat.js',
       options: {
+        banner: 'var Module = { onRuntimeInitialized: function(){ Sass._ready(); } };',
         process: function (content) {
           return content
             // prevent emscripted libsass from exporting itself
@@ -48,7 +49,12 @@ module.exports = function GruntfileConcat(grunt) {
           // that's fine in Node, potentially catastrophic in the browser.
           // That's fine, since sass.sync.js is NOT recommended
           // to be used in the browser anyway.
-          'var Module = { memoryInitializerPrefixURL: \'dist/\' };',
+          '  var Module = {',
+          '    memoryInitializerPrefixURL: \'dist/\',',
+          '    onRuntimeInitialized: function() {',
+          '      Module._sassFullyInitialized = true;',
+          '    }',
+          '  };',
         ].join('\n'),
         footer: 'return Sass;\n}));',
         process: function (content) {

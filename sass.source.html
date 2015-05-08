@@ -33,6 +33,7 @@ Sass.compile('@import "testfile";', function(result) {
       // see http://kripken.github.io/emscripten-site/docs/getting_started/FAQ.html#how-can-i-tell-when-the-page-is-fully-loaded-and-it-is-safe-to-call-compiled-functions
       onRuntimeInitialized: function() {
         console.log("runtime initialized, ready to go!");
+        Sass._ready();
       }
     };
   </script>

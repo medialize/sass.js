@@ -30,6 +30,17 @@ var Sass = {
   PATH: PATH,
   Module: Module,
 
+  // track if emscripten is initialized
+  _initialized: false,
+  // allow calling .compile() before emscripten is ready by "buffering" the call
+  // (i.e. have the client not care about its asynchronous init)
+  _initializedCallback: null,
+  _ready: function() {
+    Sass._initialized = true;
+    Sass._initializedCallback && Sass._initializedCallback();
+    Sass._initializedCallback = null;
+  },
+
   options: function(options, callback) {
     if (options === 'defaults') {
       Sass.options(Sass._defaultOptions, callback);
@@ -296,6 +307,16 @@ var Sass = {
         throw new Error('only one Sass.compile() can run concurrently, wait for the currently running task to finish!');
       }
 
+      // delay .compile() to when emscripten is ready (if not already the case)
+      // doing this *after* the initial sanity checks to maintain API behavior
+      // in respect to when/how exceptions are thrown
+      if (!Sass._initialized) {
+        Sass._initializedCallback = function() {
+          Sass.compile(text, _options, callback, _compileFile);
+        };
+        return;
+      }
+
       // temporarily - for the duration of this .compile() - overwrite options
       var _previousOptions = null;
       if (_options) {
@@ -372,3 +393,11 @@ options.forEach(function(option) {
   Sass._options[option.key] = Sass._defaultOptions[option.key] = option.initial;
   Sass._optionTypes[option.key] = option.coerce;
 });
+
+
+// _sassFullyInitialized is injected by `grunt build:sync`
+// but `grunt build:sync` will call Sass._ready() directly
+if (Module._sassFullyInitialized) {
+  // react to emscripten in sync loading mode (NodeJS)
+  Sass._ready();
+}

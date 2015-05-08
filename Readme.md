@@ -475,6 +475,7 @@ LIBSASS_VERSION="3.1.0"
 ### master (*may* become 0.8.2) ###
 
 * fixing build to cope with `emcc --version` not naming a commit, adding `grunt-closure-compiler` to dependencies - ([Issue #30](https://github.com/medialize/sass.js/issues/30))
+* fixing `.compile()` to wait until emscripten is ready - ([Issue #29](https://github.com/medialize/sass.js/issues/29))
 
 ### 0.8.1 (May 2nd 2015) ###
 
