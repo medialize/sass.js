@@ -52,7 +52,9 @@ module.exports = function GruntfileConcat(grunt) {
           '  var Module = {',
           '    memoryInitializerPrefixURL: \'dist/\',',
           '    onRuntimeInitialized: function() {',
+          // NodeJS resolves immediately, but the browser does not
           '      Module._sassFullyInitialized = true;',
+          '      typeof Sass !== "undefined" && Sass._ready();',
           '    }',
           '  };',
         ].join('\n'),
