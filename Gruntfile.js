@@ -8,7 +8,7 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    libsassVersion: '3.2.2',
+    libsassVersion: '3.2.3',
   });
 
   grunt.loadTasks('grunt-tasks');
@@ -27,12 +27,7 @@ module.exports = function(grunt) {
   ]);
 
   // concatenate source files and libsass.js
-  grunt.registerTask('build:worker', [
-    'concat:worker',
-    'closure-compiler:worker',
-    'concat:worker-banner',
-    'clean:build'
-  ]);
+  grunt.registerTask('build:worker', ['concat:worker']);
   grunt.registerTask('build:sass', ['concat:sass']);
   grunt.registerTask('build:sync', ['concat:sync']);
 

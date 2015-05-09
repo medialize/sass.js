@@ -2,7 +2,7 @@
 
 Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.2](https://github.com/sass/libsass/releases/tag/3.2.2)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified the worker weighs 2.3MB, gzipped it's still 551KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
+> A fair warning: minified the worker weighs 2.5MB, gzipped it's still 550KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
 ---
 
@@ -471,6 +471,13 @@ LIBSASS_VERSION="3.1.0"
 
 
 ## Changelog
+
+### 0.8.2 (May 9th 2015) ###
+
+* upgrading to [libsass 3.2.3](https://github.com/sass/libsass/releases/tag/3.2.3)
+* fixing build to cope with `emcc --version` not naming a commit - ([Issue #30](https://github.com/medialize/sass.js/issues/30))
+* fixing build to *not* minify distributables (very little gain, but breaks asm in Firefox) - ([Issue #29](https://github.com/medialize/sass.js/issues/29))
+* fixing `.compile()` to wait until emscripten is ready - ([Issue #29](https://github.com/medialize/sass.js/issues/29))
 
 ### 0.8.1 (May 2nd 2015) ###
 
