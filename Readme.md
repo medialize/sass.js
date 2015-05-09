@@ -472,7 +472,7 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
-### master (*may* become 0.8.2) ###
+### 0.8.2 (May 9th 2015) ###
 
 * upgrading to [libsass 3.2.3](https://github.com/sass/libsass/releases/tag/3.2.3)
 * fixing build to cope with `emcc --version` not naming a commit - ([Issue #30](https://github.com/medialize/sass.js/issues/30))
