@@ -474,6 +474,7 @@ LIBSASS_VERSION="3.1.0"
 
 ### master (*may* become 0.8.2) ###
 
+* upgrading to [libsass 3.2.3](https://github.com/sass/libsass/releases/tag/3.2.3)
 * fixing build to cope with `emcc --version` not naming a commit - ([Issue #30](https://github.com/medialize/sass.js/issues/30))
 * fixing build to *not* minify distributables (very little gain, but breaks asm in Firefox) - ([Issue #29](https://github.com/medialize/sass.js/issues/29))
 * fixing `.compile()` to wait until emscripten is ready - ([Issue #29](https://github.com/medialize/sass.js/issues/29))
