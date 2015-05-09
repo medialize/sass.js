@@ -27,12 +27,7 @@ module.exports = function(grunt) {
   ]);
 
   // concatenate source files and libsass.js
-  grunt.registerTask('build:worker', [
-    'concat:worker',
-    'closure-compiler:worker',
-    'concat:worker-banner',
-    'clean:build'
-  ]);
+  grunt.registerTask('build:worker', ['concat:worker']);
   grunt.registerTask('build:sass', ['concat:sass']);
   grunt.registerTask('build:sync', ['concat:sync']);
 

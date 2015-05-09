@@ -17,9 +17,9 @@ module.exports = function GruntfileConcat(grunt) {
     },
     worker: {
       src: ['libsass/libsass/lib/libsass.js', 'src/sass.util.js', 'src/sass.options.js', 'src/sass.importer.js', 'src/sass.api.js', 'src/sass.worker.js'],
-      dest: 'dist/sass.worker.concat.js',
+      dest: 'dist/sass.worker.js',
       options: {
-        banner: 'var Module = { onRuntimeInitialized: function(){ Sass._ready(); } };',
+        banner: banner + 'var Module = { onRuntimeInitialized: function(){ Sass._ready(); } };',
         process: function (content) {
           return content
             // prevent emscripted libsass from exporting itself
@@ -65,13 +65,6 @@ module.exports = function GruntfileConcat(grunt) {
         }
       }
     },
-    'worker-banner': {
-      src: ['dist/sass.worker.js'],
-      dest: 'dist/sass.worker.js',
-      options: {
-        banner: banner,
-      }
-    }
   });
 
 };
