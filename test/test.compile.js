@@ -71,4 +71,33 @@ describe('Sass.compile()', function() {
       done();
     });
   });
+
+  it('should queue compile() calls', function(done) {
+    var source = '$foo:123px;\n\n.m {\n  width:$foo;\n}';
+    var expected = '.m {\n  width: 123px; }\n';
+    var _counter = 2;
+
+    Sass.options('defaults');
+
+    Sass.compile(source, function(result) {
+      expect(result).to.be.a('object');
+      expect(result.map).to.be.a('object');
+      expect(result.text).to.equal(expected);
+
+      _counter--;
+      if (!_counter) {
+        done();
+      }
+    });
+    Sass.compile(source, function(result) {
+      expect(result).to.be.a('object');
+      expect(result.map).to.be.a('object');
+      expect(result.text).to.equal(expected);
+
+      _counter--;
+      if (!_counter) {
+        done();
+      }
+    });
+  });
 });

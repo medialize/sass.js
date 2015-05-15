@@ -333,7 +333,7 @@ Error: invalid top-level expression
 Using the worker API, multiple Sass instances can be initialized to compile sources in *parallel*, rather than in *sequence*:
 
 ```
-// compile sources in sequence
+// compile sources in sequence (default behavior)
 var sass = new Sass('path/to/sass.worker.js');
 sass.compile(source1, callback1);
 sass.compile(source2, callback2);
@@ -512,6 +512,7 @@ LIBSASS_VERSION="3.1.0"
 
 * fixing worker API to avoid throwing `DataCloneError` because `postMessage` can't handle `Error` instances
 * improving worker API to allow multiple *parallel* workers to be initialized - **Breaking Change**
+* improving `Sass.compile()` to queue multiple invocations for serialized execution rather than throwing an error
 * adding `sass.destroy()` to terminate a worker and free its resources
 * adding `Sass.setWorkerUrl()` to define the path of the worker before a Sass instance is created
 

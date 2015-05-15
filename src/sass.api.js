@@ -275,6 +275,9 @@ var Sass = {
     Sass._handleFiles(base, directory, files, Sass._handlePreloadFile);
   },
 
+
+  // allow concurrent task registration, even though we can only execute them in sequence
+  _compileQueue: [],
   compile: function(text, _options, callback, _compileFile) {
     if (typeof _options === 'function') {
       callback = _options;
@@ -290,23 +293,39 @@ var Sass = {
     }
 
     var done = function done(result) {
-      // give emscripten a chance to finish the C function and clean up
-      // before we resume our JavaScript duties
-      (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(function() {
+      var _cleanup = function() {
         // we're done, the next invocation may come
         Sass._sassCompileEmscriptenSuccess = null;
         Sass._sassCompileEmscriptenError = null;
+        // we may have buffered compile() calls during execution,
+        if (!Sass._compileQueue.length) {
+          return;
+        }
+        // first in first out
+        var args = Sass._compileQueue.shift();
+        Sass.compile.apply(Sass, args);
+      };
+      var _done = function() {
         // reset options to what they were before they got temporarily overwritten
         _previousOptions && Sass.options(_previousOptions);
+        // make sure we cleanup regardless of what happenes in the callback
+        (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(_cleanup);
+        // announce we're done while still buffering incoming compile() calls
         callback(result);
-      });
+      };
+
+      // give emscripten a chance to finish the C function and clean up
+      // before we resume our JavaScript duties
+      (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(_done);
     };
 
-    try {
-      if (Sass._sassCompileEmscriptenSuccess) {
-        throw new Error('only one Sass.compile() can run concurrently, wait for the currently running task to finish!');
-      }
+    // only one Sass.compile() can run concurrently, wait for the currently running task to finish!
+    if (Sass._sassCompileEmscriptenSuccess) {
+      Sass._compileQueue.push([text, _options, callback, _compileFile]);
+      return;
+    }
 
+    try {
       // delay .compile() to when emscripten is ready (if not already the case)
       // doing this *after* the initial sanity checks to maintain API behavior
       // in respect to when/how exceptions are thrown
