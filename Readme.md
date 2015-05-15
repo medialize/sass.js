@@ -15,12 +15,12 @@ Sass.js comes in two pieces: `sass.js` being the API available to the browser, `
 ```html
 <script src="dist/sass.js"></script>
 <script>
-  // telling sass.js where it can find the worker,
+  // initialize sass.js, specifying where it can find the worker,
   // url is relative to document.URL
-  Sass.initialize('dist/sass.worker.js');
+  var sass = new Sass('dist/sass.worker.js');
 
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  Sass.compile(scss, function(result) {
+  sass.compile(scss, function(result) {
     console.log(result);
   });
 </script>
@@ -28,7 +28,7 @@ Sass.js comes in two pieces: `sass.js` being the API available to the browser, `
 
 ### Synchronous API (browser)
 
-It is possible - but *not recommended* to use Sass.js in the main EventLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html):
+It is possible - but *not recommended* to use Sass.js in the main EventLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html). Contrary to the worker API, the synchronous API does not allow concurrency, which is why it exposes a "singleton" instance:
 
 ```html
 <!--
@@ -85,8 +85,22 @@ After cloning this repository you can run `grunt libsass:prepare libsass:build` 
 ## Using the Sass.js API
 
 ```js
+// initialize a Sass instance
+// Note: this is not necessary in the synchronous API
+var sass = new Sass('path/to/sass.worker.js');
+
+// destruct/destroy/clean up a Sass instance
+// Note: this is not necessary in the synchronous API
+sass.destroy();
+
+// globally set the URL where the the sass worker file is located
+// so it does not have to be supplied to every constructor
+Sass.setWorkerUrl('path/to/sass.worker.js');
+var sass = new Sass();
+
+
 // compile text to SCSS
-Sass.compile(text, function callback(result) {
+sass.compile(text, function callback(result) {
   // (object) result compilation result
   // (number) result.status success status (0 in success case)
   // (string) result.text compiled CSS string
@@ -103,15 +117,16 @@ Sass.compile(text, function callback(result) {
 // it is possible to set options for a specific compile() call,
 // rather than "gobally" for all compile() calls.
 // see Sass.options() for details
-Sass.compile(text, options, callback);
+sass.compile(text, options, callback);
 
 // compile file to SCSS
-Sass.compileFile(filename, callback);
-Sass.compileFile(filename, options, callback);
+sass.compileFile(filename, callback);
+sass.compileFile(filename, options, callback);
+
 
 // set libsass compile options
 // (provided options are merged onto previously set options)
-Sass.options({
+sass.options({
   // Format output: nested, expanded, compact, compressed
   style: Sass.style.nested,
   // Precision for outputting fractional numbers
@@ -149,18 +164,18 @@ Sass.options({
   // Disable sourceMappingUrl in css output
   sourceMapOmitUrl: true,
 }, function callback(){});
-
 // reset options to sass.js defaults (listed above)
-Sass.options('defaults', function callback(){});
+sass.options('defaults', function callback(){});
+
 
 // register a file to be available for @import
-Sass.writeFile(filename, text, function callback(success) {
+sass.writeFile(filename, text, function callback(success) {
   // (boolean) success is
   //   `true` when the write was OK,
   //   `false` when it failed
 });
 // register multiple files
-Sass.writeFile({
+sass.writeFile({
   'filename-1.scss': 'content-1',
   'filename-2.scss': 'content-2',
 }, function callback(result) {
@@ -173,13 +188,13 @@ Sass.writeFile({
 });
 
 // remove a file
-Sass.removeFile(filename, function callback(success) {
+sass.removeFile(filename, function callback(success) {
   // (boolean) success is
   //   `true` when deleting the file was OK,
   //   `false` when it failed
 });
 // remove multiple files
-Sass.removeFile([filename1, filename2], function callback(result) {
+sass.removeFile([filename1, filename2], function callback(result) {
   // (object) result is
   //    result[filename1]: success
   //    result[filename2]: success
@@ -189,12 +204,12 @@ Sass.removeFile([filename1, filename2], function callback(result) {
 });
 
 // get a file's content
-Sass.readFile(filename, function callback(content) {
+sass.readFile(filename, function callback(content) {
   // (string) content is the file's content,
   //   `undefined` when the read failed
 });
 // read multiple files
-Sass.readFile([filename1, filename2], function callback(result) {
+sass.readFile([filename1, filename2], function callback(result) {
   // (object) result is
   //    result[filename1]: content
   //    result[filename2]: content
@@ -203,23 +218,24 @@ Sass.readFile([filename1, filename2], function callback(result) {
 });
 
 // list all files (regardless of directory structure)
-Sass.listFiles(function callback(list) {
+sass.listFiles(function callback(list) {
   // (array) list contains the paths of all registered files
 });
 
 // remove all files
-Sass.clearFiles(function callback() {});
+sass.clearFiles(function callback() {});
 
 // preload a set of files
 // see chapter »Working With Files« below
-Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
+sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
 
 // register a set of files to be (synchronously) loaded when required
 // see chapter »Working With Files« below
-Sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
+// Note: this method is not available in the synchronous API
+sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
 
 // intercept file loading requests from libsass
-Sass.importer(function(request, done) {
+sass.importer(function(request, done) {
   // (object) request
   // (string) request.current path libsass wants to load (content of »@import "<path>";«)
   // (string) request.previous absolute path of previously imported file ("stdin" if first)
@@ -310,6 +326,24 @@ Error: invalid top-level expression
         on line 7 of stdin
 >> bad-token-test
    ^
+```
+
+### Compiling Concurrently
+
+Using the worker API, multiple Sass instances can be initialized to compile sources in *parallel*, rather than in *sequence*:
+
+```
+// compile sources in sequence
+var sass = new Sass('path/to/sass.worker.js');
+sass.compile(source1, callback1);
+sass.compile(source2, callback2);
+
+// compile sources in parallel
+Sass.setWorkerUrl('path/to/sass.worker.js')
+var sass1 = new Sass();
+var sass2 = new Sass();
+sass1.compile(source1, callback1);
+sass2.compile(source2, callback2);
 ```
 
 ### Working With Files
@@ -472,9 +506,18 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
-### master ###
+### master (will become 0.9.0) ###
+
+**NOTE:** This release contains one breaking change!
 
 * fixing worker API to avoid throwing `DataCloneError` because `postMessage` can't handle `Error` instances
+* improving worker API to allow multiple *parallel* workers to be initialized - **Breaking Change**
+* adding `sass.destroy()` to terminate a worker and free its resources
+* adding `Sass.setWorkerUrl()` to define the path of the worker before a Sass instance is created
+
+#### Breaking Changes
+
+* The worker API used to be initialized with `Sass.initialize('path/to/sass.worker.js')`, but as of v0.9.0 requires proper instantiation: `var sass = new Sass('path/to/sass.worker.js')`.
 
 ### 0.8.2 (May 9th 2015) ###
 
