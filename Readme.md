@@ -472,6 +472,10 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
+### master ###
+
+* fixing worker API to avoid throwing `DataCloneError` because `postMessage` can't handle `Error` instances
+
 ### 0.8.2 (May 9th 2015) ###
 
 * upgrading to [libsass 3.2.3](https://github.com/sass/libsass/releases/tag/3.2.3)
