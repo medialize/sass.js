@@ -1,40 +1,44 @@
 --- Makefile.orig	2015-03-19 20:45:55.000000000 +0100
 +++ Makefile.patched	2015-03-19 20:58:48.000000000 +0100
-@@ -143,7 +143,8 @@
+@@ -143,7 +143,11 @@
  	to_string.cpp \
  	units.cpp \
  	utf8_string.cpp \
 -	util.cpp
 +	util.cpp \
-+	emscripten_wrapper.cpp
++	emscripten_wrapper.cpp \
++	emscripten_sass_values.cpp \
++	emscripten_sass_values_glue.cpp \
++	emscripten_sass_values_glue_wrapper.cpp
  
  CSOURCES = cencode.c
  
-@@ -187,6 +188,34 @@
+@@ -187,6 +188,35 @@
  static: lib/libsass.a
  shared: $(LIBRARIES)
  
 +js: static
 +	emcc lib/libsass.a -o lib/libsass.js \
 +		-O3 \
-+		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
++		-s EXPORTED_FUNCTIONS=@../emscripten_exports.json \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
 +		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
-+		--bind \
++		--post-js emscripten_sass_values_glue.js \
 +		--memory-init-file 1
 +
 +js-debug: static
 +	emcc lib/libsass.a -o lib/libsass.js \
 +		-O0 \
-+		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
++		-s EXPORTED_FUNCTIONS=@../emscripten_exports.json \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
 +		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
++		--post-js emscripten_sass_values_glue.js \
 +		-s ASSERTIONS=1 \
 +		-s SAFE_HEAP=1 \
 +		-s DEMANGLE_SUPPORT=1 \
