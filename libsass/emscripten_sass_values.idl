@@ -1,0 +1,7 @@
+// http://kripken.github.io/emscripten-site/docs/porting/connecting_cpp_and_javascript/WebIDL-Binder.html
+
+interface Emscripten_Sass_Boolean {
+  void Emscripten_Sass_Boolean(boolean v);
+  boolean getValue();
+  void setValue(boolean v);
+};
