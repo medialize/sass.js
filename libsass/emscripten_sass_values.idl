@@ -1,7 +1,62 @@
 // http://kripken.github.io/emscripten-site/docs/porting/connecting_cpp_and_javascript/WebIDL-Binder.html
+// python /usr/local/Cellar/emscripten/HEAD/libexec/tools/webidl_binder.py \
+//   emscripten_sass_values.idl \
+//   emscripten_sass_values_glue
+
+interface Emscripten_Sass {
+  void Emscripten_Sass();
+};
+
+interface Emscripten_Sass_Unknown {
+  void Emscripten_Sass_Unknown();
+}
+
+interface Emscripten_Sass_Null {
+  void Emscripten_Sass_Null();
+}
 
 interface Emscripten_Sass_Boolean {
-  void Emscripten_Sass_Boolean(boolean v);
-  boolean getValue();
-  void setValue(boolean v);
+  void Emscripten_Sass_Boolean(boolean value);
+  attribute boolean value;
+};
+
+interface Emscripten_Sass_Number {
+  void Emscripten_Sass_Number(double value, DOMString unit);
+  attribute double value;
+  attribute DOMString unit;
+};
+
+interface Emscripten_Sass_String {
+  void Emscripten_Sass_String(DOMString value);
+  attribute DOMString value;
+};
+
+interface Emscripten_Sass_Color {
+  void Emscripten_Sass_Color(double r, double g, double b, double a);
+  attribute double r;
+  attribute double g;
+  attribute double b;
+  attribute double a;
+};
+
+
+interface Emscripten_Sass_List {
+  void Emscripten_Sass_List(DOMString separator);
+  attribute DOMString separator;
+  // TODO: no idea how to represent an vector<Emscripten_Sass> in WebIDL
+};
+
+interface Emscripten_Sass_Map {
+  void Emscripten_Sass_Map();
+  // TODO: no idea how to represent an unordered_list<Emscripten_Sass, Emscripten_Sass> in WebIDL
+};
+
+interface Emscripten_Sass_Error {
+  void Emscripten_Sass_Error(DOMString message);
+  attribute DOMString message;
+};
+
+interface Emscripten_Sass_Warning {
+  void Emscripten_Sass_Error(DOMString message);
+  attribute DOMString message;
 };
