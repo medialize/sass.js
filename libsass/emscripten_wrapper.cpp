@@ -2,8 +2,9 @@
 #include <cstring>
 #include "sass_context.h"
 #include "sass_functions.h"
-#include "sass_values.cpp"
 #include "emscripten_wrapper.hpp"
+#include "emscripten_sass_values.hpp"
+#include "emscripten_sass_values_glue_wrapper.cpp"
 #include <emscripten.h>
 #include <emscripten/bind.h>
 
@@ -222,18 +223,13 @@ union Sass_Value* sass_function_emscripten(
   struct Sass_Options* opts
 ) {
   // https://github.com/sass/libsass/wiki/Custom-Functions-internal#signature
-  const char *signature = sass_function_get_signature(cb);
+  //const char *signature = sass_function_get_signature(cb);
   //void *cookie = sass_function_get_cookie(cb);
 
-  EM_ASM_INT({
-    console.log("function()", pointerToString($0));
-  }, signature);
+  Emscripten_Sass foo = Emscripten_Sass::fromStruct(s_args);
+  return foo.toStruct();
 
-  EM_ASM( Values.reset(); );
-  sass_value_to_js(s_args);
-  EM_ASM( console.log(Values.collect()); );
-
-  if (false) {
+  if (true) {
     // simple value
     return sass_make_number(123, "px");
   }
@@ -257,101 +253,4 @@ union Sass_Value* sass_function_emscripten(
   }
   
   return NULL;
-}
-
-void sass_value_to_js(const union Sass_Value* value) {
-  // maybe we can use a switch instead?
-  // enum Sass_Tag sass_value_get_tag (value[i]);
-  if (sass_value_is_null(value)) {
-    EM_ASM( Values.add(null); );
-  } else if (sass_value_is_number(value)) {
-    EM_ASM_ARGS({
-      Values.add(new Values.Number($0, pointerToString($1)));
-    },
-      sass_number_get_value(value), // double
-      sass_number_get_unit(value) // int (string pointer)
-    );
-    
-  } else if (sass_value_is_string(value)) {
-    EM_ASM_INT({
-      Values.add(new Values.String(pointerToString($0)));
-    },
-      sass_string_get_value(value)
-    );
-  } else if (sass_value_is_boolean(value)) {
-    EM_ASM_INT({
-      Values.add(new Values.Boolean($0));
-    },
-      sass_boolean_get_value(value)
-    );
-  } else if (sass_value_is_color(value)) {
-    EM_ASM_DOUBLE({
-      Values.add(new Values.Color($0, $1, $2, $3));
-    },
-      sass_color_get_r(value),
-      sass_color_get_g(value),
-      sass_color_get_b(value),
-      sass_color_get_a(value)
-    );
-  } else if (sass_value_is_list(value)) {
-    EM_ASM_INT({
-      Values.push(new Values.List($0));
-    },
-      sass_list_get_separator(value)
-    );
-
-    size_t i;
-    size_t length = sass_list_get_length(value);
-    for (i = 0; i < length; ++i) {
-      sass_value_to_js(sass_list_get_value(value, i));
-    }
-
-    EM_ASM( Values.pop(); );
-  } else if (sass_value_is_map(value)) {
-    EM_ASM( Values.push(new Values.Map()); );
-
-    size_t i;
-    size_t length = sass_map_get_length(value);
-    for (i = 0; i < length; ++i) {
-      sass_value_to_js(sass_map_get_key(value, i));
-      sass_value_to_js(sass_map_get_value(value, i));
-    }
-
-    EM_ASM( Values.pop(); );
-
-  } else if (sass_value_is_error(value)) {
-    EM_ASM_INT({
-      Values.add(new Values.Error(pointerToString($0)));
-    },
-      sass_error_get_message(value)
-    );
-  } else if (sass_value_is_warning(value)) {
-    EM_ASM_INT({
-      Values.add(new Values.Warning(pointerToString($0)));
-    },
-      sass_warning_get_message(value)
-    );
-  } else {
-    // unknown value
-    EM_ASM( Values.add(undefined); );
-  }
-}
-
-const union Sass_Value* sass_value_from_js() {
-  
-}
-
-
-using namespace emscripten;
-EMSCRIPTEN_BINDINGS(sassjs) {
-  //emscripten::function("momma", &Sass_, allow_raw_pointers());
-  emscripten::enum_<Sass_Separator>("Sass_Separator")
-          .value("SASS_COMMA", SASS_COMMA)
-          .value("SASS_COMMA", SASS_SPACE)
-          ;
-
-  emscripten::value_object<Sass_Number>("Sass_Number")
-          .field("value", &Sass_Number::value)
-          .field("unit", &Sass_Number::unit, allow_raw_pointers())
-          ;
 }
