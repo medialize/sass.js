@@ -34,11 +34,19 @@ var Sass = {
   _initialized: false,
   // allow calling .compile() before emscripten is ready by "buffering" the call
   // (i.e. have the client not care about its asynchronous init)
-  _initializedCallback: null,
   _ready: function() {
     Sass._initialized = true;
-    Sass._initializedCallback && Sass._initializedCallback();
-    Sass._initializedCallback = null;
+    // we may have buffered compile() calls during execution,
+    Sass._compileNext();
+  },
+
+  _compileNext: function() {
+    if (!Sass._compileQueue.length) {
+      return;
+    }
+    // first in first out
+    var args = Sass._compileQueue.shift();
+    Sass.compile.apply(Sass, args);
   },
 
   options: function(options, callback) {
@@ -298,12 +306,7 @@ var Sass = {
         Sass._sassCompileEmscriptenSuccess = null;
         Sass._sassCompileEmscriptenError = null;
         // we may have buffered compile() calls during execution,
-        if (!Sass._compileQueue.length) {
-          return;
-        }
-        // first in first out
-        var args = Sass._compileQueue.shift();
-        Sass.compile.apply(Sass, args);
+        Sass._compileNext();
       };
       var _done = function() {
         // reset options to what they were before they got temporarily overwritten
@@ -320,22 +323,15 @@ var Sass = {
     };
 
     // only one Sass.compile() can run concurrently, wait for the currently running task to finish!
-    if (Sass._sassCompileEmscriptenSuccess) {
+    // Also we need to delay .compile() to when emscripten is ready (if not already the case)
+    // doing this *after* the initial sanity checks to maintain API behavior
+    // in respect to when/how exceptions are thrown
+    if (Sass._sassCompileEmscriptenSuccess || !Sass._initialized) {
       Sass._compileQueue.push([text, _options, callback, _compileFile]);
       return;
     }
 
     try {
-      // delay .compile() to when emscripten is ready (if not already the case)
-      // doing this *after* the initial sanity checks to maintain API behavior
-      // in respect to when/how exceptions are thrown
-      if (!Sass._initialized) {
-        Sass._initializedCallback = function() {
-          Sass.compile(text, _options, callback, _compileFile);
-        };
-        return;
-      }
-
       // temporarily - for the duration of this .compile() - overwrite options
       var _previousOptions = null;
       if (_options) {
