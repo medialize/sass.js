@@ -29,14 +29,6 @@ cp ./emscripten_sass_values_glue_wrapper.cpp ./libsass/emscripten_sass_values_gl
 # (cd ./libsass && python /usr/local/Cellar/emscripten/HEAD/libexec/tools/webidl_binder.py \
 #   emscripten_sass_values.idl \
 #   emscripten_sass_values_glue)
-# # yes, I imagine someone is going to kill me for this heresy
-# echo "#include \"emscripten_sass_values.hpp\" \n #include <cstdlib> \n #include <cstring>\n $(cat libsass/emscripten_sass_values_glue.cpp)" > libsass/emscripten_sass_values_glue.cpp
-
-# need to add imports:
-#include "emscripten_sass_values.hpp"
-#include <cstdlib>
-#include <cstring>
-#include <emscripten.h>
 # need to fix all functions returning (char* EMSCRIPTEN_KEEPALIVE):
 #     return self->value;
 # to

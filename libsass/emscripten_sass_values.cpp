@@ -46,7 +46,7 @@ Emscripten_Sass Emscripten_Sass::fromStruct(const union Sass_Value* input) {
 };
 
 
-
+Emscripten_Sass_Unknown::Emscripten_Sass_Unknown() {};
 union Sass_Value* Emscripten_Sass_Unknown::toStruct() {
   return sass_make_null();
 };
@@ -56,7 +56,7 @@ Emscripten_Sass_Unknown Emscripten_Sass_Unknown::fromStruct(const union Sass_Val
 };
 
 
-
+Emscripten_Sass_Null::Emscripten_Sass_Null() {};
 union Sass_Value* Emscripten_Sass_Null::toStruct() {
   return sass_make_null();
 };

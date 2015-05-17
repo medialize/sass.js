@@ -8,6 +8,7 @@
 
 using namespace std;
 
+// shouldn't this be abstract?
 class Emscripten_Sass {
 public:
   union Sass_Value* toStruct();
