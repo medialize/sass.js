@@ -3,7 +3,8 @@
   "version": "0.8.2",
   "main": [
     "./dist/sass.js",
-    "./dist/sass.worker.js"
+    "./dist/sass.worker.js",
+    "./dist/sass.sync.js"
   ],
   "ignore": [
     "**/.*",
