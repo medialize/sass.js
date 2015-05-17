@@ -7,31 +7,31 @@ interface Emscripten_Sass {
   void Emscripten_Sass();
 };
 
-interface Emscripten_Sass_Unknown {
+interface Emscripten_Sass_Unknown : Emscripten_Sass {
   void Emscripten_Sass_Unknown();
-}
+};
 
-interface Emscripten_Sass_Null {
+interface Emscripten_Sass_Null : Emscripten_Sass {
   void Emscripten_Sass_Null();
-}
+};
 
-interface Emscripten_Sass_Boolean {
+interface Emscripten_Sass_Boolean : Emscripten_Sass {
   void Emscripten_Sass_Boolean(boolean value);
   attribute boolean value;
 };
 
-interface Emscripten_Sass_Number {
+interface Emscripten_Sass_Number : Emscripten_Sass {
   void Emscripten_Sass_Number(double value, DOMString unit);
   attribute double value;
   attribute DOMString unit;
 };
 
-interface Emscripten_Sass_String {
+interface Emscripten_Sass_String : Emscripten_Sass {
   void Emscripten_Sass_String(DOMString value);
   attribute DOMString value;
 };
 
-interface Emscripten_Sass_Color {
+interface Emscripten_Sass_Color : Emscripten_Sass {
   void Emscripten_Sass_Color(double r, double g, double b, double a);
   attribute double r;
   attribute double g;
@@ -39,24 +39,23 @@ interface Emscripten_Sass_Color {
   attribute double a;
 };
 
-
-interface Emscripten_Sass_List {
+interface Emscripten_Sass_List : Emscripten_Sass {
   void Emscripten_Sass_List(DOMString separator);
   attribute DOMString separator;
   // TODO: no idea how to represent an vector<Emscripten_Sass> in WebIDL
 };
 
-interface Emscripten_Sass_Map {
+interface Emscripten_Sass_Map : Emscripten_Sass {
   void Emscripten_Sass_Map();
   // TODO: no idea how to represent an unordered_list<Emscripten_Sass, Emscripten_Sass> in WebIDL
 };
 
-interface Emscripten_Sass_Error {
+interface Emscripten_Sass_Error : Emscripten_Sass {
   void Emscripten_Sass_Error(DOMString message);
   attribute DOMString message;
 };
 
-interface Emscripten_Sass_Warning {
-  void Emscripten_Sass_Error(DOMString message);
+interface Emscripten_Sass_Warning : Emscripten_Sass {
+  void Emscripten_Sass_Warning(DOMString message);
   attribute DOMString message;
 };
