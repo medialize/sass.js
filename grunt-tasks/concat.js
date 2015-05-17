@@ -1,9 +1,11 @@
 module.exports = function GruntfileConcat(grunt) {
   'use strict';
 
+  /*jshint laxbreak:true */
   var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> (<%= versions.sassjs.commit %>) - built <%= grunt.template.today("yyyy-mm-dd") %>\n'
     + '  providing libsass <%= versions.libsass.version %> (<%= versions.libsass.commit %>)\n'
-    + '  via emscripten <%= versions.emscripten.version %> (<%= versions.emscripten.commit %>)\n */\n'
+    + '  via emscripten <%= versions.emscripten.version %> (<%= versions.emscripten.commit %>)\n */\n';
+  /*jshint laxbreak:false */
 
   grunt.config('concat', {
     sass: {
@@ -15,8 +17,9 @@ module.exports = function GruntfileConcat(grunt) {
     },
     worker: {
       src: ['libsass/libsass/lib/libsass.js', 'src/sass.util.js', 'src/sass.options.js', 'src/sass.importer.js', 'src/sass.api.js', 'src/sass.worker.js'],
-      dest: 'dist/sass.worker.concat.js',
+      dest: 'dist/sass.worker.js',
       options: {
+        banner: banner + 'var Module = { onRuntimeInitialized: function(){ Sass._ready(); } };',
         process: function (content) {
           return content
             // prevent emscripted libsass from exporting itself
@@ -46,7 +49,14 @@ module.exports = function GruntfileConcat(grunt) {
           // that's fine in Node, potentially catastrophic in the browser.
           // That's fine, since sass.sync.js is NOT recommended
           // to be used in the browser anyway.
-          'var Module = { memoryInitializerPrefixURL: \'dist/\' };',
+          '  var Module = {',
+          '    memoryInitializerPrefixURL: \'dist/\',',
+          '    onRuntimeInitialized: function() {',
+          // NodeJS resolves immediately, but the browser does not
+          '      Module._sassFullyInitialized = true;',
+          '      typeof Sass !== "undefined" && Sass._ready();',
+          '    }',
+          '  };',
         ].join('\n'),
         footer: 'return Sass;\n}));',
         process: function (content) {
@@ -55,13 +65,6 @@ module.exports = function GruntfileConcat(grunt) {
         }
       }
     },
-    'worker-banner': {
-      src: ['dist/sass.worker.js'],
-      dest: 'dist/sass.worker.js',
-      options: {
-        banner: banner,
-      }
-    }
   });
 
 };

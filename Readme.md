@@ -1,10 +1,12 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at v3.2.0). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.4](https://github.com/sass/libsass/releases/tag/3.2.4)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified the worker weighs 2.3MB, gzipped it's still 546KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
+> A fair warning: minified the worker weighs 2.5MB, gzipped it's still 555KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
-Have a go at the [playground](http://medialize.github.com/sass.js/playground.html) to fiddle with what sass.js has to offer.
+---
+
+Have a look at the [Interactive Playground](http://medialize.github.io/playground.sass.js/)
 
 ## Loading the Sass.js API
 
@@ -13,12 +15,12 @@ Sass.js comes in two pieces: `sass.js` being the API available to the browser, `
 ```html
 <script src="dist/sass.js"></script>
 <script>
-  // telling sass.js where it can find the worker,
+  // initialize sass.js, specifying where it can find the worker,
   // url is relative to document.URL
-  Sass.initialize('dist/sass.worker.js');
+  var sass = new Sass('dist/sass.worker.js');
 
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  Sass.compile(scss, function(result) {
+  sass.compile(scss, function(result) {
     console.log(result);
   });
 </script>
@@ -26,7 +28,7 @@ Sass.js comes in two pieces: `sass.js` being the API available to the browser, `
 
 ### Synchronous API (browser)
 
-It is possible - but *not recommended* to use Sass.js in the main EventLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html):
+It is possible - but *not recommended* to use Sass.js in the main EventLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html). Contrary to the worker API, the synchronous API does not allow concurrency, which is why it exposes a "singleton" instance:
 
 ```html
 <!--
@@ -83,8 +85,22 @@ After cloning this repository you can run `grunt libsass:prepare libsass:build` 
 ## Using the Sass.js API
 
 ```js
+// initialize a Sass instance
+// Note: this is not necessary in the synchronous API
+var sass = new Sass('path/to/sass.worker.js');
+
+// destruct/destroy/clean up a Sass instance
+// Note: this is not necessary in the synchronous API
+sass.destroy();
+
+// globally set the URL where the the sass worker file is located
+// so it does not have to be supplied to every constructor
+Sass.setWorkerUrl('path/to/sass.worker.js');
+var sass = new Sass();
+
+
 // compile text to SCSS
-Sass.compile(text, function callback(result) {
+sass.compile(text, function callback(result) {
   // (object) result compilation result
   // (number) result.status success status (0 in success case)
   // (string) result.text compiled CSS string
@@ -98,15 +114,24 @@ Sass.compile(text, function callback(result) {
   // (string) result.message the error message
   // (string) result.formatted human readable error message containing all details
 });
+// it is possible to set options for a specific compile() call,
+// rather than "gobally" for all compile() calls.
+// see Sass.options() for details
+sass.compile(text, options, callback);
+
+// compile file to SCSS
+sass.compileFile(filename, callback);
+sass.compileFile(filename, options, callback);
+
 
 // set libsass compile options
 // (provided options are merged onto previously set options)
-Sass.options({
+sass.options({
   // Format output: nested, expanded, compact, compressed
   style: Sass.style.nested,
   // Precision for outputting fractional numbers
-  // (0 is libsass default precision)
-  precision: 0,
+  // (-1 will use the libsass default, which currently is 5)
+  precision: -1,
   // If you want inline source comments
   comments: false,
   // Treat source_string as SASS (as opposed to SCSS)
@@ -139,48 +164,78 @@ Sass.options({
   // Disable sourceMappingUrl in css output
   sourceMapOmitUrl: true,
 }, function callback(){});
-
 // reset options to sass.js defaults (listed above)
-Sass.options('defaults', function callback(){});
+sass.options('defaults', function callback(){});
+
 
 // register a file to be available for @import
-Sass.writeFile(filename, text, function callback(success) {
+sass.writeFile(filename, text, function callback(success) {
+  // (boolean) success is
+  //   `true` when the write was OK,
+  //   `false` when it failed
+});
+// register multiple files
+sass.writeFile({
+  'filename-1.scss': 'content-1',
+  'filename-2.scss': 'content-2',
+}, function callback(result) {
+  // (object) result is
+  //    result['filename-1.scss']: success
+  //    result['filename-2.scss']: success
   // (boolean) success is
   //   `true` when the write was OK,
   //   `false` when it failed
 });
 
 // remove a file
-Sass.removeFile(filename, function callback(success) {
+sass.removeFile(filename, function callback(success) {
+  // (boolean) success is
+  //   `true` when deleting the file was OK,
+  //   `false` when it failed
+});
+// remove multiple files
+sass.removeFile([filename1, filename2], function callback(result) {
+  // (object) result is
+  //    result[filename1]: success
+  //    result[filename2]: success
   // (boolean) success is
   //   `true` when deleting the file was OK,
   //   `false` when it failed
 });
 
 // get a file's content
-Sass.readFile(filename, function callback(content) {
+sass.readFile(filename, function callback(content) {
+  // (string) content is the file's content,
+  //   `undefined` when the read failed
+});
+// read multiple files
+sass.readFile([filename1, filename2], function callback(result) {
+  // (object) result is
+  //    result[filename1]: content
+  //    result[filename2]: content
   // (string) content is the file's content,
   //   `undefined` when the read failed
 });
 
 // list all files (regardless of directory structure)
-Sass.listFiles(function callback(list) {
+sass.listFiles(function callback(list) {
   // (array) list contains the paths of all registered files
 });
 
 // remove all files
-Sass.clearFiles(function callback() {});
+sass.clearFiles(function callback() {});
 
 // preload a set of files
 // see chapter »Working With Files« below
-Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
+sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
 
 // register a set of files to be (synchronously) loaded when required
 // see chapter »Working With Files« below
-Sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
+// Note: this method is not available in the synchronous API
+sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
 
 // intercept file loading requests from libsass
-Sass.importer(function(request, done) {
+sass.importer(function(request, done) {
   // (object) request
   // (string) request.current path libsass wants to load (content of »@import "<path>";«)
   // (string) request.previous absolute path of previously imported file ("stdin" if first)
@@ -271,6 +326,24 @@ Error: invalid top-level expression
         on line 7 of stdin
 >> bad-token-test
    ^
+```
+
+### Compiling Concurrently
+
+Using the worker API, multiple Sass instances can be initialized to compile sources in *parallel*, rather than in *sequence*:
+
+```
+// compile sources in sequence (default behavior)
+var sass = new Sass('path/to/sass.worker.js');
+sass.compile(source1, callback1);
+sass.compile(source2, callback2);
+
+// compile sources in parallel
+Sass.setWorkerUrl('path/to/sass.worker.js')
+var sass1 = new Sass();
+var sass2 = new Sass();
+sass1.compile(source1, callback1);
+sass2.compile(source2, callback2);
 ```
 
 ### Working With Files
@@ -433,17 +506,61 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
-### master (libsass/3.2 integration) ###
+### master (will become 0.9.0) ###
 
-this is the libsass version 3.2 integration branch
+**NOTE:** This release contains one breaking change!
 
-* improving build infrastructure
+* upgrading to [libsass 3.2.4](https://github.com/sass/libsass/releases/tag/3.2.4)
+* fixing worker API to avoid throwing `DataCloneError` because `postMessage` can't handle `Error` instances
+* improving worker API to allow multiple *parallel* workers to be initialized - **Breaking Change**
+* improving `Sass.compile()` to queue multiple invocations for serialized execution rather than throwing an error
+* adding `sass.destroy()` to terminate a worker and free its resources
+* adding `Sass.setWorkerUrl()` to define the path of the worker before a Sass instance is created
+
+#### Breaking Changes
+
+* The worker API used to be initialized with `Sass.initialize('path/to/sass.worker.js')`, but as of v0.9.0 requires proper instantiation: `var sass = new Sass('path/to/sass.worker.js')`.
+
+### 0.8.2 (May 9th 2015) ###
+
+* upgrading to [libsass 3.2.3](https://github.com/sass/libsass/releases/tag/3.2.3)
+* fixing build to cope with `emcc --version` not naming a commit - ([Issue #30](https://github.com/medialize/sass.js/issues/30))
+* fixing build to *not* minify distributables (very little gain, but breaks asm in Firefox) - ([Issue #29](https://github.com/medialize/sass.js/issues/29))
+* fixing `.compile()` to wait until emscripten is ready - ([Issue #29](https://github.com/medialize/sass.js/issues/29))
+
+### 0.8.1 (May 2nd 2015) ###
+
+* upgrading to [libsass 3.2.2](https://github.com/sass/libsass/releases/tag/3.2.2)
+* adding `Sass.compileFile()` to compile directly from file system
+* fixing `Sass.options('defaults', callback)` to actually fire the callback
+* improving `Sass.compile()` to accept options to temporarily set for that invocation, extending the signature to
+  * `Sass.compile(source, callback)`
+  * `Sass.compile(source, options, callback)`
+* improving `Sass.writeFile()` to accept a map of files to write
+* improving `Sass.readFile()` to accept an array of files to read
+* improving `Sass.removeFile()` to accept an array of files to remove
+
+### 0.8.0 (May 2nd 2015) ###
+
+(failed and unpublished from npm, removed tag, see 0.8.1, I'm sorry)
+
+### 0.7.2 (April 30th 2015) ###
+
+* fixing option `precision` so that by default Sass.js won't overwrite libsass default precision (`5`)
+
+### 0.7.1 (April 30th 2015) ###
+
+* upgrading to [libsass 3.2.1](https://github.com/sass/libsass/releases/tag/3.2.1)
+
+### 0.7.0 (April 27th 2015) ###
+
+**NOTE:** This release contains several breaking changes!
+
+* Upgrading build infrastructure
+  * compile [libsass 3.2.0](https://github.com/sass/libsass/releases/tag/3.2.0)
   * allowing builds without forced download of libsass.git every time
   * providing emscripten debug mode
-* Upgrading build infrastructure and API to libsass 3.2
-  * [libsass 3.2 beta.4](https://github.com/sass/libsass/releases/tag/3.2.0-beta.4)
 * improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
-* improving error error reporting
 * renaming files to make more sense
 * improving synchronous API to perfectly mirror the worker API
 * adding `.options('defaults')` to reset options to sass.js defaults
@@ -467,8 +584,8 @@ this is the libsass version 3.2 integration branch
 #### Breaking Changes
 
 * synchronous API (formerly `dist/sass.js` and `dist/sass.min.js`) is now *required* to be loaded from a directory called `dist` relative to `document.URL` (irrelevant for use in Node!)
-* synchronous API now has the *exact same* signature as the worker API, meaning all responses are not returned, but passed to callback functions instead.
-* `Sass.compile()` used to return the compiled CSS as string, it now returns an object `{text: "generated_css"}`
+* synchronous API now has the *exact same* signature as the worker API, meaning responses are not returned, but passed to callback functions instead.
+* `Sass.compile()` used to return the compiled CSS as string, it now [returns an object](https://github.com/medialize/sass.js#compile-response-object)
 * distribution files renamed or removed for clarity
   * `dist/worker.js` *removed*
   * `dist/sass.worker.js` *removed*
@@ -534,7 +651,7 @@ this is the libsass version 3.2 integration branch
 ## Credits
 
 * the [sass group](https://github.com/sass), especially [team libsass](https://github.com/sass/libsass)
-* team [emscripten](https://github.com/kripken/emscripten), especially [Alan Zakai](https://github.com/kripken)
+* team [emscripten](https://github.com/kripken/emscripten), especially [Alon Zakai](https://github.com/kripken)
 
 ## License
 

@@ -24,7 +24,7 @@ var options = [
     // Precision for outputting fractional numbers
     // 0: use libsass default
     key: 'precision',
-    initial: 0,
+    initial: -1,
     coerce: Number,
   },
   {

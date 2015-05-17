@@ -103,8 +103,8 @@ describe('importer', function() {
 
     Sass.compile(source, function(result) {
       expect(result.text).to.equal(expected);
-      // FIXME: https://github.com/sass/libsass/issues/1040
-      //expect(JSON.stringify(result.files)).to.equal(JSON.stringify(expectedFiles));
+      // https://github.com/sass/libsass/issues/1040
+      expect(JSON.stringify(result.files)).to.equal(JSON.stringify(expectedFiles));
 
       done();
     });

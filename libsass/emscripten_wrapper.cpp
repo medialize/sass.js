@@ -10,6 +10,7 @@
 void sass_compile_emscripten(
   char *source_string,
   char *include_paths,
+  bool compile_file,
   bool custom_importer,
   int output_style,
   int precision,
@@ -29,12 +30,26 @@ void sass_compile_emscripten(
   Sass_Output_Style sass_output_style = (Sass_Output_Style)output_style;
 
   // initialize context
-  struct Sass_Data_Context* data_ctx = sass_make_data_context(strdup(source_string));
-  struct Sass_Context* ctx = sass_data_context_get_context(data_ctx);
+  struct Sass_Data_Context* data_ctx;
+  struct Sass_File_Context* file_ctx;
+  struct Sass_Context* ctx;
+
+  if (compile_file) {
+    file_ctx = sass_make_file_context(strdup(source_string));
+    ctx = sass_file_context_get_context(file_ctx);
+  } else {
+    data_ctx = sass_make_data_context(strdup(source_string));
+    ctx = sass_data_context_get_context(data_ctx);
+  }
+
   struct Sass_Options* ctx_opt = sass_context_get_options(ctx);
 
   // configure context
-  sass_option_set_precision(ctx_opt, precision);
+  if (precision > -1) {
+    // if we set a precision libsass will use that blindly, with
+    // 0 being a valid precision - i.e. the precision of "integer"
+    sass_option_set_precision(ctx_opt, precision);
+  }
   sass_option_set_output_style(ctx_opt, sass_output_style);
   sass_option_set_source_comments(ctx_opt, source_comments);
   sass_option_set_source_map_embed(ctx_opt, source_map_embed);
@@ -75,7 +90,12 @@ void sass_compile_emscripten(
   }
 
   // compile
-  int status = sass_compile_data_context(data_ctx);
+  int status;
+  if (compile_file) {
+    status = sass_compile_file_context(file_ctx);
+  } else {
+    status = sass_compile_data_context(data_ctx);
+  }
 
   // returning data to JS via callback rather than regular function return value and C pointer fun,
   // because emscripten does not inform JavaScript when an (empterpreter) async function is done.
@@ -109,7 +129,11 @@ void sass_compile_emscripten(
   }
 
   // clean up
-  sass_delete_data_context(data_ctx);
+  if (compile_file) {
+    sass_delete_file_context(file_ctx);
+  } else {
+    sass_delete_data_context(data_ctx);
+  }
 }
 
 struct Sass_Import** sass_importer_emscripten(

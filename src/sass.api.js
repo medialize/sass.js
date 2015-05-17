@@ -30,9 +30,20 @@ var Sass = {
   PATH: PATH,
   Module: Module,
 
+  // track if emscripten is initialized
+  _initialized: false,
+  // allow calling .compile() before emscripten is ready by "buffering" the call
+  // (i.e. have the client not care about its asynchronous init)
+  _initializedCallback: null,
+  _ready: function() {
+    Sass._initialized = true;
+    Sass._initializedCallback && Sass._initializedCallback();
+    Sass._initializedCallback = null;
+  },
+
   options: function(options, callback) {
     if (options === 'defaults') {
-      this.options(this._defaultOptions);
+      Sass.options(Sass._defaultOptions, callback);
       return;
     }
 
@@ -41,7 +52,7 @@ var Sass = {
     }
 
     Object.keys(options).forEach(function(key) {
-      var _type = this._optionTypes[key];
+      var _type = Sass._optionTypes[key];
 
       // no need to import crap
       if (!_type) {
@@ -49,10 +60,19 @@ var Sass = {
       }
 
       // force expected data type
-      this._options[key] = _type(options[key]);
-    }, this);
+      Sass._options[key] = _type(options[key]);
+    });
 
     callback && callback();
+  },
+
+  _cloneOptions: function() {
+    var o = {};
+    Object.keys(Sass._options).forEach(function(key) {
+      o[key] = Sass._options[key];
+    });
+
+    return o;
   },
 
   importer: function(importerCallback, callback) {
@@ -60,7 +80,7 @@ var Sass = {
       throw new Error('importer callback must either be a function or null');
     }
 
-    this._importer = importerCallback;
+    Sass._importer = importerCallback;
     callback && callback();
   },
 
@@ -100,6 +120,21 @@ var Sass = {
   },
 
   writeFile: function(filename, text, callback) {
+    if (typeof filename === 'object') {
+      callback = text;
+      text = null;
+
+      var map = {};
+      Object.keys(filename).forEach(function(file) {
+        Sass.writeFile(file, filename[file], function(result) {
+          map[file] = result;
+        });
+      });
+
+      callback && callback(map);
+      return;
+    }
+
     var _absolute = filename.slice(0, 1) === '/';
     var path = Sass._absolutePath(filename);
     try {
@@ -118,6 +153,18 @@ var Sass = {
   },
 
   readFile: function(filename, callback) {
+    if (Array.isArray(filename)) {
+      var map = {};
+      filename.forEach(function(file) {
+        Sass.readFile(file, function(result) {
+          map[file] = result;
+        });
+      });
+
+      callback && callback(map);
+      return;
+    }
+
     var path = Sass._absolutePath(filename);
     var result;
     try {
@@ -136,6 +183,18 @@ var Sass = {
   },
 
   removeFile: function(filename, callback) {
+    if (Array.isArray(filename)) {
+      var map = {};
+      filename.forEach(function(file) {
+        Sass.removeFile(file, function(result) {
+          map[file] = result;
+        });
+      });
+
+      callback && callback(map);
+      return;
+    }
+
     var _absolute = filename.slice(0, 1) === '/';
     var path = Sass._absolutePath(filename);
     try {
@@ -216,26 +275,73 @@ var Sass = {
     Sass._handleFiles(base, directory, files, Sass._handlePreloadFile);
   },
 
-  compile: function(text, callback) {
+
+  // allow concurrent task registration, even though we can only execute them in sequence
+  _compileQueue: [],
+  compile: function(text, _options, callback, _compileFile) {
+    if (typeof _options === 'function') {
+      callback = _options;
+      _options = null;
+    }
+
     if (!callback) {
-      throw new Error('Sass.compile() requires callback function as second paramter!');
+      throw new Error('Sass.compile() requires callback function as second (or third) paramter!');
+    }
+
+    if (_options !== null && typeof _options !== 'object') {
+      throw new Error('Sass.compile() requires second argument to be an object (options) or a function (callback)');
+    }
+
+    var done = function done(result) {
+      var _cleanup = function() {
+        // we're done, the next invocation may come
+        Sass._sassCompileEmscriptenSuccess = null;
+        Sass._sassCompileEmscriptenError = null;
+        // we may have buffered compile() calls during execution,
+        if (!Sass._compileQueue.length) {
+          return;
+        }
+        // first in first out
+        var args = Sass._compileQueue.shift();
+        Sass.compile.apply(Sass, args);
+      };
+      var _done = function() {
+        // reset options to what they were before they got temporarily overwritten
+        _previousOptions && Sass.options(_previousOptions);
+        // make sure we cleanup regardless of what happenes in the callback
+        (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(_cleanup);
+        // announce we're done while still buffering incoming compile() calls
+        callback(result);
+      };
+
+      // give emscripten a chance to finish the C function and clean up
+      // before we resume our JavaScript duties
+      (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(_done);
+    };
+
+    // only one Sass.compile() can run concurrently, wait for the currently running task to finish!
+    if (Sass._sassCompileEmscriptenSuccess) {
+      Sass._compileQueue.push([text, _options, callback, _compileFile]);
+      return;
     }
 
     try {
-      if (Sass._sassCompileEmscriptenSuccess) {
-        throw new Error('only one Sass.compile() can run concurrently, wait for the currently running task to finish!');
+      // delay .compile() to when emscripten is ready (if not already the case)
+      // doing this *after* the initial sanity checks to maintain API behavior
+      // in respect to when/how exceptions are thrown
+      if (!Sass._initialized) {
+        Sass._initializedCallback = function() {
+          Sass.compile(text, _options, callback, _compileFile);
+        };
+        return;
       }
 
-      var done = function done(result) {
-        // give emscripten a chance to finish the C function and clean up
-        // before we resume our JavaScript duties
-        (typeof setImmediate !== 'undefined' ? setImmediate : setTimeout)(function() {
-          // we're done, the next invocation may come
-          Sass._sassCompileEmscriptenSuccess = null;
-          Sass._sassCompileEmscriptenError = null;
-          callback(result);
-        });
-      };
+      // temporarily - for the duration of this .compile() - overwrite options
+      var _previousOptions = null;
+      if (_options) {
+        _previousOptions = Sass._cloneOptions();
+        Sass.options(_options);
+      }
 
       Sass._sassCompileEmscriptenSuccess = function(result, map, files) {
         done({
@@ -258,11 +364,21 @@ var Sass = {
         // return type
         null,
         // parameter types
-        ['string', 'string', 'bool'].concat(options.map(function(option) {
+        [
+          'string',
+          'string',
+          'bool',
+          'bool',
+        ].concat(options.map(function(option) {
           return option.type;
         })),
         // arguments for invocation
-        [text, Sass._path, Number(Boolean(this._importer))].concat(options.map(function(option) {
+        [
+          text,
+          Sass._path,
+          Number(Boolean(_compileFile)),
+          Number(Boolean(Sass._importer)),
+        ].concat(options.map(function(option) {
           return Sass._options[option.key];
         })),
         // we're not expecting synchronous return value
@@ -276,7 +392,19 @@ var Sass = {
         error: e
       });
     }
-  }
+  },
+  compileFile: function(filename, _options, callback) {
+    var path = Sass._absolutePath(filename);
+    if (typeof _options === 'function') {
+      callback = _options;
+      _options = {};
+    }
+
+    _options.sourceMapRoot = path;
+    _options.inputPath = path;
+
+    return Sass.compile(path, _options, callback, true);
+  },
 };
 
 // register options maintained in sass.options.js
@@ -284,3 +412,11 @@ options.forEach(function(option) {
   Sass._options[option.key] = Sass._defaultOptions[option.key] = option.initial;
   Sass._optionTypes[option.key] = option.coerce;
 });
+
+
+// _sassFullyInitialized is injected by `grunt build:sync`
+// but `grunt build:sync` will call Sass._ready() directly
+if (Module._sassFullyInitialized) {
+  // react to emscripten in sync loading mode (NodeJS)
+  Sass._ready();
+}
