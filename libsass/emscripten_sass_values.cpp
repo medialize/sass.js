@@ -80,29 +80,29 @@ Emscripten_Sass_Boolean Emscripten_Sass_Boolean::fromStruct(const union Sass_Val
 
 
 
-Emscripten_Sass_Number::Emscripten_Sass_Number(double v, string u) {
+Emscripten_Sass_Number::Emscripten_Sass_Number(double v, char* u) {
   value = v;
   unit = u;
 };
 union Sass_Value* Emscripten_Sass_Number::toStruct() {
-  return sass_make_number(value, unit.c_str());
+  return sass_make_number(value, strdup(unit));
 };
 Emscripten_Sass_Number Emscripten_Sass_Number::fromStruct(const union Sass_Value* input) {
-  Emscripten_Sass_Number _value (sass_number_get_value(input), (string)sass_number_get_unit(input));
+  Emscripten_Sass_Number _value (sass_number_get_value(input), strdup(sass_number_get_unit(input)));
   return _value;
 };
 
 
 
-Emscripten_Sass_String::Emscripten_Sass_String(string v) {
+Emscripten_Sass_String::Emscripten_Sass_String(char* v) {
   value = v;
 };
 union Sass_Value* Emscripten_Sass_String::toStruct() {
   // TODO: figure out what sass_make_qstring() is
-  return sass_make_string(value.c_str());
+  return sass_make_string(value);
 };
 Emscripten_Sass_String Emscripten_Sass_String::fromStruct(const union Sass_Value* input) {
-  Emscripten_Sass_String _value ((string)sass_string_get_value(input));
+  Emscripten_Sass_String _value (strdup(sass_string_get_value(input)));
   return _value;
 };
 
@@ -129,14 +129,14 @@ Emscripten_Sass_Color Emscripten_Sass_Color::fromStruct(const union Sass_Value* 
 
 
 
-Emscripten_Sass_List::Emscripten_Sass_List(string s) {
+Emscripten_Sass_List::Emscripten_Sass_List(char* s) {
   separator = s;
   items = vector<Emscripten_Sass>();
 };
 union Sass_Value* Emscripten_Sass_List::toStruct() {
   size_t i;
   size_t length = items.size();
-  union Sass_Value* list = sass_make_list(length, separator == "," ? SASS_COMMA : SASS_SPACE);
+  union Sass_Value* list = sass_make_list(length, strncmp(separator, ",", 1) ? SASS_COMMA : SASS_SPACE);
   for (i = 0; i < length; ++i) {
     sass_list_set_value(list, i, items.at(i).toStruct());
   }
@@ -144,7 +144,7 @@ union Sass_Value* Emscripten_Sass_List::toStruct() {
   return list;
 };
 Emscripten_Sass_List Emscripten_Sass_List::fromStruct(const union Sass_Value* input) {
-  Emscripten_Sass_List _value (sass_list_get_separator(input) == SASS_COMMA ? "," : " ");
+  Emscripten_Sass_List _value (strdup(sass_list_get_separator(input) == SASS_COMMA ? "," : " "));
   size_t i;
   size_t length = sass_list_get_length(input);
   for (i = 0; i < length; ++i) {
@@ -187,26 +187,26 @@ Emscripten_Sass_Map Emscripten_Sass_Map::fromStruct(const union Sass_Value* inpu
 
 
 
-Emscripten_Sass_Error::Emscripten_Sass_Error(string v) {
+Emscripten_Sass_Error::Emscripten_Sass_Error(char* v) {
   message = v;
 };
 union Sass_Value* Emscripten_Sass_Error::toStruct() {
-  return sass_make_error(message.c_str());
+  return sass_make_error(message);
 };
 Emscripten_Sass_Error Emscripten_Sass_Error::fromStruct(const union Sass_Value* input) {
-  Emscripten_Sass_Error _value ((string)sass_error_get_message(input));
+  Emscripten_Sass_Error _value (sass_error_get_message(input));
   return _value;
 };
 
 
 
-Emscripten_Sass_Warning::Emscripten_Sass_Warning(string v) {
+Emscripten_Sass_Warning::Emscripten_Sass_Warning(char* v) {
   message = v;
 };
 union Sass_Value* Emscripten_Sass_Warning::toStruct() {
-  return sass_make_warning(message.c_str());
+  return sass_make_warning(message);
 };
 Emscripten_Sass_Warning Emscripten_Sass_Warning::fromStruct(const union Sass_Value* input) {
-  Emscripten_Sass_Warning _value ((string)sass_warning_get_message(input));
+  Emscripten_Sass_Warning _value (sass_warning_get_message(input));
   return _value;
 };

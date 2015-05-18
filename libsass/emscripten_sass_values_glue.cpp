@@ -20,7 +20,7 @@ Emscripten_Sass_Warning* EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_Wa
 }
 
 char* EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_Warning_get_message_0(Emscripten_Sass_Warning* self) {
-  return strdup(self->message.c_str());
+  return self->message;
 }
 
 void EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_Warning_set_message_1(Emscripten_Sass_Warning* self, char* arg0) {
@@ -76,7 +76,7 @@ Emscripten_Sass_List* EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_List_
 }
 
 char* EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_List_get_separator_0(Emscripten_Sass_List* self) {
-  return strdup(self->separator.c_str());
+  return self->separator;
 }
 
 void EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_List_set_separator_1(Emscripten_Sass_List* self, char* arg0) {
@@ -156,7 +156,7 @@ Emscripten_Sass_String* EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_Str
 }
 
 char* EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_String_get_value_0(Emscripten_Sass_String* self) {
-  return strdup(self->value.c_str());
+  return self->value;
 }
 
 void EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_String_set_value_1(Emscripten_Sass_String* self, char* arg0) {
@@ -180,7 +180,7 @@ Emscripten_Sass_Error* EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_Erro
 }
 
 char* EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_Error_get_message_0(Emscripten_Sass_Error* self) {
-  return strdup(self->message.c_str());
+  return self->message;
 }
 
 void EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_Error_set_message_1(Emscripten_Sass_Error* self, char* arg0) {
@@ -206,7 +206,7 @@ void EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_Number_set_value_1(Ems
 }
 
 char* EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_Number_get_unit_0(Emscripten_Sass_Number* self) {
-  return strdup(self->unit.c_str());
+  return self->unit;
 }
 
 void EMSCRIPTEN_KEEPALIVE emscripten_bind_Emscripten_Sass_Number_set_unit_1(Emscripten_Sass_Number* self, char* arg0) {
