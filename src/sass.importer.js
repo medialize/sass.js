@@ -59,7 +59,7 @@ var Importer = {
 
   _libsassPathVariations: function(path) {
     // [importer,include_path] this is where we would add the ability to
-    // examine the include_path (if we ever use that in sass.js)
+    // examine the include_path (if we ever use that in Sass.js)
     path = PATH.normalize(path);
     var directory = PATH.dirname(path);
     var basename = PATH.basename(path);
