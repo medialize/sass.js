@@ -15,15 +15,33 @@ Sass.js comes in two pieces: `sass.js` being the API available to the browser, `
 ```html
 <script src="dist/sass.js"></script>
 <script>
-  // initialize sass.js, specifying where it can find the worker,
-  // url is relative to document.URL
-  var sass = new Sass('dist/sass.worker.js');
-
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
   sass.compile(scss, function(result) {
     console.log(result);
   });
 </script>
+```
+
+If you load `sass.js` by other means than then `<script>` example above, it cannot find the URL of `dist/sass.worker.js` by itself. In this case you need to tell Sass where to find the worker first:
+
+```js
+define(function defineSassModule(require) {
+  // load Sass.js
+  var Sass = require('path/to/sass.js');
+
+  // tell Sass.js where it can find the worker,
+  // url is relative to document.URL - i.e. outside of whatever
+  // Require or Browserify et al do for you
+  Sass.setWorkerUrl('dist/sass.worker.js');
+
+  // initialize a Sass instance
+  var sass = new Sass();
+
+  var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
+  sass.compile(scss, function(result) {
+    console.log(result);
+  });
+});
 ```
 
 ### Synchronous API (browser)
@@ -508,14 +526,16 @@ LIBSASS_VERSION="3.1.0"
 
 ### master (will become 0.9.0) ###
 
-**NOTE:** This release contains one breaking change!
+**NOTE:** This release contains breaking changes!
 
 * upgrading to [libsass 3.2.4](https://github.com/sass/libsass/releases/tag/3.2.4)
 * fixing worker API to avoid throwing `DataCloneError` because `postMessage` can't handle `Error` instances
+* improving worker API to find `sass.worker.js` itself when loaded through simple `<script>` element - ([Issue #32](https://github.com/medialize/sass.js/issues/32))
 * improving worker API to allow multiple *parallel* workers to be initialized - **Breaking Change**
 * improving `Sass.compile()` to queue multiple invocations for serialized execution rather than throwing an error
 * adding `sass.destroy()` to terminate a worker and free its resources
 * adding `Sass.setWorkerUrl()` to define the path of the worker before a Sass instance is created
+
 
 #### Breaking Changes
 

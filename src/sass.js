@@ -23,7 +23,10 @@
 
   function Sass(workerUrl) {
     if (!workerUrl && !globalWorkerUrl) {
-      throw new Error('Sass needs to be initialized with the URL of sass.worker.js');
+      throw new Error(
+        'Sass needs to be initialized with the URL of sass.worker.js - '
+        + 'either via Sass.setWorkerUrl(url) or by new Sass(url)'
+      );
     }
 
     if (!globalWorkerUrl) {
@@ -143,6 +146,25 @@
       }, callback);
     };
   });
+
+  // automatically set the workerUrl in case we're loaded by a simple
+  // <script src="path/to/sass.js"></script>
+  // see https://github.com/medialize/sass.js/pull/32#issuecomment-103142214
+  // we can only run this test in the browser,
+  // so make sure we actually have a DOM to work with
+  if (typeof document !== 'undefined' && document.getElementsByTagName) {
+    // http://www.2ality.com/2014/05/current-script.html
+    var currentScript = document.currentScript || (function() {
+      var scripts = document.getElementsByTagName('script');
+      return scripts[scripts.length - 1];
+    })();
+
+    var defaultWorkerUrl = currentScript && currentScript.src;
+    // make sure we're not running in some concatenated thing
+    if (defaultWorkerUrl && defaultWorkerUrl.slice(-8) === '/sass.js') {
+      Sass.setWorkerUrl(defaultWorkerUrl.slice(0, -8) + '/sass.worker.js');
+    }
+  }
 
   return Sass;
 }));
