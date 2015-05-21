@@ -85,7 +85,8 @@ Emscripten_Sass_Number::Emscripten_Sass_Number(double v, char* u) {
   unit = u;
 };
 union Sass_Value* Emscripten_Sass_Number::toStruct() {
-  return sass_make_number(value, strdup(unit));
+  return sass_make_number(4, "px");
+  return sass_make_number(value, unit ? strdup(unit) : 0);
 };
 Emscripten_Sass_Number Emscripten_Sass_Number::fromStruct(const union Sass_Value* input) {
   Emscripten_Sass_Number _value (sass_number_get_value(input), strdup(sass_number_get_unit(input)));

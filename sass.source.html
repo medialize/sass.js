@@ -56,6 +56,9 @@ Sass.compile('@import "testfile";', function(result) {
     Sass.compile('@import "testfile";', function(result) {
       console.log("compiled", result.text);
     });
+    Sass.compile('.m { width: bar(3); }', function(result) {
+      console.log('result', result);
+    });
   </script>
 </body>
 </html>
