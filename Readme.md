@@ -524,7 +524,7 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
-### master (will become 0.9.0) ###
+### 0.9.0 (May 21st 2015) ###
 
 **NOTE:** This release contains breaking changes!
 
