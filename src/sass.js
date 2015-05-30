@@ -1,112 +1,140 @@
-(function (root, factory) {
-  'use strict';
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define([], factory);
-  } else if (typeof exports === 'object') {
-    // Node. Does not work with strict CommonJS, but
-    // only CommonJS-like enviroments that support module.exports,
-    // like Node.
-    module.exports = factory();
-  } else {
-    // Browser globals (root is window)
-    root.Sass = factory();
+/*global Worker, SASSJS_RELATIVE_PATH*/
+'use strict';
+
+var noop = function(){};
+var slice = [].slice;
+// defined upon first Sass.initialize() call
+var globalWorkerUrl;
+
+function Sass(workerUrl) {
+  if (!workerUrl && !globalWorkerUrl) {
+    /*jshint laxbreak:true */
+    throw new Error(
+      'Sass needs to be initialized with the URL of sass.worker.js - '
+      + 'either via Sass.setWorkerUrl(url) or by new Sass(url)'
+    );
+    /*jshint laxbreak:false */
   }
-}(this, function () {
-  'use strict';
-  /*global Worker*/
 
-  var noop = function(){};
-  var slice = [].slice;
+  if (!globalWorkerUrl) {
+    globalWorkerUrl = workerUrl;
+  }
 
-  var Sass = {
-    _worker: null,
-    _callbacks: {},
-
-    style: {
-      nested: 0,
-      expanded: 1,
-      compact: 2,
-      compressed: 3
-    },
-    comments: {
-      'none': 0,
-      'default': 1
-    },
-
-    _dispatch: function(options, callback) {
-      options.id = 'cb' + Date.now() + Math.random();
-      Sass._callbacks[options.id] = callback;
-      Sass._worker.postMessage(options);
-    },
-
-    _importerInit: function(args) {
-      // importer API done callback pushing results
-      // back to the worker
-      var done = function done(result) {
-        Sass._worker.postMessage({
-          command: '_importerFinish',
-          args: [result]
-        });
-      };
-
-      try {
-        Sass._importer(args[0], done);
-      } catch(e) {
-        done({ error: e.message });
-        throw e;
-      }
-    },
-
-    importer: function(importerCallback, callback) {
-      if (typeof importerCallback !== 'function' && importerCallback !== null) {
-        throw new Error('importer callback must either be a function or null');
-      }
-
-      // callback is executed in the main EventLoop
-      Sass._importer = importerCallback;
-      // tell worker to activate importer callback
-      Sass._worker.postMessage({
-        command: 'importer',
-        args: [Boolean(importerCallback)]
-      });
-
-      callback && callback();
-    },
-
-    initialize: function(workerUrl) {
-      if (Sass._worker) {
-        throw new Error('Sass Worker is already initalized');
-      }
-
-      Sass._worker = new Worker(workerUrl);
-      Sass._worker.addEventListener('message', function(event) {
-        if (event.data.command) {
-          Sass[event.data.command](event.data.args);
-        }
-
-        Sass._callbacks[event.data.id] && Sass._callbacks[event.data.id](event.data.result);
-        delete Sass._callbacks[event.data.id];
-      }, false);
+  // bind all functions
+  // we're doing this because we used to have a single hard-wired instance that allowed
+  // [].map(Sass.removeFile) and we need to maintain that for now (at least until 1.0.0)
+  for (var key in this) {
+    if (typeof this[key] === 'function') {
+      this[key] = this[key].bind(this);
     }
+  }
+
+  this._callbacks = {};
+  this._worker = new Worker(workerUrl || globalWorkerUrl);
+  this._worker.addEventListener('message', this._handleWorkerMessage, false);
+}
+
+// allow setting the workerUrl before the first Sass instance is initialized,
+// where registering the global workerUrl would've happened automatically
+Sass.setWorkerUrl = function(workerUrl) {
+  globalWorkerUrl = workerUrl;
+};
+
+Sass.style = {
+  nested: 0,
+  expanded: 1,
+  compact: 2,
+  compressed: 3
+};
+
+Sass.comments = {
+  'none': 0,
+  'default': 1
+};
+
+Sass.prototype = {
+  style: Sass.style,
+  comments: Sass.comments,
+
+  destroy: function() {
+    this._worker && this._worker.terminate();
+    this._worker = null;
+    this._callbacks = {};
+    this._importer = null;
+  },
+
+  _handleWorkerMessage: function(event) {
+    if (event.data.command) {
+      this[event.data.command](event.data.args);
+    }
+
+    this._callbacks[event.data.id] && this._callbacks[event.data.id](event.data.result);
+    delete this._callbacks[event.data.id];
+  },
+
+  _dispatch: function(options, callback) {
+    if (!this._worker) {
+      throw new Error('Sass worker has been terminated');
+    }
+
+    options.id = 'cb' + Date.now() + Math.random();
+    this._callbacks[options.id] = callback;
+    this._worker.postMessage(options);
+  },
+
+  _importerInit: function(args) {
+    // importer API done callback pushing results
+    // back to the worker
+    var done = function done(result) {
+      this._worker.postMessage({
+        command: '_importerFinish',
+        args: [result]
+      });
+    }.bind(this);
+
+    try {
+      this._importer(args[0], done);
+    } catch(e) {
+      done({ error: e.message });
+      throw e;
+    }
+  },
+
+  importer: function(importerCallback, callback) {
+    if (typeof importerCallback !== 'function' && importerCallback !== null) {
+      throw new Error('importer callback must either be a function or null');
+    }
+
+    // callback is executed in the main EventLoop
+    this._importer = importerCallback;
+    // tell worker to activate importer callback
+    this._worker.postMessage({
+      command: 'importer',
+      args: [Boolean(importerCallback)]
+    });
+
+    callback && callback();
+  },
+};
+
+var commands = 'writeFile readFile listFiles removeFile clearFiles lazyFiles preloadFiles options compile compileFile';
+commands.split(' ').forEach(function(command) {
+  Sass.prototype[command] = function() {
+    var callback = slice.call(arguments, -1)[0];
+    var args = slice.call(arguments, 0, -1);
+    if (typeof callback !== 'function') {
+      args.push(callback);
+      callback = noop;
+    }
+
+    this._dispatch({
+      command: command,
+      args: args
+    }, callback);
   };
+});
 
-  var commands = 'writeFile readFile listFiles removeFile clearFiles lazyFiles preloadFiles options compile compileFile';
-  commands.split(' ').forEach(function(command) {
-    Sass[command] = function() {
-      var callback = slice.call(arguments, -1)[0];
-      var args = slice.call(arguments, 0, -1);
-      if (typeof callback !== 'function') {
-        args.push(callback);
-        callback = noop;
-      }
-
-      Sass._dispatch({
-        command: command,
-        args: args
-      }, callback);
-    };
-  });
-
-  return Sass;
-}));
+// automatically set the workerUrl in case we're loaded by a simple
+// <script src="path/to/sass.js"></script>
+// see https://github.com/medialize/sass.js/pull/32#issuecomment-103142214
+Sass.setWorkerUrl(SASSJS_RELATIVE_PATH + '/sass.worker.js');

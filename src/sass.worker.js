@@ -28,10 +28,33 @@ var methods = {
 onmessage = function (event) {
 
   function done(result) {
-    postMessage({
-      id: event.data.id,
-      result: result
-    });
+    try {
+      // may throw DataCloneError: Failed to execute 'postMessage' on 'WorkerGlobalScope': An object could not be cloned.
+      // because of Error instances not being clonable (wtf?)
+      postMessage({
+        id: event.data.id,
+        result: result
+      });
+    } catch (e) {
+      if (!result.error) {
+        // unless we're dealing with a DataCloneError because of an Error instance,
+        // we have no idea what is going on, so give up.
+        throw e;
+      } else {
+        // for whatever reason Error instances may not always be serializable,
+        // in which case we simply return the error data as a plain object
+        result.error = {
+          code: result.error.code,
+          message: result.error.message,
+          stack: result.error.stack,
+        };
+      }
+
+      postMessage({
+        id: event.data.id,
+        result: result
+      });
+    }
   }
 
   var method = methods[event.data.command] || Sass[event.data.command];

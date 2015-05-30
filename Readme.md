@@ -1,8 +1,8 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.2](https://github.com/sass/libsass/releases/tag/3.2.2)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.4](https://github.com/sass/libsass/releases/tag/3.2.4)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified the worker weighs 2.5MB, gzipped it's still 550KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
+> A fair warning: minified the worker weighs 2.5MB, gzipped it's still 555KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
 ---
 
@@ -10,30 +10,49 @@ Have a look at the [Interactive Playground](http://medialize.github.io/playgroun
 
 ## Loading the Sass.js API
 
-Sass.js comes in two pieces: `sass.js` being the API available to the browser, `sass.worker.js` being the emscripted libsass that runs in a [Web Worker](https://developer.mozilla.org/en/docs/Web/API/Worker). For use in contexts where Web Workers are not available, `sass.sync.js` can be used for the synchronous API described below. The regular way of running sass.js is by way of [`sass.worker.html`](sass.worker.html):
+Sass.js comes in two pieces: `sass.js` being the API available to the browser, `sass.worker.js` being the emscripted libsass that runs in a [Web Worker](https://developer.mozilla.org/en/docs/Web/API/Worker). For use in contexts where Web Workers are not available, `sass.sync.js` can be used for the synchronous API described below. The regular way of running Sass.js is by way of [`sass.worker.html`](sass.worker.html):
 
 ```html
 <script src="dist/sass.js"></script>
 <script>
-  // telling sass.js where it can find the worker,
-  // url is relative to document.URL
-  Sass.initialize('dist/sass.worker.js');
-
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  Sass.compile(scss, function(result) {
+  sass.compile(scss, function(result) {
     console.log(result);
   });
 </script>
 ```
 
+If you load `sass.js` by other means than then `<script>` example above, it cannot find the URL of `dist/sass.worker.js` by itself. In this case you need to tell Sass where to find the worker first:
+
+```js
+define(function defineSassModule(require) {
+  // load Sass.js
+  var Sass = require('path/to/sass.js');
+
+  // tell Sass.js where it can find the worker,
+  // url is relative to document.URL - i.e. outside of whatever
+  // Require or Browserify et al do for you
+  Sass.setWorkerUrl('dist/sass.worker.js');
+
+  // initialize a Sass instance
+  var sass = new Sass();
+
+  var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
+  sass.compile(scss, function(result) {
+    console.log(result);
+  });
+});
+```
+
 ### Synchronous API (browser)
 
-It is possible - but *not recommended* to use Sass.js in the main EventLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html):
+It is possible - but *not recommended* to use Sass.js in the main EventLoop instead of using a Worker, by running [`sass.sync.html`](sass.sync.html). Contrary to the worker API, the synchronous API does not allow concurrency, which is why it exposes a "singleton" instance:
 
 ```html
 <!--
-  Not that "dist/libsass.js.mem" is loaded relative to document.URL
-  That's ok for Node and sass.js test pages, but certainly not for production.
+  Note that "libsass.js.mem" is loaded relative to document.URL,
+  unless sass.sync.js is loaded in its own <script> element.
+  That's ok for Node and Sass.js test pages, but probably not for production.
   Use the worker variant instead!
 -->
 <script src="dist/sass.sync.js"></script>
@@ -48,7 +67,7 @@ It is possible - but *not recommended* to use Sass.js in the main EventLoop inst
 
 ### Synchronous API (NodeJS)
 
-While you probably want to use [node-sass](https://github.com/sass/node-sass) for performance reasons, sass.js also runs on NodeJS. You can use the synchronous API (as in "executed in the main EventLoop") as follows:
+While you probably want to use [node-sass](https://github.com/sass/node-sass) for performance reasons, Sass.js also runs on NodeJS. You can use the synchronous API (as in "executed in the main EventLoop") as follows:
 
 ```js
 Sass = require('sass.js');
@@ -58,18 +77,18 @@ Sass.compile(scss, function(result) {
 });
 ```
 
-[webworker-threads](https://www.npmjs.com/package/webworker-threads) could be the key to running sass.js in a non-blocking fashion, but it (currently) has its problems with [typed arrays](https://github.com/audreyt/node-webworker-threads/issues/18#issuecomment-92098583).
+[webworker-threads](https://www.npmjs.com/package/webworker-threads) could be the key to running Sass.js in a non-blocking fashion, but it (currently) has its problems with [typed arrays](https://github.com/audreyt/node-webworker-threads/issues/18#issuecomment-92098583).
 
 ### Synchronous API From Source (browser)
 
-After cloning this repository you can run `grunt libsass:prepare libsass:build` (explained below) and then run sass.js off its source files by running [`sass.source.html`](sass.source.html)
+After cloning this repository you can run `grunt libsass:prepare libsass:build` (explained below) and then run Sass.js off its source files by running [`sass.source.html`](sass.source.html)
 
 ```html
 <!-- you need to compile libsass.js first using `grunt libsass:prepare libsass:build` -->
 <script src="libsass/libsass/lib/libsass.js"></script>
 <!-- mapping of Sass.js options to be fed to libsass via the emscripten wrapper -->
 <script src="src/sass.options.js"></script>
-<!-- the sass.js abstraction of libsass and emscripten -->
+<!-- the Sass.js abstraction of libsass and emscripten -->
 <script src="src/sass.api.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
@@ -85,8 +104,22 @@ After cloning this repository you can run `grunt libsass:prepare libsass:build` 
 ## Using the Sass.js API
 
 ```js
+// initialize a Sass instance
+// Note: this is not necessary in the synchronous API
+var sass = new Sass('path/to/sass.worker.js');
+
+// destruct/destroy/clean up a Sass instance
+// Note: this is not necessary in the synchronous API
+sass.destroy();
+
+// globally set the URL where the the sass worker file is located
+// so it does not have to be supplied to every constructor
+Sass.setWorkerUrl('path/to/sass.worker.js');
+var sass = new Sass();
+
+
 // compile text to SCSS
-Sass.compile(text, function callback(result) {
+sass.compile(text, function callback(result) {
   // (object) result compilation result
   // (number) result.status success status (0 in success case)
   // (string) result.text compiled CSS string
@@ -103,15 +136,16 @@ Sass.compile(text, function callback(result) {
 // it is possible to set options for a specific compile() call,
 // rather than "gobally" for all compile() calls.
 // see Sass.options() for details
-Sass.compile(text, options, callback);
+sass.compile(text, options, callback);
 
 // compile file to SCSS
-Sass.compileFile(filename, callback);
-Sass.compileFile(filename, options, callback);
+sass.compileFile(filename, callback);
+sass.compileFile(filename, options, callback);
+
 
 // set libsass compile options
 // (provided options are merged onto previously set options)
-Sass.options({
+sass.options({
   // Format output: nested, expanded, compact, compressed
   style: Sass.style.nested,
   // Precision for outputting fractional numbers
@@ -149,18 +183,18 @@ Sass.options({
   // Disable sourceMappingUrl in css output
   sourceMapOmitUrl: true,
 }, function callback(){});
+// reset options to Sass.js defaults (listed above)
+sass.options('defaults', function callback(){});
 
-// reset options to sass.js defaults (listed above)
-Sass.options('defaults', function callback(){});
 
 // register a file to be available for @import
-Sass.writeFile(filename, text, function callback(success) {
+sass.writeFile(filename, text, function callback(success) {
   // (boolean) success is
   //   `true` when the write was OK,
   //   `false` when it failed
 });
 // register multiple files
-Sass.writeFile({
+sass.writeFile({
   'filename-1.scss': 'content-1',
   'filename-2.scss': 'content-2',
 }, function callback(result) {
@@ -173,13 +207,13 @@ Sass.writeFile({
 });
 
 // remove a file
-Sass.removeFile(filename, function callback(success) {
+sass.removeFile(filename, function callback(success) {
   // (boolean) success is
   //   `true` when deleting the file was OK,
   //   `false` when it failed
 });
 // remove multiple files
-Sass.removeFile([filename1, filename2], function callback(result) {
+sass.removeFile([filename1, filename2], function callback(result) {
   // (object) result is
   //    result[filename1]: success
   //    result[filename2]: success
@@ -189,12 +223,12 @@ Sass.removeFile([filename1, filename2], function callback(result) {
 });
 
 // get a file's content
-Sass.readFile(filename, function callback(content) {
+sass.readFile(filename, function callback(content) {
   // (string) content is the file's content,
   //   `undefined` when the read failed
 });
 // read multiple files
-Sass.readFile([filename1, filename2], function callback(result) {
+sass.readFile([filename1, filename2], function callback(result) {
   // (object) result is
   //    result[filename1]: content
   //    result[filename2]: content
@@ -203,23 +237,24 @@ Sass.readFile([filename1, filename2], function callback(result) {
 });
 
 // list all files (regardless of directory structure)
-Sass.listFiles(function callback(list) {
+sass.listFiles(function callback(list) {
   // (array) list contains the paths of all registered files
 });
 
 // remove all files
-Sass.clearFiles(function callback() {});
+sass.clearFiles(function callback() {});
 
 // preload a set of files
 // see chapter »Working With Files« below
-Sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
+sass.preloadFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
 
 // register a set of files to be (synchronously) loaded when required
 // see chapter »Working With Files« below
-Sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
+// Note: this method is not available in the synchronous API
+sass.lazyFiles(remoteUrlBase, localDirectory, filesMap, function callback() {});
 
 // intercept file loading requests from libsass
-Sass.importer(function(request, done) {
+sass.importer(function(request, done) {
   // (object) request
   // (string) request.current path libsass wants to load (content of »@import "<path>";«)
   // (string) request.previous absolute path of previously imported file ("stdin" if first)
@@ -312,6 +347,24 @@ Error: invalid top-level expression
    ^
 ```
 
+### Compiling Concurrently
+
+Using the worker API, multiple Sass instances can be initialized to compile sources in *parallel*, rather than in *sequence*:
+
+```
+// compile sources in sequence (default behavior)
+var sass = new Sass('path/to/sass.worker.js');
+sass.compile(source1, callback1);
+sass.compile(source2, callback2);
+
+// compile sources in parallel
+Sass.setWorkerUrl('path/to/sass.worker.js')
+var sass1 = new Sass();
+var sass2 = new Sass();
+sass1.compile(source1, callback1);
+sass2.compile(source2, callback2);
+```
+
 ### Working With Files
 
 Chances are you want to use one of the readily available Sass mixins (e.g. [drublic/sass-mixins](https://github.com/drublic/Sass-Mixins) or [Bourbon](https://github.com/thoughtbot/bourbon)). While Sass.js doesn't feature a full-blown "loadBurbon()", registering individual files is possible:
@@ -372,7 +425,7 @@ Since libsass 3.2 a callback allows us to hook into the compilation process. The
 // register a custom importer callback
 Sass.importer(function(request, done) {
   if (request.path) {
-    // sass.js already found a file,
+    // Sass.js already found a file,
     // we probably want to just load that
     done();
   } else if (request.current === 'content') {
@@ -407,7 +460,7 @@ Sass.importer(null);
 
 ## Building Sass.js ##
 
-To compile libsass to JS you need [emscripten](http://emscripten.org), to build sass.js additionally need [grunt](http://gruntjs.com/).
+To compile libsass to JS you need [emscripten](http://emscripten.org), to build Sass.js additionally need [grunt](http://gruntjs.com/).
 
 ```bash
 grunt build
@@ -422,7 +475,7 @@ grunt build
 
 ```
 
-### Building sass.js in emscripten debug mode ###
+### Building Sass.js in emscripten debug mode ###
 
 ```bash
 grunt build:debug
@@ -472,6 +525,27 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
+### 0.9.1 (May 30th 2015) ###
+
+* fixing automatic path detection (for loading `sass.worker.js` and `libsass.js.mem`), to make `sass.sync.js` load `libsass.mem.js` relative to itself (Node and browser) - ([Issue #33](https://github.com/medialize/sass.js/issues/33))
+
+### 0.9.0 (May 21st 2015) ###
+
+**NOTE:** This release contains breaking changes!
+
+* upgrading to [libsass 3.2.4](https://github.com/sass/libsass/releases/tag/3.2.4)
+* fixing worker API to avoid throwing `DataCloneError` because `postMessage` can't handle `Error` instances
+* improving worker API to find `sass.worker.js` itself when loaded through simple `<script>` element - ([Issue #32](https://github.com/medialize/sass.js/issues/32))
+* improving worker API to allow multiple *parallel* workers to be initialized - **Breaking Change**
+* improving `Sass.compile()` to queue multiple invocations for serialized execution rather than throwing an error
+* adding `sass.destroy()` to terminate a worker and free its resources
+* adding `Sass.setWorkerUrl()` to define the path of the worker before a Sass instance is created
+
+
+#### Breaking Changes
+
+* The worker API used to be initialized with `Sass.initialize('path/to/sass.worker.js')`, but as of v0.9.0 requires proper instantiation: `var sass = new Sass('path/to/sass.worker.js')`.
+
 ### 0.8.2 (May 9th 2015) ###
 
 * upgrading to [libsass 3.2.3](https://github.com/sass/libsass/releases/tag/3.2.3)
@@ -514,7 +588,7 @@ LIBSASS_VERSION="3.1.0"
 * improving `emscripten_wrapper.cpp` to use `sass_context.h` instead of the deprecated `sass_interface.h`
 * renaming files to make more sense
 * improving synchronous API to perfectly mirror the worker API
-* adding `.options('defaults')` to reset options to sass.js defaults
+* adding `.options('defaults')` to reset options to Sass.js defaults
 * adding `dist/libsass.js.mem`, optimized memory file created by emscripten
 * adding `Sass.lazyFiles()` and `Sass.preloadFiles()`
 * adding `Sass.clearFiles()` to wipe all files known to `Sass.listFiles()`

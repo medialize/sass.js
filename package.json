@@ -1,6 +1,7 @@
 {
   "name": "sass.js",
-  "version": "0.8.2",
+  "version": "0.9.1",
+  "libsass": "3.2.4",
   "title": "Sass.js - API for emscripted libsass",
   "description": "Sass.js is a convenience API for the JavaScript libsass (compiled with Emscripten)",
   "homepage": "http://medialize.github.com/sass.js/",
@@ -19,12 +20,7 @@
     "type": "git",
     "url": "https://github.com/medialize/sass.js.git"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://www.opensource.org/licenses/mit-license"
-    }
-  ],
+  "license": "MIT",
   "keywords": [
     "libsass",
     "sass",

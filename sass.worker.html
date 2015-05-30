@@ -6,36 +6,46 @@
 </head>
 <body>
   <h1>Sass.js Worker Console</h1>
-  <p>This document loads the <em>worker</em> sass.js. Please open your browser's DevTools to use the API.</p>
+  <p>This document loads the <em>worker</em> Sass.js. Please open your browser's DevTools to use the API.</p>
 
   <h2>Try the following example:</h2>
-  <pre>Sass.writeFile('testfile.scss', '@import "sub/deeptest";\n.testfile { content: "loaded"; }', function() {
+  <pre>// when loading the worker api via script[src$="/sass.js"] it's a safe bet the worker
+// will be found relative to that file. In any other case you'd have to define where
+// the worker is located before initializing Sass:
+// Sass.setWorkerUrl('dist/sass.worker.js');
+var sass = new Sass();
+
+sass.writeFile('testfile.scss', '@import "sub/deeptest";\n.testfile { content: "loaded"; }', function() {
   console.log('wrote "testfile.scss"');
 });
-Sass.writeFile('sub/deeptest.scss', '.deeptest { content: "loaded"; }', function() {
+sass.writeFile('sub/deeptest.scss', '.deeptest { content: "loaded"; }', function() {
   console.log('wrote "sub/deeptest.scss"');
 });
-Sass.options({ style: Sass.style.expanded }, function(result) {
+sass.options({ style: Sass.style.expanded }, function(result) {
   console.log("set options");
 });
-Sass.compile('@import "testfile";', function(result) {
+sass.compile('@import "testfile";', function(result) {
   console.log("compiled", result.text);
 });</pre>
 
   <script src="dist/sass.js"></script>
   <script>
-    Sass.initialize('dist/sass.worker.js');
+    // when loading the worker api via script[src$="/sass.js"] it's a safe bet the worker
+    // will be found relative to that file. In any other case you'd have to define where
+    // the worker is located before initializing Sass:
+    // Sass.setWorkerUrl('dist/sass.worker.js');
+    var sass = new Sass();
 
-    Sass.writeFile('testfile.scss', '@import "sub/deeptest";\n.testfile { content: "loaded"; }', function() {
+    sass.writeFile('testfile.scss', '@import "sub/deeptest";\n.testfile { content: "loaded"; }', function() {
       console.log('wrote "testfile.scss"');
     });
-    Sass.writeFile('sub/deeptest.scss', '.deeptest { content: "loaded"; }', function() {
+    sass.writeFile('sub/deeptest.scss', '.deeptest { content: "loaded"; }', function() {
       console.log('wrote "sub/deeptest.scss"');
     });
-    Sass.options({ style: Sass.style.expanded }, function(result) {
+    sass.options({ style: Sass.style.expanded }, function(result) {
       console.log("set options");
     });
-    Sass.compile('@import "testfile";', function(result) {
+    sass.compile('@import "testfile";', function(result) {
       console.log("compiled", result.text);
     });
   </script>
