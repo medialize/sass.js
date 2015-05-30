@@ -50,8 +50,9 @@ It is possible - but *not recommended* to use Sass.js in the main EventLoop inst
 
 ```html
 <!--
-  Not that "dist/libsass.js.mem" is loaded relative to document.URL
-  That's ok for Node and Sass.js test pages, but certainly not for production.
+  Note that "libsass.js.mem" is loaded relative to document.URL,
+  unless sass.sync.js is loaded in its own <script> element.
+  That's ok for Node and Sass.js test pages, but probably not for production.
   Use the worker variant instead!
 -->
 <script src="dist/sass.sync.js"></script>
@@ -523,6 +524,10 @@ LIBSASS_VERSION="3.1.0"
 
 
 ## Changelog
+
+### master (will become 0.9.1) ###
+
+* fixing automatic path detection (for loading `sass.worker.js` and `libsass.js.mem`), to make `sass.sync.js` load `libsass.mem.js` relative to itself (Node and browser) - ([Issue #33](https://github.com/medialize/sass.js/issues/33))
 
 ### 0.9.0 (May 21st 2015) ###
 
