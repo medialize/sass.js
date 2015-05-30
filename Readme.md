@@ -525,7 +525,7 @@ LIBSASS_VERSION="3.1.0"
 
 ## Changelog
 
-### master (will become 0.9.1) ###
+### 0.9.1 (May 30th 2015) ###
 
 * fixing automatic path detection (for loading `sass.worker.js` and `libsass.js.mem`), to make `sass.sync.js` load `libsass.mem.js` relative to itself (Node and browser) - ([Issue #33](https://github.com/medialize/sass.js/issues/33))
 
