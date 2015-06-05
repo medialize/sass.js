@@ -229,18 +229,22 @@ union Sass_Value* sass_function_emscripten(
   Emscripten_Sass foo = Emscripten_Sass::fromStruct(s_args);
   // http://stackoverflow.com/questions/5313322/c-cast-to-derived-class
   Emscripten_Sass_List list = *static_cast<Emscripten_Sass_List *>(&foo);
+  EM_ASM_DOUBLE({
+    console.log("identified items", $0);
+  }, list.items.size());
+
   Emscripten_Sass_Number num = *static_cast<Emscripten_Sass_Number *>(&(list.items.at(0)));
   EM_ASM_DOUBLE({
     console.log("Emscripten_Sass_Number.value", $0);
   }, num.value);
 
   // this is failing and I have no idea why
-  union Sass_Value* nums = num.toStruct();
-  EM_ASM_DOUBLE({
-    console.log("sass_number_get_value()", $0);
-  }, sass_number_get_value(nums));
-
-  return nums;
+  // union Sass_Value* nums = num.toStruct();
+  // EM_ASM_DOUBLE({
+  //   console.log("sass_number_get_value()", $0);
+  // }, sass_number_get_value(nums));
+  //
+  // return nums;
 
   if (true) {
     // simple value
