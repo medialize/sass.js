@@ -39,7 +39,8 @@ module.exports = function(grunt) {
     'libsass:build',
     'build:sass',
     'build:worker',
-    'build:sync'
+    'build:sync',
+    'file-size',
   ]);
   grunt.registerTask('build:debug', [
     'clean:dist',
@@ -49,7 +50,8 @@ module.exports = function(grunt) {
     'libsass:debug',
     'build:sass',
     'build:worker',
-    'build:sync'
+    'build:sync',
+    'file-size',
   ]);
   // simplifications for development
   grunt.registerTask('rebuild', [
@@ -57,14 +59,16 @@ module.exports = function(grunt) {
     'libsass:build',
     'build:sass',
     'build:worker',
-    'build:sync'
+    'build:sync',
+    'file-size',
   ]);
   grunt.registerTask('rebuild:debug', [
     'versions',
     'libsass:debug',
     'build:sass',
     'build:worker',
-    'build:sync'
+    'build:sync',
+    'file-size',
   ]);
 
   grunt.registerTask('lint', 'jshint');
