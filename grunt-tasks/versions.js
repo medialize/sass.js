@@ -13,7 +13,7 @@ module.exports = function GruntfileVersions(grunt) {
 
     // git rev-parse --short HEAD
     // f82a41b
-    childProcess.exec('git rev-parse --short HEAD', {cwd: path}, function (err, stdout, stderr){
+    childProcess.exec('git rev-parse --short HEAD', {cwd: path}, function(err, stdout, stderr) {
       if (err) {
         grunt.log.error('obtaining git commit failed with: ' + err.code + '\n' + stderr);
         return;
@@ -22,12 +22,12 @@ module.exports = function GruntfileVersions(grunt) {
       data.commit = stdout.slice(0, -1);
       // git symbolic-ref HEAD
       // refs/heads/master
-      childProcess.exec('git symbolic-ref HEAD', {cwd: path}, function (err, stdout /*, stderr*/){
+      childProcess.exec('git symbolic-ref HEAD', {cwd: path}, function(err, stdout /*, stderr*/) {
         if (err) {
           // git describe --tags
           // 3.2.0-beta.5-32-g0dd6543 (last tag contained)
           // 3.2.0-beta.5 (immediate tag)
-          childProcess.exec('git describe --tags', {cwd: path}, function (err, stdout, stderr){
+          childProcess.exec('git describe --tags', {cwd: path}, function(err, stdout, stderr) {
             if (err) {
               grunt.log.error('obtaining git tag failed with: ' + err.code + '\n' + stderr);
               return;
@@ -46,7 +46,7 @@ module.exports = function GruntfileVersions(grunt) {
     });
   }
 
-  grunt.registerTask('get-emscripten-version', function () {
+  grunt.registerTask('get-emscripten-version', function() {
     var done = this.async();
 
     if (!grunt.config.data.versions) {
@@ -54,7 +54,7 @@ module.exports = function GruntfileVersions(grunt) {
     }
 
     var versions = grunt.config.data.versions;
-    childProcess.exec('emcc --version', function (err, stdout, stderr){
+    childProcess.exec('emcc --version', function(err, stdout, stderr) {
       if (err) {
         grunt.log.error('`emcc --version` failed with: ' + err.code + '\n' + stderr);
         return;
@@ -74,7 +74,7 @@ module.exports = function GruntfileVersions(grunt) {
     });
   });
 
-  grunt.registerTask('get-libsass-version', function () {
+  grunt.registerTask('get-libsass-version', function() {
     var done = this.async();
 
     if (!grunt.config.data.versions) {
@@ -88,7 +88,7 @@ module.exports = function GruntfileVersions(grunt) {
     });
   });
 
-  grunt.registerTask('get-sassjs-version', function () {
+  grunt.registerTask('get-sassjs-version', function() {
     var done = this.async();
 
     if (!grunt.config.data.versions) {
@@ -104,7 +104,7 @@ module.exports = function GruntfileVersions(grunt) {
     });
   });
 
-  grunt.registerTask('save-versions', function () {
+  grunt.registerTask('save-versions', function() {
     var done = this.async();
     var _versions = JSON.stringify(grunt.config.data.versions, null, 2);
     fs.writeFile('dist/versions.json', _versions, done);
