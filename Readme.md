@@ -1,8 +1,8 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.4](https://github.com/sass/libsass/releases/tag/3.2.4)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.2.5](https://github.com/sass/libsass/releases/tag/3.2.5)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified the worker weighs 2.5MB, gzipped it's still 555KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
+> A fair warning: minified the worker weighs 2.6MB, gzipped it's still 570KB (+20KB for the mem-file). If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
 ---
 
@@ -524,6 +524,10 @@ LIBSASS_VERSION="3.1.0"
 
 
 ## Changelog
+
+### 0.9.2 (June 14th 2015) ###
+
+* upgrading to [libsass 3.2.5](https://github.com/sass/libsass/releases/tag/3.2.5)
 
 ### 0.9.1 (May 30th 2015) ###
 
