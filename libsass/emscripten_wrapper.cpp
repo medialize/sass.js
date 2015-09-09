@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <cstring>
-#include "sass_context.h"
+#include "sass/context.h"
 #include "emscripten_wrapper.hpp"
 #include <emscripten.h>
 
@@ -123,7 +123,7 @@ struct Sass_Import** sass_importer_emscripten(
   struct Sass_Compiler* comp
 ) {
   struct Sass_Import* previous = sass_compiler_get_last_import(comp);
-  const char* prev_base = sass_import_get_base(previous);
+  const char* prev_base = sass_import_get_abs_path(previous);
   // struct Sass_Context* ctx = sass_compiler_get_context(comp);
   // struct Sass_Options* opts = sass_context_get_options(ctx);
 
