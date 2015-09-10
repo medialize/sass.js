@@ -28,7 +28,7 @@ describe('Sass.compile()', function() {
     Sass.compile(source, function(result) {
       expect(result).to.be.a('object');
       expect(result.line).to.equal(7);
-      expect(result.message).to.equal('invalid top-level expression');
+      expect(result.message).to.include('Invalid CSS after "foobar":');
 
       done();
     });
