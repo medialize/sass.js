@@ -1,5 +1,10 @@
 # Sass.js Changelog
 
+## 0.9.3 (October 24th 2015) ##
+
+* upgrading to [libsass 3.3.0](https://github.com/sass/libsass/releases/tag/3.3.0)
+* upgrading to [emscripten 1.35.2](https://github.com/kripken/emscripten/releases/tag/1.35.2)
+
 ## 0.9.2 (June 14th 2015) ##
 
 * upgrading to [libsass 3.2.5](https://github.com/sass/libsass/releases/tag/3.2.5)
