@@ -24,7 +24,7 @@
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
 +		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
-+		-s ASSERTIONS=1 \
++		-s ASSERTIONS=2 \
 +		-s SAFE_HEAP=1 \
 +		-s DEMANGLE_SUPPORT=1 \
 +		--profiling-funcs \

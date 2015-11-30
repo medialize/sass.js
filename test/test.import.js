@@ -59,7 +59,7 @@ describe('@import', function() {
     Sass.compile(source, function(result) {
       expect(result).to.be.a('object');
       expect(result.line).to.equal(1);
-      expect(result.message).to.equal('file to import not found or unreadable: unknown-file\nCurrent dir: ');
+      expect(result.message).to.equal('File to import not found or unreadable: unknown-file\nParent style sheet: stdin');
 
       done();
     });
