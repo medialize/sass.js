@@ -4,6 +4,7 @@
 
 * upgrading to [libsass 3.3.3](https://github.com/sass/libsass/releases/tag/3.3.3)
 * upgrading to [emscripten 1.35.22](https://github.com/kripken/emscripten/releases/tag/1.35.22)
+* inline memory init file and drop `libsass.js.mem` - ([Issue #42](https://github.com/medialize/sass.js/issues/42))
 
 ## 0.9.4 (October 27th 2015) ##
 
@@ -21,7 +22,7 @@
 
 ## 0.9.1 (May 30th 2015) ##
 
-* fixing automatic path detection (for loading `sass.worker.js` and `libsass.js.mem`), to make `sass.sync.js` load `libsass.mem.js` relative to itself (Node and browser) - ([Issue #33](https://github.com/medialize/sass.js/issues/33))
+* fixing automatic path detection (for loading `sass.worker.js` and `libsass.js.mem`), to make `sass.sync.js` load `libsass.js.mem` relative to itself (Node and browser) - ([Issue #33](https://github.com/medialize/sass.js/issues/33))
 
 ## 0.9.0 (May 21st 2015) ##
 

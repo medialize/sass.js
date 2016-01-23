@@ -13,7 +13,7 @@
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
 +		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
-+		--memory-init-file 1
++		--memory-init-file 0
 +
 +js-debug: static
 +	emcc lib/libsass.a -o lib/libsass.js \
@@ -29,7 +29,7 @@
 +		-s DEMANGLE_SUPPORT=1 \
 +		--profiling-funcs \
 +		--minify 0 \
-+		--memory-init-file 1
++		--memory-init-file 0
 +
  lib:
  	$(MKDIR) lib
@@ -39,7 +39,7 @@
  
  clean-objects: lib
 -	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la
-+	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la lib/*.js lib/*.js.mem
++	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la lib/*.js
  	-$(RMDIR) lib
  clean: clean-objects
  	$(RM) $(CLEANUPS)

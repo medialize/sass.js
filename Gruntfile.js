@@ -17,12 +17,10 @@ module.exports = function(grunt) {
   grunt.registerTask('libsass:build', [
     'shell:buildLibsass',
     'mkdir:dist',
-    'shell:copyLibsassMem'
   ]);
   grunt.registerTask('libsass:debug', [
     'shell:buildLibsassDebug',
     'mkdir:dist',
-    'shell:copyLibsassMem'
   ]);
 
   // concatenate source files and libsass.js

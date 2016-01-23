@@ -414,5 +414,8 @@ options.forEach(function(option) {
 // but `grunt build:sync` will call Sass._ready() directly
 if (Module._sassFullyInitialized) {
   // react to emscripten in sync loading mode (NodeJS)
-  Sass._ready();
+  setTimeout(function() {
+    // initialize after emscripten is loaded
+    Sass._ready();
+  });
 }
