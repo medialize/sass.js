@@ -4,15 +4,11 @@
     "compressed": "2 KB"
   },
   "dist/sass.sync.js": {
-    "normal": "2357 KB",
-    "compressed": "515 KB"
+    "normal": "2613 KB",
+    "compressed": "561 KB"
   },
   "dist/sass.worker.js": {
-    "normal": "2357 KB",
-    "compressed": "515 KB"
-  },
-  "dist/libsass.js.mem": {
-    "normal": "73 KB",
-    "compressed": "16 KB"
+    "normal": "2613 KB",
+    "compressed": "561 KB"
   }
 }
