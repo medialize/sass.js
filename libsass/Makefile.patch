@@ -1,18 +1,8 @@
---- Makefile.orig	2015-03-19 20:45:55.000000000 +0100
-+++ Makefile.patched	2015-03-19 20:58:48.000000000 +0100
-@@ -143,7 +143,8 @@
- 	to_string.cpp \
- 	units.cpp \
- 	utf8_string.cpp \
--	util.cpp
-+	util.cpp \
-+	emscripten_wrapper.cpp
- 
- CSOURCES = cencode.c
- 
-@@ -187,6 +188,33 @@
- static: lib/libsass.a
- shared: $(LIBRARIES)
+--- Makefile.orig	2015-09-09 14:30:05.000000000 +0300
++++ Makefile	2015-09-09 14:36:59.000000000 +0300
+@@ -208,6 +208,33 @@
+ debug-shared: CXXFLAGS := -g -DDEBUG -DDEBUG_LVL="$(DEBUG_LVL)" $(filter-out -O2,$(CXXFLAGS))
+ debug-shared: shared
  
 +js: static
 +	emcc lib/libsass.a -o lib/libsass.js \
@@ -23,7 +13,7 @@
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
 +		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
-+		--memory-init-file 1
++		--memory-init-file 0
 +
 +js-debug: static
 +	emcc lib/libsass.a -o lib/libsass.js \
@@ -34,22 +24,22 @@
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
 +		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
-+		-s ASSERTIONS=1 \
++		-s ASSERTIONS=2 \
 +		-s SAFE_HEAP=1 \
 +		-s DEMANGLE_SUPPORT=1 \
 +		--profiling-funcs \
 +		--minify 0 \
-+		--memory-init-file 1
++		--memory-init-file 0
 +
  lib:
  	$(MKDIR) lib
  
-@@ -235,7 +256,7 @@
+@@ -299,7 +326,7 @@
  	$(RUBY_BIN) $(SASS_SPEC_PATH)/sass-spec.rb -c $(SASSC_BIN) $(LOG_FLAGS) $(SASS_SPEC_PATH)/spec/issues
  
- clean:
--	$(RM) $(RCOBJECTS) $(COBJECTS) $(OBJECTS) $(LIBRARIES) lib/*.a lib/*.so lib/*.dll lib/*.la
-+	$(RM) $(RCOBJECTS) $(COBJECTS) $(OBJECTS) $(LIBRARIES) lib/*.a lib/*.so lib/*.dll lib/*.la lib/*.js lib/*.js.mem
- 
- 
- .PHONY: all debug debug-static debug-shared static shared install install-static install-shared sassc clean
+ clean-objects: lib
+-	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la
++	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la lib/*.js
+ 	-$(RMDIR) lib
+ clean: clean-objects
+ 	$(RM) $(CLEANUPS)

@@ -65,15 +65,8 @@ module.exports = function GruntfileVersions(grunt) {
             compressed: compressed
           };
 
-          getFileSize('dist/libsass.js.mem', function(normal, compressed) {
-            sizes['dist/libsass.js.mem'] = {
-              normal: normal,
-              compressed: compressed
-            };
-
-            var _sizes = JSON.stringify(sizes, null, 2);
-            fs.writeFile('dist/file-size.json', _sizes, done);
-          });
+          var _sizes = JSON.stringify(sizes, null, 2);
+          fs.writeFile('dist/file-size.json', _sizes, done);
         });
       });
     });

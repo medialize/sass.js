@@ -1,0 +1,11 @@
+--- Makefile.conf.orig	2015-09-09 14:47:04.000000000 +0300
++++ Makefile.conf	2015-09-09 14:47:23.000000000 +0300
+@@ -42,6 +42,7 @@
+ 	units.cpp \
+ 	utf8_string.cpp \
+ 	values.cpp \
+-	util.cpp
++	util.cpp \
++	emscripten_wrapper.cpp
+ 
+ CSOURCES = cencode.c

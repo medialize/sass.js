@@ -17,9 +17,10 @@ echo "  resetting target directory to git HEAD"
 # patch
 echo "  patching Makefile"
 patch ./libsass/Makefile < ./Makefile.patch
+patch ./libsass/Makefile.conf < ./Makefile.conf.patch
 echo "  copying emscripten_wrapper"
-cp ./emscripten_wrapper.cpp ./libsass/emscripten_wrapper.cpp
-cp ./emscripten_wrapper.hpp ./libsass/emscripten_wrapper.hpp
+cp ./emscripten_wrapper.cpp ./libsass/src/emscripten_wrapper.cpp
+cp ./emscripten_wrapper.hpp ./libsass/src/emscripten_wrapper.hpp
 
 # build
 echo "  initializing emscripten"

@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <cstring>
-#include "sass_context.h"
+#include "sass/context.h"
 #include "emscripten_wrapper.hpp"
 #include <emscripten.h>
 
@@ -67,7 +67,8 @@ void sass_compile_emscripten(
     double priority = 0;
     void* cookie = 0;
     Sass_Importer_List importers = sass_make_importer_list(1);
-    importers[0] = sass_make_importer(sass_importer_emscripten, priority, cookie);
+    Sass_Importer_Entry importer = sass_make_importer(sass_importer_emscripten, priority, cookie);
+    sass_importer_set_list_entry(importers, 0, importer);
     sass_option_set_c_importers(ctx_opt, importers);
   }
 
@@ -118,12 +119,13 @@ void sass_compile_emscripten(
   }
 }
 
-struct Sass_Import** sass_importer_emscripten(
-  const char* cur_path, Sass_Importer_Entry cb,
+Sass_Import_List sass_importer_emscripten(
+  const char* cur_path,
+  Sass_Importer_Entry cb,
   struct Sass_Compiler* comp
 ) {
   struct Sass_Import* previous = sass_compiler_get_last_import(comp);
-  const char* prev_base = sass_import_get_base(previous);
+  const char* prev_base = sass_import_get_abs_path(previous);
   // struct Sass_Context* ctx = sass_compiler_get_context(comp);
   // struct Sass_Options* opts = sass_context_get_options(ctx);
 
@@ -164,7 +166,7 @@ struct Sass_Import** sass_importer_emscripten(
   }, 0);
 
   if (error) {
-    struct Sass_Import** list = sass_make_import_list(1);
+    Sass_Import_List list = sass_make_import_list(1);
     list[0] = sass_make_import_entry(cur_path, 0, 0);
     sass_import_set_error(list[0], strdup(error), 0, 0);
     return list;
@@ -179,7 +181,7 @@ struct Sass_Import** sass_importer_emscripten(
   }, 0);
 
   if (content || path) {
-    struct Sass_Import** list = sass_make_import_list(1);
+    Sass_Import_List list = sass_make_import_list(1);
     // TODO: figure out if strdup() is really required
     list[0] = sass_make_import_entry(strdup(path ? path : cur_path), content ? strdup(content) : 0, 0);
     return list;
