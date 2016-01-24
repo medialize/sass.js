@@ -2,7 +2,7 @@ var fs = require('fs');
 var Benchmark = require('benchmark');
 var nodeSass = require('node-sass');
 var Sass = require('../dist/sass.sync.js');
-var source = fs.readFileSync(__dirname + '/../scss/demo.scss');
+var source = fs.readFileSync(__dirname + '/../scss/demo.scss', {encoding: 'utf8'});
 
 var suite = new Benchmark.Suite();
 // add tests
