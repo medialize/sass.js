@@ -27,6 +27,7 @@ var Importer = {
         previous: previous,
         resolved: resolved,
         path: found,
+        options: Sass._options.importer || null,
       }, done);
     } catch(e) {
       // allow emscripten to resume libsass,

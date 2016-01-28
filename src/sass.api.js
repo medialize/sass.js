@@ -62,6 +62,13 @@ var Sass = {
     Object.keys(options).forEach(function(key) {
       var _type = Sass._optionTypes[key];
 
+      if (key === 'importer') {
+        // allow passing compile() time options
+        // to the importer callback
+        Sass._options[key] = options[key];
+        return;
+      }
+
       // no need to import crap
       if (!_type) {
         throw new Error('Unknown option "' + key + '"');
