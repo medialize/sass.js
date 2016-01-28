@@ -203,4 +203,75 @@ describe('importer', function() {
     });
   });
 
+  it('should accept options', function(done) {
+    var source = '@import "testfile";';
+    var expected = '.hello{content:"world"}\n';
+
+    Sass.importer(function(request, done) {
+      done({
+        content: request.options.gustav,
+      });
+    });
+
+    Sass.options('defaults');
+    Sass.options({ style: Sass.style.compressed });
+
+    var options = {
+      importer: {
+        gustav: '.hello { content: "world" }',
+      },
+    };
+
+    Sass.compile(source, options, function(result) {
+      expect(result.text).to.equal(expected);
+      done();
+    });
+  });
+
+  it('should use correct options', function(done) {
+    var source = '@import "testfile";';
+    var alpha = '.alpha{content:"alpha"}\n';
+    var bravo = '.bravo{content:"bravo"}\n';
+    var charlie = '.charlie{content:"charlie"}\n';
+
+    var remaining = 4;
+    var _done = function() {
+      remaining--;
+      if (!remaining) {
+        done();
+      }
+    };
+
+    Sass.options('defaults');
+    Sass.options({ style: Sass.style.compressed });
+
+    Sass.importer(function(request, done) {
+      done({
+        content: request.options,
+      });
+    });
+
+    Sass.options({ importer: '.alpha { content: "alpha"; }' });
+    Sass.compile(source, function(result) {
+      expect(result.text).to.equal(alpha, 'alpha');
+      _done();
+    });
+
+    Sass.options({ importer: '.bravo { content: "bravo"; }' });
+    Sass.compile(source, function(result) {
+      expect(result.text).to.equal(bravo, 'first bravo');
+      _done();
+    });
+
+    Sass.compile(source, { importer: '.charlie { content: "charlie"; }' }, function(result) {
+      expect(result.text).to.equal(charlie, 'charlie');
+      _done();
+    });
+
+    Sass.compile(source, function(result) {
+      expect(result.text).to.equal(bravo, 'second bravo');
+      _done();
+    });
+  });
+
 });
