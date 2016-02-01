@@ -1,5 +1,9 @@
 # Sass.js Changelog
 
+## 0.9.6 (February 1st 2015) ##
+
+* adding option `importer` to provide data to [importer callbacks](https://github.com/medialize/sass.js/#importer-callback-function) - ([Issue #43](https://github.com/medialize/sass.js/issues/43))
+
 ## 0.9.5 (January 23rd 2015) ##
 
 * upgrading to [libsass 3.3.3](https://github.com/sass/libsass/releases/tag/3.3.3)
