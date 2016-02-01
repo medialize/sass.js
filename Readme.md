@@ -162,6 +162,10 @@ sass.options({
   // String to be used to for line feeds
   linefeed: '\n',
 
+  // data passed through to the importer callback
+  // must be serializable to JSON
+  importer: {},
+
   // Path to source map file
   // Enables the source map generating
   // Used to create sourceMappingUrl
@@ -262,6 +266,7 @@ sass.importer(function(request, done) {
   // (string) request.previous absolute path of previously imported file ("stdin" if first)
   // (string) request.resolved currentPath resolved against previousPath
   // (string) request.path absolute path in file system, null if not found
+  // (mixed)  request.options the value of options.importer
   // -------------------------------
   // (object) result
   // (string) result.path the absolute path to load from file system

@@ -1,4 +1,4 @@
-/*! sass.js - v0.9.5 (4bc1079) - built 2016-01-23
+/*! sass.js - v0.9.6 (7312bc8) - built 2016-02-01
   providing libsass 3.3.3 (bc1e6db)
   via emscripten 1.35.22 (84d78f3)
  */
@@ -315,6 +315,7 @@ var Importer = {
         previous: previous,
         resolved: resolved,
         path: found,
+        options: Sass._options.importer || null,
       }, done);
     } catch(e) {
       // allow emscripten to resume libsass,
@@ -447,6 +448,13 @@ var Sass = {
 
     Object.keys(options).forEach(function(key) {
       var _type = Sass._optionTypes[key];
+
+      if (key === 'importer') {
+        // allow passing compile() time options
+        // to the importer callback
+        Sass._options[key] = options[key];
+        return;
+      }
 
       // no need to import crap
       if (!_type) {

@@ -1,6 +1,6 @@
 {
   "name": "sass.js",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "libsass": "3.3.3",
   "title": "Sass.js - API for emscripted libsass",
   "description": "Sass.js is a convenience API for the JavaScript libsass (compiled with Emscripten)",
@@ -38,7 +38,7 @@
     "maps/"
   ],
   "devDependencies": {
-    "benchmark": "~1.0.0",
+    "benchmark": "^2.0.0",
     "chai": "~2.1.2",
     "grunt": "~0.4.5",
     "grunt-contrib-clean": "~0.6.0",
@@ -49,7 +49,7 @@
     "grunt-shell": "~1.1.2",
     "jit-grunt": "^0.9.1",
     "jshint-stylish": "~1.0.1",
-    "node-sass": "~2.0.1",
+    "node-sass": "^3.4.2",
     "time-grunt": "^1.1.0"
   }
 }
