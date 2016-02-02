@@ -1,6 +1,6 @@
 --- Makefile.orig	2015-09-09 14:30:05.000000000 +0300
 +++ Makefile	2015-09-09 14:36:59.000000000 +0300
-@@ -208,6 +208,33 @@
+@@ -208,6 +208,34 @@
  debug-shared: CXXFLAGS := -g -DDEBUG -DDEBUG_LVL="$(DEBUG_LVL)" $(filter-out -O2,$(CXXFLAGS))
  debug-shared: shared
  
@@ -10,6 +10,7 @@
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
++		-s SAFE_SPLIT_MEMORY=1 \
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
 +		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
