@@ -9,7 +9,7 @@
   },
   "sassjs": {
     "version": "0.9.6",
-    "commit": "61aaa79",
-    "branch": "cleanup-initialization"
+    "commit": "21dde55",
+    "branch": "test-safe-split-memory"
   }
 }
