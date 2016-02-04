@@ -1,5 +1,9 @@
 # Sass.js Changelog
 
+## 0.9.7 (February 4th 2015) ##
+
+* refactoring sass.js initialization when emscripten is ready
+
 ## 0.9.6 (February 1st 2015) ##
 
 * adding option `importer` to provide data to [importer callbacks](https://github.com/medialize/sass.js/#importer-callback-function) - ([Issue #43](https://github.com/medialize/sass.js/issues/43))

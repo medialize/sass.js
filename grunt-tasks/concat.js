@@ -33,7 +33,6 @@ module.exports = function GruntfileConcat(grunt) {
     worker: {
       dest: 'dist/sass.worker.js',
       src: [
-        'src/sass.configure.worker.js',
         'libsass/libsass/lib/libsass.js',
         'src/sass.util.js',
         'src/sass.options.js',
@@ -56,7 +55,6 @@ module.exports = function GruntfileConcat(grunt) {
       dest: 'dist/sass.sync.js',
       src: [
         'src/sass.configure.path.js',
-        'src/sass.configure.sync.js',
         'libsass/libsass/lib/libsass.js',
         'src/sass.util.js',
         'src/sass.options.js',

@@ -23,18 +23,6 @@ Sass.compile('@import "testfile";', function(result) {
   console.log("compiled", result.text);
 });</pre>
 
-  <script>
-    var Module = {
-      // see http://kripken.github.io/emscripten-site/docs/getting_started/FAQ.html#how-can-i-tell-when-the-page-is-fully-loaded-and-it-is-safe-to-call-compiled-functions
-      onRuntimeInitialized: function() {
-        console.log("runtime initialized, ready to go!");
-        setTimeout(function() {
-          // initialize after emscripten is loaded
-          Sass._ready();
-        });
-      },
-    };
-  </script>
   <script src="libsass/libsass/lib/libsass.js"></script>
   <script src="src/sass.util.js"></script>
   <script src="src/sass.options.js"></script>

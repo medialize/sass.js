@@ -416,13 +416,9 @@ options.forEach(function(option) {
   Sass._optionTypes[option.key] = option.coerce;
 });
 
+// until 0.9.6 we used a weird hacky way to get informed by Module.onRuntimeInitialized
+// when emscripten was fully loaded. But since 0.9.5 we're not using a separate .mem file
+// anymore and emscripten doesn't preload any files for us, so this became irrelevant.
 
-// _sassFullyInitialized is injected by `grunt build:sync`
-// but `grunt build:sync` will call Sass._ready() directly
-if (Module._sassFullyInitialized) {
-  // react to emscripten in sync loading mode (NodeJS)
-  setTimeout(function() {
-    // initialize after emscripten is loaded
-    Sass._ready();
-  });
-}
+// initialize after emscripten is loaded and the event loop cleared
+setTimeout(Sass._ready);
