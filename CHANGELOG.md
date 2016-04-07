@@ -1,5 +1,10 @@
 # Sass.js Changelog
 
+## 0.9.8 (April 7th 2016) ##
+
+* upgrading to [libsass 3.3.4](https://github.com/sass/libsass/releases/tag/3.3.4)
+* upgrading to [emscripten 1.36.1](https://github.com/kripken/emscripten/releases/tag/1.36.1)
+
 ## 0.9.7 (February 4th 2016) ##
 
 * refactoring sass.js initialization when emscripten is ready
