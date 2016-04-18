@@ -300,7 +300,7 @@ var Sass = {
     }
 
     if (!callback) {
-      throw new Error('Sass.compile() requires callback function as second (or third) paramter!');
+      throw new Error('Sass.compile() requires callback function as second (or third) parameter!');
     }
 
     if (_options !== null && typeof _options !== 'object') {
