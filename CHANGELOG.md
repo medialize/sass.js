@@ -1,8 +1,9 @@
 # Sass.js Changelog
 
-## master ##
+## 0.9.11 (July 17th 2016) ##
 
 * fixing Importer callback to handle nested imports when running asynchronously - ([Issue #59](https://github.com/medialize/sass.js/issues/59))
+* upgrading to [emscripten 1.36.5](https://github.com/kripken/emscripten/releases/tag/1.36.5)
 
 ## 0.9.10 (April 20th 2016) ##
 
