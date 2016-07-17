@@ -1,5 +1,9 @@
 # Sass.js Changelog
 
+## master ##
+
+* fixing Importer callback to handle nested imports when running asynchronously - ([Issue #59](https://github.com/medialize/sass.js/issues/59))
+
 ## 0.9.10 (April 20th 2016) ##
 
 * upgrading to [libsass 3.3.6](https://github.com/sass/libsass/releases/tag/3.3.6)

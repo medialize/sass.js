@@ -274,4 +274,35 @@ describe('importer', function() {
     });
   });
 
+  it('should handle asynchronous nested imports', function(done) {
+    // https://github.com/medialize/sass.js/issues/59
+    var source = '.parent { @import "child"; }';
+    var expected = '.parent .child{color:red}\n';
+    var expectedFiles = [
+      '/some/virtual/path',
+    ];
+
+    Sass.clearFiles();
+    Sass.importer(function(request, done) {
+      var result = {
+        content: '.child { color: red; }',
+        path: '/some/virtual/path',
+      };
+
+      setTimeout(function() {
+        done(result);
+      }, 100);
+    });
+
+    Sass.options('defaults');
+    Sass.options({ style: Sass.style.compressed });
+
+    Sass.compile(source, function(result) {
+      expect(result.text).to.equal(expected);
+      expect(JSON.stringify(result.files)).to.equal(JSON.stringify(expectedFiles));
+
+      done();
+    });
+  });
+
 });
