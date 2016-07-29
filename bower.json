@@ -1,6 +1,6 @@
 {
   "name": "sass.js",
-  "version": "0.9.7",
+  "version": "0.9.10",
   "main": [
     "./dist/sass.js",
     "./dist/sass.worker.js"

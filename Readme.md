@@ -1,14 +1,15 @@
 # Sass.js
 
-Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.3.3](https://github.com/sass/libsass/releases/tag/3.3.3)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
+Sass parser in JavaScript. This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.3.6](https://github.com/sass/libsass/releases/tag/3.3.6)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
-> A fair warning: minified the worker weighs 2.6MB, gzipped it's still 560KB. If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
+> A fair warning: minified the worker weighs 2.7MB, gzipped it's still 580KB. If you're on NodeJS or io.js, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
 ---
 
 Have a look at the [Interactive Playground](http://medialize.github.io/playground.sass.js/). Sass.js is used in the following tools:
 
 * [mobilexag/plugin-sass](https://github.com/mobilexag/plugin-sass) is a SystemJS plugin
+* [kevcjones/plugin-scss](https://github.com/kevcjones/plugin-scss) is a SystemJS plugin
 * [theefer/plugin-sass](https://github.com/theefer/plugin-sass) is a SystemJS plugin
 * [stealjs/steal-sass](https://github.com/stealjs/steal-sass) is a StealJS plugin
 * [lein-sass](https://github.com/yogthos/lein-sass) is a minimum dependency Clojure library designed to compile SASS files using Sass.js running on Nashorn
