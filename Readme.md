@@ -8,6 +8,7 @@ Sass parser in JavaScript. This is a convenience API for [emscripted](https://gi
 
 Have a look at the [Interactive Playground](http://medialize.github.io/playground.sass.js/). Sass.js is used in the following tools:
 
+* [grunt-contrib-sassjs](https://github.com/amiramw/grunt-contrib-sassjs)
 * [mobilexag/plugin-sass](https://github.com/mobilexag/plugin-sass) is a SystemJS plugin
 * [kevcjones/plugin-scss](https://github.com/kevcjones/plugin-scss) is a SystemJS plugin
 * [theefer/plugin-sass](https://github.com/theefer/plugin-sass) is a SystemJS plugin
