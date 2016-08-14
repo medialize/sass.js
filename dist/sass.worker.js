@@ -1,4 +1,4 @@
-/*! sass.js - v0.9.11 (ba3fac4) - built 2016-07-17
+/*! sass.js - v0.9.12 (e1a0112) - built 2016-08-14
   providing libsass 3.3.6 (3ae9a20)
   via emscripten 1.36.5 (092d471)
  */
@@ -235,7 +235,7 @@ var Importer = {
     Importer._result = null;
 
     var resolved = PATH.resolve(previous === 'stdin' ? Sass._path : PATH.dirname(previous), current);
-    var found = Importer._resolvePath(resolved);
+    var found = Sass.findPathVariation(FS.stat, resolved);
     var done = function done(result) {
       Importer._result = result;
       Importer._running = false;
@@ -276,44 +276,6 @@ var Importer = {
 
   _resultPointer: function(key) {
     return Importer._result && Importer._result[key] && stringToPointer(Importer._result[key]) || 0;
-  },
-
-  _libsassPathVariations: function(path) {
-    // [importer,include_path] this is where we would add the ability to
-    // examine the include_path (if we ever use that in Sass.js)
-    path = PATH.normalize(path);
-    var directory = PATH.dirname(path);
-    var basename = PATH.basename(path);
-    var extensions = ['.scss', '.sass', '.css'];
-    // basically what is done by resolve_and_load() in file.cpp
-    // Resolution order for ambiguous imports:
-    return [
-      // (1) filename as given
-      path,
-      // (2) underscore + given
-      PATH.resolve(directory, '_' + basename)
-    ].concat(extensions.map(function(extension) {
-      // (3) underscore + given + extension
-      return PATH.resolve(directory, '_' + basename + extension);
-    })).concat(extensions.map(function(extension) {
-      // (4) given + extension
-      return PATH.resolve(directory, basename + extension);
-    }));
-  },
-
-  _resolvePath: function(path) {
-    return Importer._libsassPathVariations(path).reduce(function(found, path) {
-      if (found) {
-        return found;
-      }
-
-      try {
-        FS.stat(path);
-        return path;
-      } catch(e) {
-        return null;
-      }
-    }, null);
   },
 
 };
@@ -741,6 +703,62 @@ options.forEach(function(option) {
 
 // initialize after emscripten is loaded and the event loop cleared
 setTimeout(Sass._ready);
+
+/*global PATH, Sass*/
+/*jshint strict:false*/
+
+function isAbsolutePath (path) {
+  return path[0] === '/';
+}
+
+Sass.getPathVariations = function(path) {
+  // [importer,include_path] this is where we would add the ability to
+  // examine the include_path (if we ever use that in Sass.js)
+  path = PATH.normalize(path);
+  var directory = PATH.dirname(path);
+  var basename = PATH.basename(path);
+  var extensions = ['.scss', '.sass', '.css'];
+  // basically what is done by resolve_and_load() in file.cpp
+  // Resolution order for ambiguous imports:
+  var list = [
+    // (1) filename as given
+    path,
+    // (2) underscore + given
+    PATH.resolve(directory, '_' + basename)
+  ].concat(extensions.map(function(extension) {
+    // (3) underscore + given + extension
+    return PATH.resolve(directory, '_' + basename + extension);
+  })).concat(extensions.map(function(extension) {
+    // (4) given + extension
+    return PATH.resolve(directory, basename + extension);
+  }));
+
+  if (!isAbsolutePath(path)) {
+    // PATH.resolve() makes everything absolute, revert that
+    list = list.map(function(item) {
+      return isAbsolutePath(item)
+        ? item.slice(1)
+        : item;
+    });
+  }
+
+  return list;
+};
+
+Sass.findPathVariation = function(stat, path) {
+  return Sass.getPathVariations(path).reduce(function(found, path) {
+    if (found) {
+      return found;
+    }
+
+    try {
+      stat(path);
+      return path;
+    } catch(e) {
+      return null;
+    }
+  }, null);
+};
 
 'use strict';
 /*global Sass, postMessage, onmessage:true, importScripts*/
