@@ -462,6 +462,39 @@ Sass.importer(function(request, done) {
 Sass.importer(null);
 ```
 
+## Resolving file names
+
+Sass allows you to specify `@import "hello/world";`, which will be resolved (by [file.cpp](https://github.com/sass/libsass/blob/3.3.6/src/file.cpp#L303-L336)) against the following paths in the file system:
+
+```
+[
+  // (1) filename as given
+  "hello/world",
+  // (2) underscore + given
+  "hello/_world",
+  // (3) underscore + given + extension
+  "hello/_world.scss",
+  "hello/_world.sass",
+  "hello/_world.css",
+  // (4) given + extension
+  "hello/world.scss",
+  "hello/world.sass",
+  "hello/world.css"
+]
+```
+
+**In the Synchronous API** (`sass.sync.js`) Sass.js provides the above list when running `Sass.getPathVariations('hello/world')`. To simplify finding the correct file in the filesystem, the following may be used:
+
+```js
+var fs = require('fs');
+var Sass = require('sass.js');
+
+var file = Sass.findPathVariation(fs.statSync, 'hello/world');
+```
+
+Note that the callback handed to `Sass.findPathVariation()` (in this case [`fs.statSync()`](https://nodejs.org/api/fs.html#fs_fs_statsync_path)) needs to throw an error when the file does not exist.
+
+
 
 ---
 

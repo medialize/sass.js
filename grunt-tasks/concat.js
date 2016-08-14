@@ -38,6 +38,7 @@ module.exports = function GruntfileConcat(grunt) {
         'src/sass.options.js',
         'src/sass.importer.js',
         'src/sass.api.js',
+        'src/sass.resolve-paths.js',
         'src/sass.worker.js'
       ],
       options: {
@@ -59,7 +60,8 @@ module.exports = function GruntfileConcat(grunt) {
         'src/sass.util.js',
         'src/sass.options.js',
         'src/sass.importer.js',
-        'src/sass.api.js'
+        'src/sass.api.js',
+        'src/sass.resolve-paths.js'
       ],
       options: {
         banner: banner + '\n' + umdHeader,

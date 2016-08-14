@@ -1,5 +1,9 @@
 # Sass.js Changelog
 
+## master ##
+
+* refactoring Importer to expose `Sass.findPathVariation()` and `Sass.getPathVariations()` in the Synchronous API - ([Issue #61](https://github.com/medialize/sass.js/issues/61))
+
 ## 0.9.11 (July 17th 2016) ##
 
 * fixing Importer callback to handle nested imports when running asynchronously - ([Issue #59](https://github.com/medialize/sass.js/issues/59))
