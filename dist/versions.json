@@ -1,15 +1,15 @@
 {
   "emscripten": {
     "version": "1.36.5",
-    "commit": "092d471"
+    "commit": "8e29cf1"
   },
   "libsass": {
     "version": "3.3.6",
     "commit": "3ae9a20"
   },
   "sassjs": {
-    "version": "0.9.12",
-    "commit": "e1a0112",
+    "version": "0.9.13",
+    "commit": "236485c",
     "branch": "master"
   }
 }
