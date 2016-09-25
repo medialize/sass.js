@@ -55,7 +55,7 @@ var Importer = {
   },
 
   _resultPointer: function(key) {
-    return Importer._result && Importer._result[key] && stringToPointer(Importer._result[key]) || 0;
+    return Importer._result && Importer._result[key] !== undefined && stringToPointer(Importer._result[key]) || 0;
   },
 
 };

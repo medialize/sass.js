@@ -1,5 +1,7 @@
 # Sass.js Changelog
 
+* fixing Importer to allow passing empty strings - ([Issue #63](https://github.com/medialize/sass.js/issues/63))
+
 ## 0.9.12 (August 14th 2016) ##
 
 * refactoring Importer to expose `Sass.findPathVariation()` and `Sass.getPathVariations()` in the Synchronous API - ([Issue #61](https://github.com/medialize/sass.js/issues/61))
