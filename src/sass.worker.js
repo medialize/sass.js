@@ -8,7 +8,7 @@ var _importerInit = function(request, done) {
   postMessage({
     command: '_importerInit',
     args: [request]
-  });
+  }, '*');
 };
 
 var methods = {
@@ -34,7 +34,7 @@ onmessage = function (event) {
       postMessage({
         id: event.data.id,
         result: result
-      });
+      }, '*');
     } catch (e) {
       if (!result.error) {
         // unless we're dealing with a DataCloneError because of an Error instance,
@@ -53,7 +53,7 @@ onmessage = function (event) {
       postMessage({
         id: event.data.id,
         result: result
-      });
+      }, '*');
     }
   }
 
