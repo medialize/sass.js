@@ -1,5 +1,9 @@
 # Sass.js Changelog
 
+## master ##
+
+* upgrading to [libsass 3.4.0](https://github.com/sass/libsass/releases/tag/3.4.0)
+
 ## 0.9.13 (September 25th 2016) ##
 
 * fixing Importer to allow passing empty strings - ([Issue #63](https://github.com/medialize/sass.js/issues/63))
