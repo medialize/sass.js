@@ -79,7 +79,7 @@ Sass.prototype = {
 
     options.id = 'cb' + Date.now() + Math.random();
     this._callbacks[options.id] = callback;
-    this._worker.postMessage(options, '*');
+    this._worker.postMessage(options);
   },
 
   _importerInit: function(args) {
@@ -89,7 +89,7 @@ Sass.prototype = {
       this._worker.postMessage({
         command: '_importerFinish',
         args: [result]
-      }, '*');
+      });
     }.bind(this);
 
     try {
@@ -111,7 +111,7 @@ Sass.prototype = {
     this._worker.postMessage({
       command: 'importer',
       args: [Boolean(importerCallback)]
-    }, '*');
+    });
 
     callback && callback();
   },
