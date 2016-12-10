@@ -18,6 +18,7 @@ See [Getting started](./getting-started.md) for instructions how to load the lib
   * [Lazyloading files (DEPRECATED)](#lazyloading-files-deprecated)
   * [The Importer Callback](#the-importer-callback)
   * [Resolving file names](#resolving-file-names)
+* [File system access in Node](#file-system-access-in-node)
 
 
 ## Lifecycle (Worker API)
@@ -518,6 +519,26 @@ var fs = require('fs');
 var Sass = require('sass.js');
 
 var file = Sass.findPathVariation(fs.statSync, 'hello/world');
+```
+
+
+## File system access in Node
+
+In order to compile files from the *real* file system in Node, the utility `dist/sass.node.js` provides a simple interface that hides reading files from the file system and writing them to emscripten's file system before they can be used by libsass:
+
+**NOTE:** paths must be relative to (and descendants of) the current working directory (`process.cwd()`).
+
+```js
+var compile = require('sass.js/dist/sass.node');
+
+var path = 'scss/example.scss';
+var options = {
+  style: compile.Sass.style.expanded,
+};
+
+compile(path, options, function(result) {
+  console.log(result);
+});
 ```
 
 ---

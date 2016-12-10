@@ -28,6 +28,7 @@ grunt build
 # destination:
 #   dist/file-size.json
 #   dist/sass.js
+#   dist/sass.node.js
 #   dist/sass.sync.js
 #   dist/sass.worker.js
 #   dist/versions.json
@@ -47,6 +48,7 @@ grunt build:debug
 # destination:
 #   dist/file-size.json
 #   dist/sass.js
+#   dist/sass.node.js
 #   dist/sass.sync.js
 #   dist/sass.worker.js
 #   dist/versions.json

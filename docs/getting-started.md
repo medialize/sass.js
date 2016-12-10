@@ -5,6 +5,7 @@ Sass.js aims to run in all environments. To achieve that, it's provided in indiv
 * `dist/sass.js`: The consumable API for communicating with the worker `dist/sass.worker.js`.
 * `dist/sass.worker.js`: The emscripted libsass loaded by `dist/sass.js` and the [Web Worker](https://developer.mozilla.org/en/docs/Web/API/Worker) utilities.
 * `dist/sass.sync.js`: The consumable API and emscripted libsass for running the compiler in the main thread. Use this only in environments not supporting Web Workers (e.g. Node, Rhino, Nashorn).
+* `dist/sass.node.js`: A convenience API around `dist/sass.sync.js` to compile directly from the file system.
 * `dist/file-size.js`: *(meta)* A file listing the sizes of the compiled files.
 * `dist/versions.js`: *(meta)* A file listing the versions of Sass.js, libsass and emscripten.
 
@@ -70,7 +71,7 @@ The synchronous API does not need to be told where to find the worker (using `Sa
 While you probably want to use [node-sass](https://github.com/sass/node-sass) for performance reasons, Sass.js also runs on NodeJS. You can use the synchronous API (as in "executed in the main EventLoop") as follows:
 
 ```js
-Sass = require('sass.js');
+var Sass = require('sass.js');
 var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
 Sass.compile(scss, function(result) {
   console.log(result);
@@ -78,6 +79,23 @@ Sass.compile(scss, function(result) {
 ```
 
 [webworker-threads](https://www.npmjs.com/package/webworker-threads) could be the key to running Sass.js in a non-blocking fashion in the future, but it (currently) has its problems with [typed arrays](https://github.com/audreyt/node-webworker-threads/issues/18#issuecomment-92098583).
+
+### Accessing the file system in Node
+
+In order to easily compile files in Node use the utility `dist/sass.node.js`. It takes care of reading files from the file system and importing them into emscripten's memory file system, so they're accessible to libsass.
+
+```js
+var compile = require('sass.js/dist/sass.node');
+
+var path = 'scss/example.scss';
+var options = {
+  style: compile.Sass.style.expanded,
+};
+
+compile(path, options, function(result) {
+  console.log(result);
+});
+```
 
 ---
 

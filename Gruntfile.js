@@ -27,6 +27,7 @@ module.exports = function(grunt) {
   grunt.registerTask('build:worker', ['concat:worker']);
   grunt.registerTask('build:sass', ['concat:sass']);
   grunt.registerTask('build:sync', ['concat:sync']);
+  grunt.registerTask('build:node', ['concat:node']);
 
   // full build pipeline
   grunt.registerTask('build', [
@@ -38,6 +39,7 @@ module.exports = function(grunt) {
     'build:sass',
     'build:worker',
     'build:sync',
+    'build:node',
     'file-size',
   ]);
   grunt.registerTask('build:debug', [
@@ -49,6 +51,7 @@ module.exports = function(grunt) {
     'build:sass',
     'build:worker',
     'build:sync',
+    'build:node',
     'file-size',
   ]);
   // simplifications for development
@@ -58,6 +61,7 @@ module.exports = function(grunt) {
     'build:sass',
     'build:worker',
     'build:sync',
+    'build:node',
     'file-size',
   ]);
   grunt.registerTask('rebuild:debug', [
@@ -66,6 +70,7 @@ module.exports = function(grunt) {
     'build:sass',
     'build:worker',
     'build:sync',
+    'build:node',
     'file-size',
   ]);
 

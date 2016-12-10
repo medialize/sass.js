@@ -72,6 +72,15 @@ module.exports = function GruntfileConcat(grunt) {
         }
       }
     },
+    node: {
+      dest: 'dist/sass.node.js',
+      src: [
+        'src/sass.node.js',
+      ],
+      options: {
+        banner: banner,
+      },
+    },
   });
 
 };
