@@ -1,5 +1,20 @@
 # Sass.js Changelog
 
+## 0.10.0 (December 11th 2016) ##
+
+* Deprecating the synchronous `Sass.lazyFiles()` - as this can be achieved asynchronously with an Importer Callback
+* upgrading to [libsass 3.4.0](https://github.com/sass/libsass/releases/tag/3.4.0)
+* fixing Importer to properly process UTF8 strings - ([Issue #72](https://github.com/medialize/sass.js/issues/72))
+* adding `sass.node.js` for convenient compilation of SCSS and SASS files in Node - ([Issue #72](https://github.com/medialize/sass.js/issues/72))
+
+## 0.9.13 (September 25th 2016) ##
+
+* fixing Importer to allow passing empty strings - ([Issue #63](https://github.com/medialize/sass.js/issues/63))
+
+## 0.9.12 (August 14th 2016) ##
+
+* refactoring Importer to expose `Sass.findPathVariation()` and `Sass.getPathVariations()` in the Synchronous API - ([Issue #61](https://github.com/medialize/sass.js/issues/61))
+
 ## 0.9.11 (July 17th 2016) ##
 
 * fixing Importer callback to handle nested imports when running asynchronously - ([Issue #59](https://github.com/medialize/sass.js/issues/59))

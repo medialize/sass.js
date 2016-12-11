@@ -28,6 +28,7 @@ Sass.compile('@import "testfile";', function(result) {
   <script src="src/sass.options.js"></script>
   <script src="src/sass.importer.js"></script>
   <script src="src/sass.api.js"></script>
+  <script src="src/sass.resolve-paths.js"></script>
   <script>
     Sass.writeFile('testfile.scss', '@import "sub/deeptest";\n.testfile { content: "loaded"; }', function() {
       console.log('wrote "testfile.scss"');
