@@ -2,6 +2,7 @@
 
 var expect = require('chai').expect;
 var Sass = require('../dist/sass.sync.js');
+var BOM = '\uFEFF';
 
 describe('importer', function() {
 
@@ -17,7 +18,7 @@ describe('importer', function() {
       {'current':'sub/deeptest', 'previous':'/sass/testfile.scss', 'path':'/sass/sub/deeptest.scss'}
     ];
     var buffer = [];
-      
+
     Sass.clearFiles();
     Sass.importer(function(request, done) {
       buffer.push({
@@ -43,7 +44,7 @@ describe('importer', function() {
       done();
     });
   });
-  
+
   it('should rewrite paths', function(done) {
     var source = '@import "testfile";';
     var expected = '.rewritten{content:"loaded"}.testfile{content:"loaded"}\n';
@@ -75,7 +76,7 @@ describe('importer', function() {
       done();
     });
   });
-  
+
   it('should rewrite content', function(done) {
     var source = '@import "testfile";';
     var expected = '.yolo{content:"injected"}.testfile{content:"loaded"}\n';
@@ -301,6 +302,37 @@ describe('importer', function() {
       expect(result.text).to.equal(expected);
       expect(JSON.stringify(result.files)).to.equal(JSON.stringify(expectedFiles));
 
+      done();
+    });
+  });
+
+  it('should compile UTF-8', function(done) {
+    var source = '@import "testfile";';
+    var expected = BOM + '.yolo{content:"injöcted"}.testfile{content:"löäded"}\n';
+    var expectedFiles = [
+      '/sass/sub/yolo.scss',
+      '/sass/testfile.scss'
+    ];
+
+    Sass.clearFiles();
+    Sass.importer(function(request, done) {
+      var result = {};
+      if (request.current === 'sub/deeptest') {
+        result.path = '/sass/sub/yolo.scss';
+        result.content = '// some “fun” characters\n.yolo { content: "injöcted"; }';
+      }
+
+      done(result);
+    });
+
+    Sass.options('defaults');
+    Sass.options({ style: Sass.style.compressed });
+
+    Sass.writeFile('testfile.scss', '// some “fun” characters\n@import "sub/deeptest";\n.testfile { content: "löäded"; }');
+    Sass.writeFile('sub/yolo.scss', '// some “fun” characters\n.yolo { content: "löäded"; }');
+
+    Sass.compile(source, function(result) {
+      expect(result.text).to.equal(expected);
       done();
     });
   });

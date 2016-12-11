@@ -4,6 +4,7 @@
 
 * Deprecating the synchronous `Sass.lazyFiles()` - as this can be achieved asynchronously with an Importer Callback
 * upgrading to [libsass 3.4.0](https://github.com/sass/libsass/releases/tag/3.4.0)
+* fixing Importer to properly process UTF8 strings - ([Issue #72](https://github.com/medialize/sass.js/issues/72))
 
 ## 0.9.13 (September 25th 2016) ##
 

@@ -27,7 +27,10 @@ function pointerToString(pointer) {
 }
 
 function stringToPointer(text) {
-  var buffer = Module._malloc(text.length + 1);
+  // a character like ” takes 3 bytes, while .length would return 1
+  // see https://github.com/medialize/sass.js/issues/72#issuecomment-263916386
+  var bytes = unescape(encodeURIComponent(text)).length;
+  var buffer = Module._malloc(bytes + 1);
   Module.writeStringToMemory(text, buffer);
   return buffer;
 }
