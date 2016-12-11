@@ -1,6 +1,6 @@
 # Sass.js Changelog
 
-## master ##
+## 0.10.0 (December 11th 2016) ##
 
 * Deprecating the synchronous `Sass.lazyFiles()` - as this can be achieved asynchronously with an Importer Callback
 * upgrading to [libsass 3.4.0](https://github.com/sass/libsass/releases/tag/3.4.0)
