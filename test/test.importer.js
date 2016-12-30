@@ -229,7 +229,7 @@ describe('importer', function() {
     });
   });
 
-  it.only('should support indented syntax', function(done) {
+  it('should support indented syntax', function(done) {
     var source = '@import "testfile"';
     var expected = '.m {\n  width: 123px; }\n';
 
