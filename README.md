@@ -26,6 +26,7 @@ Sass.js is used in the following tools:
 * [kevcjones/plugin-scss](https://github.com/kevcjones/plugin-scss) is a SystemJS plugin
 * [theefer/plugin-sass](https://github.com/theefer/plugin-sass) is a SystemJS plugin
 * [stealjs/steal-sass](https://github.com/stealjs/steal-sass) is a StealJS plugin
+* [nickheiner/sassjs-loader](https://github.com/NickHeiner/sassjs-loader) is a Webpack plugin
 * [lein-sass](https://github.com/yogthos/lein-sass) is a minimum dependency Clojure library designed to compile SASS files using Sass.js running on Nashorn
 * [qwebs](https://www.npmjs.com/package/qwebs) is a "back-end web server"
 * [Crunch 2](http://getcrunch.co/)
