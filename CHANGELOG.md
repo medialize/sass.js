@@ -1,6 +1,6 @@
 # Sass.js Changelog
 
-## 0.10.3 (January 8th 2016) ##
+## 0.10.3 (January 8th 2017) ##
 
 * upgrading to [libsass 3.4.3](https://github.com/sass/libsass/releases/tag/3.4.3)
 
