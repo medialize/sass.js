@@ -2,7 +2,7 @@
 
 Sass parser in JavaScript. Have a look at the [Interactive Playground](http://sass.js.org/) to play around with compiling SCSS to CSS in your browser.
 
-This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.4.3](https://github.com/sass/libsass/releases/tag/3.4.3)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
+This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.4.4](https://github.com/sass/libsass/releases/tag/3.4.4)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
 A fair warning: minified the worker weighs 3.2MB, gzipped it's still 670KB. If you're on NodeJS, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
