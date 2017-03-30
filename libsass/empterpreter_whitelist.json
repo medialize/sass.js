@@ -5,6 +5,7 @@
   "__ZL20sass_compile_contextP12Sass_ContextPN4Sass7ContextE",
   "__ZN4Sass12Data_Context5parseEv",
   "__ZN4Sass6Parser12parse_importEv",
+  "__ZN4Sass6Parser13parse_rulesetE9Lookahead",
   "__ZN4Sass6Parser13parse_rulesetE9Lookaheadb",
   "__ZN4Sass6Parser15add_single_fileEPNS_6ImportENSt3__112basic_stringIcNS3_11char_traitsIcEENS3_9allocatorIcEEEE",
   "__ZN4Sass6Parser15parse_css_blockEb",
