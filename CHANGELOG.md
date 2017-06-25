@@ -1,6 +1,10 @@
 # Sass.js Changelog
 
-## 0.10.4 (March 30th 2016) ##
+## 0.10.5 (June 25th 2017) ##
+
+* upgrading to [libsass 3.4.5](https://github.com/sass/libsass/releases/tag/3.4.5)
+
+## 0.10.4 (March 30th 2017) ##
 
 * upgrading to [libsass 3.4.4](https://github.com/sass/libsass/releases/tag/3.4.4)
 
