@@ -8,8 +8,8 @@
     "commit": "31573210"
   },
   "sassjs": {
-    "version": "0.10.5",
-    "commit": "2cd3782",
+    "version": "0.10.6",
+    "commit": "f91eed9",
     "branch": "master"
   }
 }
