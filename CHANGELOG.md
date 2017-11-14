@@ -1,5 +1,9 @@
 # Sass.js Changelog
 
+## 0.10.7 (November 14th 2017) ##
+
+* upgrading to [libsass 3.4.7](https://github.com/sass/libsass/releases/tag/3.4.7)
+
 ## 0.10.6 (July 28th 2017) ##
 
 * fixing `sass.node.js` to work on windows - ([Issue #86](https://github.com/medialize/sass.js/issues/86))
