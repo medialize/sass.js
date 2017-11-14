@@ -1,5 +1,6 @@
-var fs = require('fs');
 var Sass = require('./sass.sync.js');
+var fs = require('fs');
+var path = require('path');
 
 function fileExists(path) {
   var stat = fs.statSync(path);
@@ -31,9 +32,7 @@ function importFileToSass(path, done) {
 }
 
 function importerCallback(request, done) {
-  // sass.js works in the "/sass/" directory, make that relative to CWD
-  var requestedPath = request.resolved.replace(/^\/sass\//, '' );
-  importFileToSass(requestedPath, done);
+  importFileToSass(resolve(request), done);
 }
 
 function compileFile(path, options, callback) {
@@ -46,6 +45,19 @@ function compileFile(path, options, callback) {
   importFileToSass(path, function() {
     Sass.compileFile(path, options, callback);
   });
+}
+
+function resolve(request) {
+  // the request will not have the correct "resolved" path on Windows
+  // see https://github.com/medialize/sass.js/issues/69
+  // see https://github.com/medialize/sass.js/issues/86
+  return path.normalize(
+    path.join(
+      // sass.js works in the "/sass/" directory, make that relative to CWD
+      path.dirname(request.previous.replace(/^\/sass\//, '')),
+      request.current
+    )
+  ).replace(/\\/g, '/');
 }
 
 compileFile.importFileToSass = importFileToSass;
