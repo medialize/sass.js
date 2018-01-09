@@ -7,6 +7,10 @@ function fileExists(path) {
   return stat && stat.isFile();
 }
 
+function removeFileExtension(path) {
+  return path.slice(0, path.lastIndexOf('.'));
+}
+
 function importFileToSass(path, done) {
   // any path must be relative to CWD to work in both environments (real FS, and emscripten FS)
   var requestedPath = './' + path;
@@ -20,13 +24,19 @@ function importFileToSass(path, done) {
     return;
   }
 
+  // Make sure to omit the ".css" file extension when it was omitted in requestedPath.
+  // This allow raw css imports.
+  // see https://github.com/sass/libsass/pull/754
+  var isRawCss = !requestedPath.endsWith('.css') && filesystemPath.endsWith('.css');
+  var targetPath = isRawCss ? removeFileExtension(filesystemPath) : filesystemPath;
+
   // write the file to emscripten FS so libsass internal FS handling
   // can engage the scss/sass switch, which apparently does not happen
   // for content provided through the importer callback directly
   var content = fs.readFileSync(filesystemPath, {encoding: 'utf8'});
   Sass.writeFile(filesystemPath, content, function() {
     done({
-      path: filesystemPath,
+      path: targetPath,
     });
   });
 }
