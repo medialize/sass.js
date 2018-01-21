@@ -1,5 +1,10 @@
 # Sass.js Changelog
 
+## 0.10.8 (January 21st 2018) ##
+
+* upgrading to [libsass 3.4.8](https://github.com/sass/libsass/releases/tag/3.4.8)
+* fixing `sass.node.js` to allow raw CSS imports - ([PR #94](https://github.com/medialize/sass.js/pull/94))
+
 ## 0.10.7 (November 14th 2017) ##
 
 * upgrading to [libsass 3.4.7](https://github.com/sass/libsass/releases/tag/3.4.7)
