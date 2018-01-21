@@ -1,5 +1,5 @@
-/*! sass.js - v0.10.7 (ae544a4) - built 2017-11-14
-  providing libsass 3.4.7 (c943792a)
+/*! sass.js - v0.10.8 (eb28f5f) - built 2018-01-21
+  providing libsass 3.4.8 (a1f13edf)
   via emscripten 1.37.0 ()
  */
 var Sass = require('./sass.sync.js');
@@ -9,6 +9,10 @@ var path = require('path');
 function fileExists(path) {
   var stat = fs.statSync(path);
   return stat && stat.isFile();
+}
+
+function removeFileExtension(path) {
+  return path.slice(0, path.lastIndexOf('.'));
 }
 
 function importFileToSass(path, done) {
@@ -24,13 +28,19 @@ function importFileToSass(path, done) {
     return;
   }
 
+  // Make sure to omit the ".css" file extension when it was omitted in requestedPath.
+  // This allow raw css imports.
+  // see https://github.com/sass/libsass/pull/754
+  var isRawCss = !requestedPath.endsWith('.css') && filesystemPath.endsWith('.css');
+  var targetPath = isRawCss ? removeFileExtension(filesystemPath) : filesystemPath;
+
   // write the file to emscripten FS so libsass internal FS handling
   // can engage the scss/sass switch, which apparently does not happen
   // for content provided through the importer callback directly
   var content = fs.readFileSync(filesystemPath, {encoding: 'utf8'});
   Sass.writeFile(filesystemPath, content, function() {
     done({
-      path: filesystemPath,
+      path: targetPath,
     });
   });
 }

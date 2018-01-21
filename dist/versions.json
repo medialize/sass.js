@@ -4,12 +4,12 @@
     "commit": null
   },
   "libsass": {
-    "version": "3.4.7",
-    "commit": "c943792a"
+    "version": "3.4.8",
+    "commit": "a1f13edf"
   },
   "sassjs": {
-    "version": "0.10.7",
-    "commit": "ae544a4",
-    "branch": "master"
+    "version": "0.10.8",
+    "commit": "eb28f5f",
+    "branch": "upgrade-libsass-3.4.8"
   }
 }
