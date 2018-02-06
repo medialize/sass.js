@@ -1,5 +1,10 @@
 # Sass.js Changelog
 
+## 0.10.9 (February 6th 2018) ##
+
+* upgrading to [libsass 3.4.9](https://github.com/sass/libsass/releases/tag/3.4.9)
+* upgrading to [emscripten 1.37.33](https://github.com/kripken/emscripten/releases/tag/1.37.33)
+
 ## 0.10.8 (January 21st 2018) ##
 
 * upgrading to [libsass 3.4.8](https://github.com/sass/libsass/releases/tag/3.4.8)
