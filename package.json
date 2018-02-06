@@ -1,6 +1,6 @@
 {
   "name": "sass.js",
-  "version": "0.10.9",
+  "version": "0.11.0",
   "libsass": "3.5.0",
   "title": "Sass.js - API for emscripted libsass",
   "description": "Sass.js is a convenience API for the JavaScript libsass (compiled with Emscripten)",

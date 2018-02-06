@@ -1,5 +1,13 @@
 # Sass.js Changelog
 
+## 0.11.0 (March 6th 2018) ##
+
+* upgrading to [libsass 3.5.0](https://github.com/sass/libsass/releases/tag/3.5.0)
+* upgrading to [emscripten 1.37.35](https://github.com/kripken/emscripten/releases/tag/1.37.35)
+* switching from ASM to WASM - ([Issue #74](https://github.com/medialize/sass.js/issues/74))
+
+**NOTE:** If you were copying `dist/sass.worker.js` to your build-target, make sure to extend that to also copy `dist/libsass.wasm` to the same directory - [#95](https://github.com/medialize/sass.js/issues/95)
+
 ## 0.10.9 (February 6th 2018) ##
 
 * upgrading to [libsass 3.4.9](https://github.com/sass/libsass/releases/tag/3.4.9)
