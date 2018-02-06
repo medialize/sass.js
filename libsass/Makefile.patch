@@ -1,13 +1,14 @@
 --- Makefile.orig	2015-09-09 14:30:05.000000000 +0300
 +++ Makefile	2015-09-09 14:36:59.000000000 +0300
-@@ -208,6 +208,33 @@
+@@ -208,6 +208,35 @@
  debug-shared: CXXFLAGS := -g -DDEBUG -DDEBUG_LVL="$(DEBUG_LVL)" $(filter-out -O2,$(CXXFLAGS))
  debug-shared: shared
- 
+
 +js: static
 +	emcc lib/libsass.a -o lib/libsass.js \
 + 		-O3 \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
++		-s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "Pointer_stringify", "getValue", "lengthBytesUTF8", "stringToUTF8"]' \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
@@ -19,6 +20,7 @@
 +	emcc lib/libsass.a -o lib/libsass.js \
 +		-O0 \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
++		-s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "Pointer_stringify", "getValue", "lengthBytesUTF8", "stringToUTF8"]' \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
@@ -33,10 +35,10 @@
 +
  lib:
  	$(MKDIR) lib
- 
+
 @@ -299,7 +326,7 @@
  	$(RUBY_BIN) $(SASS_SPEC_PATH)/sass-spec.rb -c $(SASSC_BIN) $(LOG_FLAGS) $(SASS_SPEC_PATH)/spec/issues
- 
+
  clean-objects: lib
 -	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la
 +	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la lib/*.js
