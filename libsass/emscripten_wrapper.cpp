@@ -81,7 +81,7 @@ void sass_compile_emscripten(
   }
 
   // returning data to JS via callback rather than regular function return value and C pointer fun,
-  // because emscripten does not inform JavaScript when an (empterpreter) async function is done.
+  // because emscripten does not inform JavaScript when an (emterpreter) async function is done.
   // Since (char *) is a pointer (int) we can abuse EM_ASM_INT() to pass that back to JavaScript.
   // NOTE: Because we're performing tasks *after* we informed the JavaScript of success/error,
   // we need to make sure that those callbacks don't mess with the stack or prematurely

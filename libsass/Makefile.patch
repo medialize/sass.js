@@ -13,7 +13,7 @@
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
-+		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
++		-s EMTERPRETIFY_WHITELIST=@../emterpreter_whitelist.json \
 +		--memory-init-file 0
 +
 +js-debug: static
@@ -25,7 +25,7 @@
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
-+		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
++		-s EMTERPRETIFY_WHITELIST=@../emterpreter_whitelist.json \
 +		-s ASSERTIONS=1 \
 +		-s SAFE_HEAP=1 \
 +		-s DEMANGLE_SUPPORT=1 \
