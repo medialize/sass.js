@@ -1,12 +1,12 @@
 --- Makefile.orig	2015-09-09 14:30:05.000000000 +0300
 +++ Makefile	2015-09-09 14:36:59.000000000 +0300
-@@ -208,6 +208,35 @@
+@@ -208,6 +208,38 @@
  debug-shared: CXXFLAGS := -g -DDEBUG -DDEBUG_LVL="$(DEBUG_LVL)" $(filter-out -O2,$(CXXFLAGS))
  debug-shared: shared
 
 +js: static
 +	emcc lib/libsass.a -o lib/libsass.js \
-+ 		-O3 \
++		-Os \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
 +		-s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "Pointer_stringify", "getValue", "lengthBytesUTF8", "stringToUTF8"]' \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
@@ -14,6 +14,9 @@
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
 +		-s EMTERPRETIFY_WHITELIST=@../emterpreter_whitelist.json \
++		-s WASM=1 \
++		--pre-js ../../src/sass.configure.path.js \
++		--pre-js ../../src/pre-module.js \
 +		--memory-init-file 0
 +
 +js-debug: static
@@ -41,7 +44,7 @@
 
  clean-objects: lib
 -	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la
-+	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la lib/*.js
++	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la lib/*.js lib/*.wasm
  	-$(RMDIR) lib
  clean: clean-objects
  	$(RM) $(CLEANUPS)

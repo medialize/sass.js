@@ -307,6 +307,7 @@ var Sass = {
       throw new Error('Sass.compile() requires second argument to be an object (options) or a function (callback)');
     }
 
+    var _previousOptions = null;
     var done = function done(result) {
       var _cleanup = function() {
         // we're done, the next invocation may come
@@ -340,7 +341,6 @@ var Sass = {
 
     try {
       // temporarily - for the duration of this .compile() - overwrite options
-      var _previousOptions = null;
       if (_options) {
         _previousOptions = Sass._cloneOptions();
         Sass.options(_options);
@@ -415,10 +415,3 @@ options.forEach(function(option) {
   Sass._options[option.key] = Sass._defaultOptions[option.key] = option.initial;
   Sass._optionTypes[option.key] = option.coerce;
 });
-
-// until 0.9.6 we used a weird hacky way to get informed by Module.onRuntimeInitialized
-// when emscripten was fully loaded. But since 0.9.5 we're not using a separate .mem file
-// anymore and emscripten doesn't preload any files for us, so this became irrelevant.
-
-// initialize after emscripten is loaded and the event loop cleared
-setTimeout(Sass._ready);
