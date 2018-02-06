@@ -1,14 +1,18 @@
 {
   "dist/sass.js": {
-    "normal": "5 KB",
+    "normal": "6 KB",
     "compressed": "2 KB"
   },
   "dist/sass.sync.js": {
-    "normal": "3527 KB",
-    "compressed": "739 KB"
+    "normal": "358 KB",
+    "compressed": "80 KB"
   },
   "dist/sass.worker.js": {
-    "normal": "3527 KB",
-    "compressed": "739 KB"
+    "normal": "357 KB",
+    "compressed": "80 KB"
+  },
+  "dist/libsass.wasm": {
+    "normal": "1701 KB",
+    "compressed": "522 KB"
   }
 }

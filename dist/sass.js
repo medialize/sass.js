@@ -1,4 +1,4 @@
-/*! sass.js - v0.10.9 (3e41106) - built 2018-02-06
+/*! sass.js - v0.11.0-beta.1 (ff51bc1) - built 2018-02-06
   providing libsass 3.4.9 (6de5050d)
   via emscripten 1.37.33 ()
  */
@@ -12,7 +12,7 @@
   } else {
     root.Sass = factory();
   }
-}(this, function () {/*global document*/
+}(this, function () {/*global document, location, SASSJS_RELATIVE_PATH*/
 // identify the path sass.js is located at in case we're loaded by a simple
 // <script src="path/to/sass.js"></script>
 // this path can be used to identify the location of
@@ -20,12 +20,23 @@
 // * libsass.js.mem from sass.sync.js
 // see https://github.com/medialize/sass.js/pull/32#issuecomment-103142214
 // see https://github.com/medialize/sass.js/issues/33
-var SASSJS_RELATIVE_PATH = (function() {
+var _SASSJS_RELATIVE_PATH = typeof SASSJS_RELATIVE_PATH !== 'undefined' && SASSJS_RELATIVE_PATH
+var SASSJS_RELATIVE_PATH = _SASSJS_RELATIVE_PATH || (function() {
   'use strict';
+
+  var path = null;
 
   // in Node things are rather simple
   if (typeof __dirname !== 'undefined') {
     return __dirname;
+  }
+
+  // in a WebWorker we're always relative to the the worker itself
+  if (typeof WorkerLocation !== 'undefined') {
+    path = location.href;
+    if (path.slice(-15) === '/sass.worker.js') {
+      return path.slice(0, -15);
+    }
   }
 
   // we can only run this test in the browser,
@@ -40,7 +51,7 @@ var SASSJS_RELATIVE_PATH = (function() {
     return scripts[scripts.length - 1];
   })();
 
-  var path = currentScript && currentScript.src;
+  path = currentScript && currentScript.src;
   if (!path) {
     return null;
   }
