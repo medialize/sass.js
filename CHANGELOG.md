@@ -1,5 +1,9 @@
 # Sass.js Changelog
 
+## 0.11.0-beta.1 (February 6th 2018) ##
+
+* switching from ASM to WASM - ([Issue #74](https://github.com/medialize/sass.js/issues/74))
+
 ## 0.10.9 (February 6th 2018) ##
 
 * upgrading to [libsass 3.4.9](https://github.com/sass/libsass/releases/tag/3.4.9)

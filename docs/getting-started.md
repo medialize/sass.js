@@ -6,6 +6,7 @@ Sass.js aims to run in all environments. To achieve that, it's provided in indiv
 * `dist/sass.worker.js`: The emscripted libsass loaded by `dist/sass.js` and the [Web Worker](https://developer.mozilla.org/en/docs/Web/API/Worker) utilities.
 * `dist/sass.sync.js`: The consumable API and emscripted libsass for running the compiler in the main thread. Use this only in environments not supporting Web Workers (e.g. Node, Rhino, Nashorn).
 * `dist/sass.node.js`: A convenience API around `dist/sass.sync.js` to compile directly from the file system.
+* `dist/libsass.wasm`: To WebAssembly compiled libsass, loaded by and relative to `dist/sass.worker.js`, `dist/sass.sync.js` and `dist/sass.node.js`.
 * `dist/file-size.js`: *(meta)* A file listing the sizes of the compiled files.
 * `dist/versions.js`: *(meta)* A file listing the versions of Sass.js, libsass and emscripten.
 
@@ -26,7 +27,7 @@ The regular way of running Sass.js in the browser is by using the Web Worker (se
 
 ### Using Sass.js with a module loader
 
-If you load `sass.js` by other means than then `<script>` example above, it cannot find the URL of `dist/sass.worker.js` by itself. In this case you need to tell Sass where to find the worker first:
+If you load `sass.js` by other means than then `<script>` example above, it cannot find the URL of `dist/sass.worker.js` (and `dist/libsass.wasm`) by itself. In this case you need to tell Sass where to find the worker first:
 
 ```js
 define(function defineSassModule(require) {
@@ -63,7 +64,7 @@ It is possible - but *not recommended* to use Sass.js in the main EventLoop by l
 </script>
 ```
 
-The synchronous API does not need to be told where to find the worker (using `Sass.setWorkerUrl()`) because everything is included in one file.
+The synchronous API does not need to be told where to find the worker (using `Sass.setWorkerUrl()`), but it will expect the file `libsass.wasm` next to `sass.sync.js` - meaning these two files *must* remain in the same directory.
 
 
 ## Using Sass.js in Node (and Rhino, Nashorn, …)

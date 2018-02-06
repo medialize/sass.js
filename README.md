@@ -4,9 +4,12 @@ Sass parser in JavaScript. Have a look at the [Interactive Playground](http://sa
 
 This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.4.9](https://github.com/sass/libsass/releases/tag/3.4.9)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
-A fair warning: minified the worker weighs 3.4MB, gzipped it's still 740KB. If you're on NodeJS, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
-You may also be interested in giving [Dart Sass](https://github.com/sass/dart-sass) a shot.
+## Warning
+
+The total size of *gzipped* content is ~600KB (~2KB sass.js, ~80KB sass.worker.js, ~520KB libsass.wasm). Without gzip it's ~6KB sass.js, ~360KB sass.worker.js, ~1.7MB libsass.wasm.
+
+If you're on NodeJS, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead. You may also be interested in giving [Dart Sass](https://github.com/sass/dart-sass) a shot.
 
 
 ## Documentation
