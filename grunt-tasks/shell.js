@@ -11,6 +11,9 @@ module.exports = function GruntfileShell(grunt) {
     buildLibsassDebug: {
       command: '(cd libsass && /bin/bash ./build.sh "<%= pkg.libsass %>" debug)',
     },
+    copyWasm: {
+      command: 'cp libsass/libsass/lib/libsass.wasm dist/libsass.wasm',
+    },
   });
 
 };

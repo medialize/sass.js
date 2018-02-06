@@ -37,6 +37,7 @@ module.exports = function(grunt) {
     'versions',
     'libsass:build',
     'build:sass',
+    'shell:copyWasm',
     'build:worker',
     'build:sync',
     'build:node',
@@ -48,6 +49,7 @@ module.exports = function(grunt) {
     'libsass:prepare',
     'versions',
     'libsass:debug',
+    'shell:copyWasm',
     'build:sass',
     'build:worker',
     'build:sync',
@@ -58,6 +60,7 @@ module.exports = function(grunt) {
   grunt.registerTask('rebuild', [
     'versions',
     'libsass:build',
+    'shell:copyWasm',
     'build:sass',
     'build:worker',
     'build:sync',
@@ -67,6 +70,7 @@ module.exports = function(grunt) {
   grunt.registerTask('rebuild:debug', [
     'versions',
     'libsass:debug',
+    'shell:copyWasm',
     'build:sass',
     'build:worker',
     'build:sync',

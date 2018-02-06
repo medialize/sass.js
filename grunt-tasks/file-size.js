@@ -65,8 +65,15 @@ module.exports = function GruntfileVersions(grunt) {
             compressed: compressed
           };
 
-          var _sizes = JSON.stringify(sizes, null, 2);
-          fs.writeFile('dist/file-size.json', _sizes, done);
+          getFileSize('dist/libsass.wasm', function(normal, compressed) {
+            sizes['dist/libsass.wasm'] = {
+              normal: normal,
+              compressed: compressed
+            };
+
+            var _sizes = JSON.stringify(sizes, null, 2);
+            fs.writeFile('dist/file-size.json', _sizes, done);
+          });
         });
       });
     });

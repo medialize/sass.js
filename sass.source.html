@@ -23,6 +23,9 @@ Sass.compile('@import "testfile";', function(result) {
   console.log("compiled", result.text);
 });</pre>
 
+  <script>
+    window.SASSJS_RELATIVE_PATH = 'libsass/libsass/lib';
+  </script>
   <script src="libsass/libsass/lib/libsass.js"></script>
   <script src="src/sass.util.js"></script>
   <script src="src/sass.options.js"></script>
