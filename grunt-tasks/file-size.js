@@ -63,8 +63,11 @@ module.exports = function GruntfileVersions(grunt) {
     var done = this.async();
     var files = [
       'dist/sass.js',
+      'dist/sass.sync.asm.js',
       'dist/sass.sync.js',
+      'dist/sass.worker.asm.js',
       'dist/sass.worker.js',
+      'dist/libsass.wasm',
     ];
 
     var promises = files.map(path => getFileSizes(path))

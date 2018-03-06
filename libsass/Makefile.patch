@@ -1,10 +1,10 @@
 --- Makefile.orig	2015-09-09 14:30:05.000000000 +0300
 +++ Makefile	2015-09-09 14:36:59.000000000 +0300
-@@ -208,6 +208,38 @@
+@@ -208,6 +208,52 @@
  debug-shared: CXXFLAGS := -g -DDEBUG -DDEBUG_LVL="$(DEBUG_LVL)" $(filter-out -O2,$(CXXFLAGS))
  debug-shared: shared
 
-+js: static
++wasm: static
 +	emcc lib/libsass.a -o lib/libsass.js \
 +		-Os \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
@@ -19,8 +19,22 @@
 +		--pre-js ../../src/pre-module.js \
 +		--memory-init-file 0
 +
-+js-debug: static
-+	emcc lib/libsass.a -o lib/libsass.js \
++asm: static
++	emcc lib/libsass.a -o lib/libsass.asm.js \
++		-Os \
++		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
++		-s EXTRA_EXPORTED_RUNTIME_METHODS=@../exported_runtime_methods.json \
++		-s DISABLE_EXCEPTION_CATCHING=0 \
++		-s ALLOW_MEMORY_GROWTH=1 \
++		-s EMTERPRETIFY=1 \
++		-s EMTERPRETIFY_ASYNC=1 \
++		-s EMTERPRETIFY_WHITELIST=@../emterpreter_whitelist.json \
++		--pre-js ../../src/sass.configure.path.js \
++		--pre-js ../../src/pre-module.js \
++		--memory-init-file 0
++
++asm-debug: static
++	emcc lib/libsass.a -o lib/libsass.asm.js \
 +		-O0 \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
 +		-s EXTRA_EXPORTED_RUNTIME_METHODS=@../exported_runtime_methods.json \

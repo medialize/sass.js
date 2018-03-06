@@ -52,11 +52,53 @@ module.exports = function GruntfileConcat(grunt) {
         }
       }
     },
+    workerAsm: {
+      dest: 'dist/sass.worker.asm.js',
+      src: [
+        'libsass/libsass/lib/libsass.asm.js',
+        'src/sass.util.js',
+        'src/sass.options.js',
+        'src/sass.importer.js',
+        'src/sass.api.js',
+        'src/sass.resolve-paths.js',
+        'src/sass.worker.js'
+      ],
+      options: {
+        banner: banner,
+        process: function (content) {
+          return content
+            // prevent emscripted libsass from exporting itself
+            .replace(/module\['exports'\] = Module;/, '')
+            // libsass and sass API are inlined, so no need to load them
+            .replace(/importScripts\((['"])libsass.js\1,\s*\1sass.js\1\);/, '');
+        }
+      }
+    },
     sync: {
       dest: 'dist/sass.sync.js',
       src: [
         'src/sass.configure.path.js',
         'libsass/libsass/lib/libsass.js',
+        'src/sass.util.js',
+        'src/sass.options.js',
+        'src/sass.importer.js',
+        'src/sass.api.js',
+        'src/sass.resolve-paths.js'
+      ],
+      options: {
+        banner: banner + '\n' + umdHeader,
+        footer: umdFooter,
+        process: function (content) {
+          // prevent emscripted libsass from exporting itself
+          return content.replace(/module\['exports'\] = Module;/, '');
+        }
+      }
+    },
+    syncAsm: {
+      dest: 'dist/sass.sync.asm.js',
+      src: [
+        'src/sass.configure.path.js',
+        'libsass/libsass/lib/libsass.asm.js',
         'src/sass.util.js',
         'src/sass.options.js',
         'src/sass.importer.js',

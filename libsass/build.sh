@@ -25,7 +25,7 @@ cp ./emscripten_wrapper.hpp ./libsass/src/emscripten_wrapper.hpp
 # build
 echo "  initializing emscripten"
 if [ "${2:-}" = "debug" ]; then
-  (cd libsass && emmake make js-debug)
+  (cd libsass && emmake make asm-debug)
 else
-  (cd libsass && emmake make js)
+  (cd libsass && emmake make wasm asm)
 fi

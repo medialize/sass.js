@@ -24,9 +24,9 @@ module.exports = function(grunt) {
   ]);
 
   // concatenate source files and libsass.js
-  grunt.registerTask('build:worker', ['concat:worker']);
+  grunt.registerTask('build:worker', ['concat:worker', 'concat:workerAsm']);
   grunt.registerTask('build:sass', ['concat:sass']);
-  grunt.registerTask('build:sync', ['concat:sync']);
+  grunt.registerTask('build:sync', ['concat:sync', 'concat:syncAsm']);
   grunt.registerTask('build:node', ['concat:node']);
 
   // full build pipeline
@@ -49,12 +49,10 @@ module.exports = function(grunt) {
     'libsass:prepare',
     'versions',
     'libsass:debug',
-    'shell:copyWasm',
     'build:sass',
-    'build:worker',
-    'build:sync',
+    'concat:workerAsm',
+    'concat:syncAsm',
     'build:node',
-    'file-size',
   ]);
   // simplifications for development
   grunt.registerTask('rebuild', [
@@ -70,12 +68,10 @@ module.exports = function(grunt) {
   grunt.registerTask('rebuild:debug', [
     'versions',
     'libsass:debug',
-    'shell:copyWasm',
     'build:sass',
-    'build:worker',
-    'build:sync',
+    'concat:workerAsm',
+    'concat:syncAsm',
     'build:node',
-    'file-size',
   ]);
 
   grunt.registerTask('lint', 'jshint');
