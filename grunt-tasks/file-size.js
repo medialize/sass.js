@@ -4,78 +4,78 @@ module.exports = function GruntfileVersions(grunt) {
   var childProcess = require('child_process');
   var PATH = require('path');
   var fs = require('fs');
+  var util = require('util');
+  var stat = util.promisify(fs.stat)
+  var unlink = util.promisify(fs.unlink)
 
-  function getFileSize(path, done) {
+  function compressFile(path) {
     var command = 'cp ' + path + ' ' + path + '.tmp && gzip ' + path + '.tmp';
     var cwd = PATH.join(__dirname, '..');
     var target = path + '.tmp.gz';
 
-    childProcess.exec(command, {cwd: cwd}, function(err, stdout, stderr) {
-      if (err) {
-        grunt.log.error('compressing ' + path + ' failed: ' + err.code + '\n' + stderr);
-        return;
-      }
-
-      fs.stat(path, function(error, inputStats) {
+    return new Promise((resolve, reject) => {
+      childProcess.exec(command, {cwd: cwd}, function(err, stdout, stderr) {
         if (err) {
-          grunt.log.error('inspecting ' + target + ' failed: ' + err.code + '\n' + stderr);
-          return;
+          grunt.log.error('compressing ' + path + ' failed: ' + err.code + '\n' + stderr);
+          reject(err)
+        } else {
+          resolve(target)
         }
-
-        fs.stat(target, function(error, compressedStats) {
-          if (err) {
-            grunt.log.error('inspecting ' + target + ' failed: ' + err.code + '\n' + stderr);
-            return;
-          }
-
-          fs.unlink(target, function(error) {
-            if (err) {
-              grunt.log.error('removing ' + target + ' failed: ' + err.code + '\n' + stderr);
-              return;
-            }
-
-            done(
-              Math.round(inputStats.size / 1024) + ' KB',
-              Math.round(compressedStats.size / 1024) + ' KB'
-            );
-          });
-        });
       });
     });
   }
 
-  grunt.registerTask('file-size', function() {
-    var done = this.async();
-    var sizes = {};
-    getFileSize('dist/sass.js', function(normal, compressed) {
-      sizes['dist/sass.js'] = {
-        normal: normal,
-        compressed: compressed
-      };
+  function removeFile(path) {
+    return unlink(path).catch(error => {
+      grunt.log.error('removing ' + path + ' failed: ' + error.code + '\n' + stderr);
+      return Promise.reject(error)
+    })
+  }
 
-      getFileSize('dist/sass.sync.js', function(normal, compressed) {
-        sizes['dist/sass.sync.js'] = {
-          normal: normal,
-          compressed: compressed
-        };
+  function getFileSize(path) {
+    return stat(path).catch(error => {
+      grunt.log.error('inspecting ' + path + ' failed: ' + error.code + '\n' + stderr);
+      return Promise.reject(error)
+    })
+  }
 
-        getFileSize('dist/sass.worker.js', function(normal, compressed) {
-          sizes['dist/sass.worker.js'] = {
-            normal: normal,
-            compressed: compressed
-          };
-
-          getFileSize('dist/libsass.wasm', function(normal, compressed) {
-            sizes['dist/libsass.wasm'] = {
-              normal: normal,
-              compressed: compressed
-            };
-
-            var _sizes = JSON.stringify(sizes, null, 2);
-            fs.writeFile('dist/file-size.json', _sizes, done);
-          });
-        });
+  function getCompressedFileSize(path) {
+    return compressFile(path).then(target => {
+      return getFileSize(target).then(result => {
+        return removeFile(target).then(() => result);
       });
     });
+  }
+
+  function getFileSizes(path) {
+    return Promise.all([
+      getFileSize(path),
+      getCompressedFileSize(path),
+    ]).then(([ normal, compressed ]) => {
+      return {
+        normal: Math.round(normal.size / 1024) + ' KB',
+        compressed: Math.round(compressed.size / 1024) + ' KB',
+      }
+    })
+  }
+
+  grunt.registerTask('file-size', function() {
+    var done = this.async();
+    var files = [
+      'dist/sass.js',
+      'dist/sass.sync.js',
+      'dist/sass.worker.js',
+    ];
+
+    var promises = files.map(path => getFileSizes(path))
+    Promise.all(promises).then(results => {
+      return files.reduce((result, path, index) => {
+        result[path] = results[index]
+        return result
+      }, {})
+    }).then(result => {
+      var _sizes = JSON.stringify(result, null, 2);
+      fs.writeFile('dist/file-size.json', _sizes, done);
+    }).catch(done);
   });
 };
