@@ -8,7 +8,7 @@
 +	emcc lib/libsass.a -o lib/libsass.js \
 + 		-O3 \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
-+		-s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "Pointer_stringify", "getValue", "lengthBytesUTF8", "stringToUTF8"]' \
++		-s EXTRA_EXPORTED_RUNTIME_METHODS=@../exported_runtime_methods.json \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
@@ -20,7 +20,7 @@
 +	emcc lib/libsass.a -o lib/libsass.js \
 +		-O0 \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
-+		-s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "Pointer_stringify", "getValue", "lengthBytesUTF8", "stringToUTF8"]' \
++		-s EXTRA_EXPORTED_RUNTIME_METHODS=@../exported_runtime_methods.json \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
