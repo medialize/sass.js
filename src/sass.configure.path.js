@@ -40,6 +40,11 @@ var SASSJS_RELATIVE_PATH = (function() {
   if (path.slice(-13) === '/sass.sync.js') {
     return path.slice(0, -13);
   }
+	
+  if (path.indexOf('sass.js') > -1) {
+      var arPath = path.split('/');
+      if (arPath.pop()) return arPath.join('/');
+  }
 
   return null;
 })() || '.';
