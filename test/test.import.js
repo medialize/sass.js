@@ -34,7 +34,7 @@ describe('@import', function() {
       done();
     });
   });
-  
+
   it('should resolve nested imports', function(done) {
     var source = '@import "some-dir/testfile";';
     var expected = '.imported {\n  content: "bar"; }\n\n.imported {\n  content: "testfile"; }\n';
@@ -59,7 +59,7 @@ describe('@import', function() {
     Sass.compile(source, function(result) {
       expect(result).to.be.a('object');
       expect(result.line).to.equal(1);
-      expect(result.message).to.equal('File to import not found or unreadable: unknown-file.\nParent style sheet: stdin');
+      expect(result.message).to.equal('File to import not found or unreadable: unknown-file.');
 
       done();
     });
