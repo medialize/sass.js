@@ -1,0 +1,7 @@
+[
+  "ccall",
+  "Pointer_stringify",
+  "getValue",
+  "lengthBytesUTF8",
+  "stringToUTF8"
+]

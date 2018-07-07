@@ -1,5 +1,4 @@
 [
-  "_ZN4Sass9To_StringC1EPNS_7ContextEbb",
   "__Z20sass_compile_contextP12Sass_ContextN4Sass7Context4DataE",
   "__Z20sass_compile_contextP12Sass_ContextPN4Sass7ContextE",
   "__ZL20sass_compile_contextP12Sass_ContextPN4Sass7ContextE",
@@ -25,12 +24,14 @@
   "__ZN4Sass7Context14call_importersERKNSt3__212basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEEPKcRNS_11ParserStateEPNS_6ImportE",
   "__ZN4Sass7Context17register_resourceERKNS_7IncludeERKNS_8ResourceE",
   "__ZN4Sass7Context17register_resourceERKNS_7IncludeERKNS_8ResourceEPNS_11ParserStateE",
+  "__ZN4Sass7Context17register_resourceERKNS_7IncludeERKNS_8ResourceERNS_11ParserStateE",
   "__ZN4Sass7Context19process_queue_entryERNS_11Sass_QueuedEj",
-  "__ZN4Sass7Context8add_fileERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEES9_NS_11ParserStateE",
   "__ZN4Sass7Context8add_fileERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEEb",
+  "__ZN4Sass7Context8add_fileERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEES9_NS_11ParserStateE",
+  "_emscripten_sleep",
   "_sass_compile_data_context",
   "_sass_compile_emscripten",
   "_sass_compiler_parse",
   "_sass_importer_emscripten",
-  "_emscripten_sleep"
+  "_ZN4Sass9To_StringC1EPNS_7ContextEbb"
 ]

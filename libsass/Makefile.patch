@@ -8,24 +8,24 @@
 +	emcc lib/libsass.a -o lib/libsass.js \
 + 		-O3 \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
-+		-s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "Pointer_stringify", "getValue", "lengthBytesUTF8", "stringToUTF8"]' \
++		-s EXTRA_EXPORTED_RUNTIME_METHODS=@../exported_runtime_methods.json \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
-+		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
++		-s EMTERPRETIFY_WHITELIST=@../emterpreter_whitelist.json \
 +		--memory-init-file 0
 +
 +js-debug: static
 +	emcc lib/libsass.a -o lib/libsass.js \
 +		-O0 \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
-+		-s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "Pointer_stringify", "getValue", "lengthBytesUTF8", "stringToUTF8"]' \
++		-s EXTRA_EXPORTED_RUNTIME_METHODS=@../exported_runtime_methods.json \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
 +		-s EMTERPRETIFY_ASYNC=1 \
-+		-s EMTERPRETIFY_WHITELIST=@../empterpreter_whitelist.json \
++		-s EMTERPRETIFY_WHITELIST=@../emterpreter_whitelist.json \
 +		-s ASSERTIONS=1 \
 +		-s SAFE_HEAP=1 \
 +		-s DEMANGLE_SUPPORT=1 \
