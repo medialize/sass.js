@@ -17,6 +17,7 @@ The regular way of running Sass.js in the browser is by using the Web Worker (se
 ```html
 <script src="dist/sass.js"></script>
 <script>
+  var sass = new Sass();
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
   sass.compile(scss, function(result) {
     console.log(result);
