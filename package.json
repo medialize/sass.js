@@ -31,7 +31,8 @@
   "scripts": {
     "build": "grunt build",
     "test": "grunt test",
-    "lint": "grunt lint"
+    "lint": "grunt lint",
+    "serve": "serve ."
   },
   "files": [
     "dist/",
@@ -50,7 +51,8 @@
     "jit-grunt": "^0.10.0",
     "jshint-stylish": "^2.1.0",
     "mocha": "^3.2.0",
-    "node-sass": "^3.13.1",
+    "node-sass": "^4.9.3",
+    "serve": "^10.0.1",
     "time-grunt": "^1.1.0"
   }
 }
