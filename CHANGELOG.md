@@ -1,5 +1,10 @@
 # Sass.js Changelog
 
+## 0.10.11 (September 22nd 2018) ##
+
+* upgrading to [emscripten 1.38.12](https://github.com/kripken/emscripten/releases/tag/1.38.12) - ([Issue #85](https://github.com/medialize/sass.js/issues/85))
+* fixing IE11 compatibility by adding `-s LEGACY_VM_SUPPORT=1` - ([Issue #96](https://github.com/medialize/sass.js/issues/96))
+
 ## 0.10.10 (July 7th 2018) ##
 
 * upgrading to [libsass 3.5.4](https://github.com/sass/libsass/releases/tag/3.5.4)
