@@ -1,6 +1,6 @@
 --- Makefile.orig	2015-09-09 14:30:05.000000000 +0300
 +++ Makefile	2015-09-09 14:36:59.000000000 +0300
-@@ -208,6 +208,35 @@
+@@ -208,6 +208,37 @@
  debug-shared: CXXFLAGS := -g -DDEBUG -DDEBUG_LVL="$(DEBUG_LVL)" $(filter-out -O2,$(CXXFLAGS))
  debug-shared: shared
 
@@ -9,6 +9,7 @@
 + 		-O3 \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
 +		-s EXTRA_EXPORTED_RUNTIME_METHODS=@../exported_runtime_methods.json \
++		-s WASM=0 \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
@@ -21,6 +22,7 @@
 +		-O0 \
 +		-s EXPORTED_FUNCTIONS="['_sass_compile_emscripten']" \
 +		-s EXTRA_EXPORTED_RUNTIME_METHODS=@../exported_runtime_methods.json \
++		-s WASM=0 \
 +		-s DISABLE_EXCEPTION_CATCHING=0 \
 +		-s ALLOW_MEMORY_GROWTH=1 \
 +		-s EMTERPRETIFY=1 \
