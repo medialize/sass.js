@@ -43,6 +43,7 @@ Sass.js is used in the following tools:
 
 * the [sass group](https://github.com/sass), especially [team libsass](https://github.com/sass/libsass)
 * team [emscripten](https://github.com/kripken/emscripten), especially [Alon Zakai](https://github.com/kripken)
+* [Piotr Paczkowski](https://github.com/trzecieu/) for providing the [emscripten docker image](https://hub.docker.com/r/trzeci/emscripten/)
 
 
 ## License

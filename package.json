@@ -30,6 +30,13 @@
   "main": "./dist/sass.sync.js",
   "scripts": {
     "build": "grunt build",
+    "build:debug": "grunt build:debug",
+    "rebuild": "grunt rebuild",
+    "rebuild:debug": "grunt rebuild:debug",
+    "libsass:prepare": "grunt libsass:prepare",
+    "libsass:build": "grunt libsass:build",
+    "libsass:build": "grunt libsass:build",
+    "libsass:debug": "grunt libsass:debug",
     "test": "grunt test",
     "lint": "grunt lint",
     "serve": "serve ."

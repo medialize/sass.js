@@ -1,6 +1,6 @@
 # Building Sass.js
 
-To compile libsass to JS you need [emscripten](http://emscripten.org), to build Sass.js you also need [grunt](http://gruntjs.com/).
+To compile libsass to JS you need [docker](https://www.docker.com/).
 
 
 ## Preparations
@@ -13,17 +13,10 @@ cd sass.js
 npm install
 ```
 
-Install emscripten (using [Home Brew](http://brew.sh/))
-
-```bash
-brew install emscripten
-```
-
-
 ## Building everything
 
 ```bash
-grunt build
+npm run build
 
 # destination:
 #   dist/file-size.json
@@ -36,14 +29,14 @@ grunt build
 
 ### Assembling files
 
-When working with the Sass.js APIs it is not neccessary to download the libsass repository every time. The `grunt rebuild` command will compile the Sass.js the same way `grunt build` will, except it will expect the repository to already exist.
+When working with the Sass.js APIs it is not neccessary to download the libsass repository every time. The `npm run rebuild` command will compile the Sass.js the same way `npm run build` will, except it will expect the repository to already exist.
 
 ### Building in emscripten debug mode
 
 This is useful (and necessary) to identify the callstacks required to whitelist for the [Emterpreter](https://github.com/kripken/emscripten/wiki/Emterpreter#emterpreter-async-run-synchronous-code).
 
 ```bash
-grunt build:debug
+npm run build:debug
 
 # destination:
 #   dist/file-size.json
@@ -60,11 +53,11 @@ When working on the C wrapper it may be unnecessary to build the entire library,
 
 ```bash
 # import libsass repository
-grunt libsass:prepare
+npm run libsass:prepare
 # invoke emscripten
-grunt libsass:build
+npm run libsass:build
 # invoke emscripten in debug mode
-grunt libsass:debug
+npm run libsass:debug
 
 # destination:
 #   libsass/libsass/lib/libsass.js
@@ -73,7 +66,7 @@ grunt libsass:debug
 
 ## Loading the source files in the browser
 
-After cloning this repository you can run `grunt libsass:prepare libsass:build` and then run Sass.js off its source files to gain access to all components (emscripten environment, Sass.js components) in the global scope (see [`sass.source.html`](../sass.source.html)):
+After cloning this repository you can run `npm run libsass:prepare libsass:build` and then run Sass.js off its source files to gain access to all components (emscripten environment, Sass.js components) in the global scope (see [`sass.source.html`](../sass.source.html)):
 
 ```html
 <!-- you need to compile libsass.js first using `grunt libsass:prepare libsass:build` -->
