@@ -2,7 +2,7 @@
 
 Sass parser in JavaScript. Have a look at the [Interactive Playground](http://sass.js.org/) to play around with compiling SCSS to CSS in your browser.
 
-This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.5.4](https://github.com/sass/libsass/releases/tag/3.5.4)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
+This is a convenience API for [emscripted](https://github.com/kripken/emscripten) [libsass](https://github.com/sass/libsass) (at [v3.5.5](https://github.com/sass/libsass/releases/tag/3.5.5)). If you're looking to run Sass in node, you're probably looking for [node-sass](https://github.com/sass/node-sass). Sass.js and node-sass should generate the same results.
 
 A fair warning: minified the worker weighs 3.5MB, gzipped it's still 750KB. If you're on NodeJS, please use the (considerably faster) [node-sass](https://github.com/andrew/node-sass) instead.
 
@@ -43,6 +43,7 @@ Sass.js is used in the following tools:
 
 * the [sass group](https://github.com/sass), especially [team libsass](https://github.com/sass/libsass)
 * team [emscripten](https://github.com/kripken/emscripten), especially [Alon Zakai](https://github.com/kripken)
+* [Piotr Paczkowski](https://github.com/trzecieu/) for providing the [emscripten docker image](https://hub.docker.com/r/trzeci/emscripten/)
 
 
 ## License

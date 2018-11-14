@@ -1,5 +1,11 @@
 # Sass.js Changelog
 
+## 0.10.12 (November 14th 2018) ##
+
+* fixing `sass.configure.paths.js` for angular compiler - [Issue #105](https://github.com/medialize/sass.js/pull/105) [Issue #100](https://github.com/medialize/sass.js/issues/100)
+* upgrading to [libsass 3.5.5](https://github.com/sass/libsass/releases/tag/3.5.5)
+* upgrading to [emscripten 1.38.18](https://github.com/kripken/emscripten/releases/tag/1.38.18)
+
 ## 0.10.11 (September 22nd 2018) ##
 
 * upgrading to [emscripten 1.38.12](https://github.com/kripken/emscripten/releases/tag/1.38.12) - ([Issue #85](https://github.com/medialize/sass.js/issues/85))

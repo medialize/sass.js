@@ -57,7 +57,6 @@ It is possible - but *not recommended* to use Sass.js in the main EventLoop by l
 <script src="dist/sass.sync.js"></script>
 <script>
   var scss = '$someVar: 123px; .some-selector { width: $someVar; }';
-  var result = Sass.compile(scss);
   Sass.compile(scss, function(result) {
     console.log(result);
   });

@@ -1,7 +1,7 @@
 {
   "name": "sass.js",
-  "version": "0.10.11",
-  "libsass": "3.5.4",
+  "version": "0.10.12",
+  "libsass": "3.5.5",
   "title": "Sass.js - API for emscripted libsass",
   "description": "Sass.js is a convenience API for the JavaScript libsass (compiled with Emscripten)",
   "homepage": "http://medialize.github.com/sass.js/",
@@ -30,6 +30,13 @@
   "main": "./dist/sass.sync.js",
   "scripts": {
     "build": "grunt build",
+    "build:debug": "grunt build:debug",
+    "rebuild": "grunt rebuild",
+    "rebuild:debug": "grunt rebuild:debug",
+    "libsass:prepare": "grunt libsass:prepare",
+    "libsass:build": "grunt libsass:build",
+    "libsass:build": "grunt libsass:build",
+    "libsass:debug": "grunt libsass:debug",
     "test": "grunt test",
     "lint": "grunt lint",
     "serve": "serve ."
