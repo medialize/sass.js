@@ -1,5 +1,9 @@
 # Sass.js Changelog
 
+## 0.10.13 (November 19th 2018) ##
+
+* fixing `sass.configure.paths.js` to restore ES5 compatibility - [Issue #109](https://github.com/medialize/sass.js/pull/109)
+
 ## 0.10.12 (November 14th 2018) ##
 
 * fixing `sass.configure.paths.js` for angular compiler - [Issue #105](https://github.com/medialize/sass.js/pull/105) [Issue #100](https://github.com/medialize/sass.js/issues/100)
