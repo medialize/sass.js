@@ -71,7 +71,7 @@ function resolve(request) {
       path.dirname(request.previous.replace(/^\/sass\//, '')),
       request.current
     )
-  ).replace(/\\/g, '/');
+  );
 }
 
 compileFile.importFileToSass = importFileToSass;
