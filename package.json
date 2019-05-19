@@ -35,7 +35,6 @@
     "rebuild:debug": "grunt rebuild:debug",
     "libsass:prepare": "grunt libsass:prepare",
     "libsass:build": "grunt libsass:build",
-    "libsass:build": "grunt libsass:build",
     "libsass:debug": "grunt libsass:debug",
     "test": "grunt test",
     "lint": "grunt lint",
