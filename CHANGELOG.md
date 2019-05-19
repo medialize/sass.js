@@ -1,5 +1,11 @@
 # Sass.js Changelog
 
+## 0.11.0 (May 19th 2019) ##
+
+* fixing path resolver in node - [Issue #122](https://github.com/medialize/sass.js/pull/122)
+* upgrading to [libsass 3.6.0](https://github.com/sass/libsass/releases/tag/3.6.0)
+* upgrading to [emscripten 1.38.31](https://github.com/kripken/emscripten/releases/tag/1.38.31)
+
 ## 0.10.13 (November 19th 2018) ##
 
 * fixing `sass.configure.paths.js` to restore ES5 compatibility - [Issue #109](https://github.com/medialize/sass.js/pull/109)
