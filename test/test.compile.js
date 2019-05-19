@@ -2,7 +2,6 @@
 
 var expect = require('chai').expect;
 var Sass = require('../dist/sass.sync.js');
-var BOM = '\uFEFF';
 
 describe('Sass.compile()', function() {
 
@@ -104,7 +103,7 @@ describe('Sass.compile()', function() {
 
   it('should compile UTF-8', function(done) {
     var source = '// some “fun” characters\n$foo: "hällö würld";\n\n.m {\n  content:$foo;\n}';
-    var expected = BOM + '.m{content:"hällö würld"}\n';
+    var expected = '.m{content:"hällö würld"}\n';
 
     Sass.options('defaults');
     Sass.options({

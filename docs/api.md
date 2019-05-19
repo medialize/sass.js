@@ -136,7 +136,7 @@ sass.options({
 
 ### Compiling strings
 
-The `Sass.compile()` method compiles a SCSS source string (SASS) to CSS. See the [the response object](#the-response-object) below for details on the operation's resulting data structure.
+The `compile` method compiles a SCSS source string (SASS) to CSS. See the [the response object](#the-response-object) below for details on the operation's resulting data structure.
 
 **NOTE:** To compile SASS source strings the option `indentedSyntax` needs to be set to `true`.
 
@@ -146,7 +146,7 @@ sass.compile(source, function callback(result) {
 });
 ```
 
-It is possible to set options for a specific `Sass.compile()` call, rather than globally for all `Sass.compile()` calls. See [Sass.options()](#libsass-compile-options) for details:
+It is possible to set options for a specific `compile` call, rather than globally for all `compile` calls. See [Sass.options()](#libsass-compile-options) for details:
 
 ```js
 sass.compile(source, options, function callback(result) {
@@ -274,9 +274,10 @@ sass2.compile(source2, callback2);
 Chances are you want to use one of the readily available Sass mixins (e.g. [drublic/sass-mixins](https://github.com/drublic/Sass-Mixins) or [Bourbon](https://github.com/thoughtbot/bourbon)). While Sass.js doesn't feature a full-blown "loadBurbon()", registering individual files is possible:
 
 ```js
-Sass.writeFile('one.scss', '.one { width: 123px; }');
-Sass.writeFile('some-dir/two.scss', '.two { width: 123px; }');
-Sass.compile('@import "one"; @import "some-dir/two";', function(result) {
+var sass = new Sass();
+sass.writeFile('one.scss', '.one { width: 123px; }');
+sass.writeFile('some-dir/two.scss', '.two { width: 123px; }');
+sass.compile('@import "one"; @import "some-dir/two";', function(result) {
   console.log(result.text);
 });
 ```

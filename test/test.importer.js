@@ -2,7 +2,6 @@
 
 var expect = require('chai').expect;
 var Sass = require('../dist/sass.sync.js');
-var BOM = '\uFEFF';
 
 describe('importer', function() {
 
@@ -308,7 +307,7 @@ describe('importer', function() {
 
   it('should compile UTF-8', function(done) {
     var source = '@import "testfile";';
-    var expected = BOM + '.yolo{content:"injöcted"}.testfile{content:"löäded"}\n';
+    var expected = '.yolo{content:"injöcted"}.testfile{content:"löäded"}\n';
     var expectedFiles = [
       '/sass/sub/yolo.scss',
       '/sass/testfile.scss'
