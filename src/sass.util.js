@@ -23,7 +23,7 @@ function addTrailingSlash(text) {
 
 function pointerToString(pointer) {
   /*jshint camelcase:false*/
-  return pointer && Module.Pointer_stringify(pointer) || null;
+  return pointer && Module.UTF8ToString(pointer) || null;
 }
 
 function stringToPointer(text) {
