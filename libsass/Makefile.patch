@@ -43,7 +43,7 @@
 @@ -299,7 +326,7 @@
  	$(RUBY_BIN) $(SASS_SPEC_PATH)/sass-spec.rb -c $(SASSC_BIN) $(LOG_FLAGS) $(SASS_SPEC_PATH)/spec/issues
 
- clean-objects: lib
+ clean-objects: | lib
 -	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la
 +	-$(RM) lib/*.a lib/*.so lib/*.dll lib/*.la lib/*.js
  	-$(RMDIR) lib
