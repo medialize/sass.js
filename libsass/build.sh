@@ -25,9 +25,10 @@ cp ./exported_runtime_methods.json ./libsass/exported_runtime_methods.json
 cp ./emterpreter_whitelist.json ./libsass/emterpreter_whitelist.json
 
 # build
+EMSCRIPTEN_TAG="sdk-tag-1.39.0-64bit"
 echo "  initializing emscripten"
 if [ "${2:-}" = "debug" ]; then
-  docker run --rm --volume "$(pwd)/libsass:/src" --user="emscripten" trzeci/emscripten:latest emmake make js-debug
+  docker run --rm --volume "$(pwd)/libsass:/src" --user="emscripten" trzeci/emscripten:${EMSCRIPTEN_TAG} emmake make js-debug
 else
-  docker run --rm --volume "$(pwd)/libsass:/src" --user="emscripten" trzeci/emscripten:latest emmake make js
+  docker run --rm --volume "$(pwd)/libsass:/src" --user="emscripten" trzeci/emscripten:${EMSCRIPTEN_TAG} emmake make js
 fi

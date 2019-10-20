@@ -1,4 +1,4 @@
-/*global FS, PATH, Sass, stringToPointer*/
+/*global FS, PATH, PATH_FS, Sass, stringToPointer*/
 /*jshint strict:false*/
 
 var Importer = {
@@ -14,7 +14,7 @@ var Importer = {
     Importer._running = true;
     Importer._result = null;
 
-    var resolved = PATH.resolve(previous === 'stdin' ? Sass._path : PATH.dirname(previous), current);
+    var resolved = PATH_FS.resolve(previous === 'stdin' ? Sass._path : PATH.dirname(previous), current);
     var found = Sass.findPathVariation(FS.stat, resolved);
     var done = function done(result) {
       Importer._result = result;
