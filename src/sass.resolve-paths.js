@@ -1,4 +1,4 @@
-/*global PATH, Sass*/
+/*global PATH, PATH_FS, Sass*/
 /*jshint strict:false*/
 
 function isAbsolutePath (path) {
@@ -18,17 +18,17 @@ Sass.getPathVariations = function(path) {
     // (1) filename as given
     path,
     // (2) underscore + given
-    PATH.resolve(directory, '_' + basename)
+    PATH_FS.resolve(directory, '_' + basename)
   ].concat(extensions.map(function(extension) {
     // (3) underscore + given + extension
-    return PATH.resolve(directory, '_' + basename + extension);
+    return PATH_FS.resolve(directory, '_' + basename + extension);
   })).concat(extensions.map(function(extension) {
     // (4) given + extension
-    return PATH.resolve(directory, basename + extension);
+    return PATH_FS.resolve(directory, basename + extension);
   }));
 
   if (!isAbsolutePath(path)) {
-    // PATH.resolve() makes everything absolute, revert that
+    // PATH_FS.resolve() makes everything absolute, revert that
     list = list.map(function(item) {
       return isAbsolutePath(item)
         ? item.slice(1)
