@@ -228,6 +228,33 @@ describe('importer', function() {
     });
   });
 
+  it('should support indented syntax', function(done) {
+    var source = '@import "testfile"';
+    var expected = '.m {\n  width: 123px; }\n';
+
+    Sass.importer(function(request, done) {
+      done({
+        content: request.options.gustav,
+      });
+    });
+
+    Sass.options('defaults');
+    Sass.options({
+      indentedSyntax: true,
+    });
+
+    var options = {
+      importer: {
+        gustav: '$foo: 123px\n\n.m\n  width: $foo',
+      },
+    };
+
+    Sass.compile(source, options, function(result) {
+      expect(result.text).to.equal(expected);
+      done();
+    });
+  });
+
   it('should use correct options', function(done) {
     var source = '@import "testfile";';
     var alpha = '.alpha{content:"alpha"}\n';
