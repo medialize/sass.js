@@ -26,6 +26,7 @@ module.exports = function(grunt) {
   // concatenate source files and libsass.js
   grunt.registerTask('build:worker', ['concat:worker']);
   grunt.registerTask('build:sass', ['concat:sass']);
+  grunt.registerTask('build:sass-inline-code', ['concat:sassInlineCode']);
   grunt.registerTask('build:sync', ['concat:sync']);
   grunt.registerTask('build:node', ['concat:node']);
 
@@ -54,16 +55,12 @@ module.exports = function(grunt) {
     'build:node',
     'file-size',
   ]);
-  // simplifications for development
-  grunt.registerTask('rebuild', [
-    'versions',
-    'libsass:build',
-    'build:sass',
-    'build:worker',
-    'build:sync',
-    'build:node',
-    'file-size',
+
+  grunt.registerTask('build:sass:htmlacademy', [
+    'build:sass-inline-code',
+    'file-size'
   ]);
+
   grunt.registerTask('rebuild:debug', [
     'versions',
     'libsass:debug',

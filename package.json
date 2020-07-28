@@ -29,6 +29,7 @@
   ],
   "main": "./dist/sass.sync.js",
   "scripts": {
+    "build:sass:htmlacademy": "grunt build:sass:htmlacademy",
     "build": "grunt build",
     "build:debug": "grunt build:debug",
     "rebuild": "grunt rebuild",

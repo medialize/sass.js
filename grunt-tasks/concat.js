@@ -2,9 +2,6 @@ module.exports = function GruntfileConcat(grunt) {
   'use strict';
 
   /*jshint laxbreak:true */
-  var banner = '/*! <%= pkg.name %> - v<%= pkg.version %> (<%= versions.sassjs.commit %>) - built <%= grunt.template.today("yyyy-mm-dd") %>\n'
-    + '  providing libsass <%= versions.libsass.version %> (<%= versions.libsass.commit %>)\n'
-    + '  via emscripten <%= versions.emscripten.version %> (<%= versions.emscripten.commit %>)\n */\n';
   var umdHeader = ['(function (root, factory) {',
     '  \'use strict\';',
     '  if (typeof define === \'function\' && define.amd) {',
@@ -26,7 +23,18 @@ module.exports = function GruntfileConcat(grunt) {
         'src/sass.js'
       ],
       options: {
-        banner: banner + '\n' + umdHeader,
+        banner: umdHeader,
+        footer: umdFooter,
+      }
+    },
+    sassInlineCode: {
+      dest: 'dist/sass.inline-code.js',
+      src: [
+        'src/sass.configure.path.js',
+        'src/sass.inline-code.js'
+      ],
+      options: {
+        banner: umdHeader,
         footer: umdFooter,
       }
     },
@@ -42,7 +50,7 @@ module.exports = function GruntfileConcat(grunt) {
         'src/sass.worker.js'
       ],
       options: {
-        banner: banner,
+        banner: '',
         process: function (content) {
           return content
             // prevent emscripted libsass from exporting itself
@@ -64,7 +72,7 @@ module.exports = function GruntfileConcat(grunt) {
         'src/sass.resolve-paths.js'
       ],
       options: {
-        banner: banner + '\n' + umdHeader,
+        banner: umdHeader,
         footer: umdFooter,
         process: function (content) {
           // prevent emscripted libsass from exporting itself
@@ -78,7 +86,7 @@ module.exports = function GruntfileConcat(grunt) {
         'src/sass.node.js',
       ],
       options: {
-        banner: banner,
+        banner: '',
       },
     },
   });
